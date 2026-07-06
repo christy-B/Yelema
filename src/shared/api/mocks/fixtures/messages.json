@@ -1,0 +1,22 @@
+{
+  "c_1": [
+    { "id": "m_1", "role": "user", "text": "Quels sont les trois principaux risques ?" },
+    { "id": "m_2", "role": "agent", "text": "Voici les trois risques identifiés dans le rapport.", "sources": ["Rapport_Q1.pdf · p. 7"] }
+  ],
+  "c_2": [
+    { "id": "m_3", "role": "user", "text": "Reprends les hypothèses de recettes du budget prévisionnel." },
+    { "id": "m_4", "role": "agent", "text": "Les hypothèses de recettes reposent sur trois postes principaux, résumés ci-dessous.", "sources": ["Budget_previsionnel_2027.xlsx · onglet 2"] }
+  ],
+  "c_3": [
+    { "id": "m_5", "role": "user", "text": "Rédige une réponse formelle à la lettre du partenaire." },
+    { "id": "m_6", "role": "agent", "text": "Voici un projet de courrier au registre administratif attendu.", "sources": ["Courrier_partenaire_v2.docx"] }
+  ],
+  "c_4": [
+    { "id": "m_7", "role": "user", "text": "Les totaux du tableau 4 sont-ils cohérents ?" },
+    { "id": "m_8", "role": "agent", "text": "Deux écarts ont été repérés sur les totaux du tableau 4.", "sources": ["Annexe_budget_2026.xlsx · onglet 3"] }
+  ],
+  "c_5": [
+    { "id": "m_9", "role": "user", "text": "Résume les décisions prises en réunion du conseil." },
+    { "id": "m_10", "role": "agent", "text": "Voici les décisions et les actions à suivre issues de la réunion." }
+  ]
+}

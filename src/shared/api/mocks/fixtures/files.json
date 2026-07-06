@@ -1,0 +1,10 @@
+{
+  "storage": { "used": "4,7 Mo", "quota": "2 Go", "count": 5, "percent": 1 },
+  "files": [
+    { "id": "f_1", "name": "Rapport_trimestriel_Q1.pdf", "kind": "PDF · 28 pages", "agent": "Analyse documentaire", "size": "2,4 Mo", "date": "12 juin 2026", "storageKey": "s3://yelema/ws_3/f_1" },
+    { "id": "f_2", "name": "Annexe_budget_2026.xlsx", "kind": "Tableur · 3 onglets", "agent": "Vérification d'infos", "size": "840 Ko", "date": "12 juin 2026", "storageKey": "s3://yelema/ws_3/f_2" },
+    { "id": "f_3", "name": "Convention_partenariat.docx", "kind": "Document · 14 pages", "agent": "Analyse documentaire", "size": "312 Ko", "date": "5 juin 2026", "storageKey": "s3://yelema/ws_3/f_3" },
+    { "id": "f_4", "name": "Note_cadrage_strategie.pdf", "kind": "PDF · 9 pages", "agent": "Synthèse & notes", "size": "1,1 Mo", "date": "2 juin 2026", "storageKey": "s3://yelema/ws_3/f_4" },
+    { "id": "f_5", "name": "Courrier_partenaire_v2.docx", "kind": "Document · 2 pages", "agent": "Courrier administratif", "size": "86 Ko", "date": "28 mai 2026", "storageKey": "s3://yelema/ws_3/f_5" }
+  ]
+}

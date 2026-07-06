@@ -1,0 +1,6 @@
+{
+  "u_12": { "id": "u_12", "name": "Aïcha Koné", "title": "Administratrice", "email": "a.kone@plan.gouv.ci", "language": "fr", "avatarUrl": "/mock-assets/avatars/u_12.png", "twoFactorEnabled": false, "notificationsEnabled": true },
+  "u_18": { "id": "u_18", "name": "Bakary Diallo", "title": "Analyste budgétaire", "email": "b.diallo@plan.gouv.ci", "language": "fr", "twoFactorEnabled": false, "notificationsEnabled": true },
+  "u_20": { "id": "u_20", "name": "Nassira Sow", "title": "Chargée de mission", "email": "n.sow@plan.gouv.ci", "language": "fr", "twoFactorEnabled": false, "notificationsEnabled": true },
+  "u_99": { "id": "u_99", "name": "Mariam Coulibaly", "title": "Assistante de direction", "email": "m.coulibaly@plan.gouv.ci", "language": "fr", "twoFactorEnabled": false, "notificationsEnabled": true }
+}

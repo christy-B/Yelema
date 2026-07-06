@@ -1,0 +1,8 @@
+[
+  { "id": "u_12", "name": "Aïcha Koné", "email": "a.kone@plan.gouv.ci", "initials": "AK", "color": "#8D68FA", "status": "active", "capabilities": ["members", "billing", "analytics", "workspace"], "excludedAgentIds": [] },
+  { "id": "u_18", "name": "Bakary Diallo", "email": "b.diallo@plan.gouv.ci", "initials": "BD", "color": "#2E4EC4", "status": "active", "capabilities": ["billing"], "excludedAgentIds": ["decision", "auto", "veille", "donnees"] },
+  { "id": "u_21", "name": "Clarisse Touré", "email": "c.toure@plan.gouv.ci", "initials": "CT", "color": "#8D68FA", "status": "active", "capabilities": [], "excludedAgentIds": ["courrier", "traduction"] },
+  { "id": "u_24", "name": "Fatou Sangaré", "email": "f.sangare@plan.gouv.ci", "initials": "FS", "color": "#E4765A", "status": "active", "capabilities": ["analytics"], "excludedAgentIds": ["auto", "support"] },
+  { "id": "u_20", "name": "Nassira Sow", "email": "n.sow@plan.gouv.ci", "initials": "NS", "color": "#0EA371", "status": "active", "capabilities": [], "excludedAgentIds": [] },
+  { "id": "u_99", "name": "Mariam Coulibaly", "email": "m.coulibaly@plan.gouv.ci", "initials": "MC", "color": "#13a538", "status": "pending", "capabilities": [], "excludedAgentIds": [] }
+]

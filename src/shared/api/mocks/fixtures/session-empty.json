@@ -1,0 +1,17 @@
+{
+  "user": {
+    "id": "u_20",
+    "name": "Nassira Sow",
+    "email": "n.sow@plan.gouv.ci",
+    "language": "fr"
+  },
+  "workspace": {
+    "id": "ws_3",
+    "name": "Ministère du Plan",
+    "domain": "plan.gouv.ci",
+    "plan": "Organisation",
+    "hosting": "cloud-public",
+    "logoUrl": "/mock-assets/logos/ws_3.png"
+  },
+  "capabilities": []
+}

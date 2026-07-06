@@ -1,0 +1,22 @@
+.workspace-shell { display: flex; width: 100%; height: 100%; background: var(--surface); }
+.sidebar { display: flex; flex: 0 0 248px; flex-direction: column; width: 248px; padding: 18px 16px 14px; border-right: 1px solid var(--line); background: #fff; }
+.workspace-selector { display: flex; align-items: center; gap: 10px; min-height: 55px; padding: 9px 12px; border: 1px solid var(--line); border-radius: 11px; background: #f7f8fb; }
+.workspace-mark { display: grid; flex: 0 0 auto; width: 31px; height: 31px; color: #fff; border-radius: 8px; background: var(--primary); font-weight: 700; font-size: 14px; place-items: center; }
+.workspace-selector-copy { display: flex; flex: 1; flex-direction: column; min-width: 0; }
+.workspace-selector-copy strong { overflow: hidden; font-size: 13.5px; text-overflow: ellipsis; white-space: nowrap; }
+.workspace-selector-copy small, .user-summary small { margin-top: 1px; color: var(--faint); font-size: 11px; }
+.workspace-selector > svg { color: #8d93a5; }
+.sidebar-nav { display: flex; flex-direction: column; gap: 4px; margin-top: 18px; }
+.sidebar-link { display: flex; align-items: center; gap: 12px; min-height: 42px; padding: 0 13px; color: #596178; border-radius: 10px; font-size: 14px; font-weight: 500; }
+.sidebar-link:hover { color: var(--primary); background: #f5f3fc; }
+.sidebar-link.is-active { color: #fff; background: var(--primary); font-weight: 600; }
+.sidebar-footer { display: flex; flex-direction: column; margin-top: auto; }
+.user-menu { display: flex; align-items: center; gap: 6px; margin-top: 9px; padding: 11px 3px 0 8px; border-top: 1px solid var(--line); }
+.user-summary { display: flex; align-items: center; gap: 10px; flex: 1; min-width: 0; }
+.user-summary > span:last-child { display: flex; flex-direction: column; min-width: 0; }
+.user-summary strong { overflow: hidden; font-size: 13px; text-overflow: ellipsis; white-space: nowrap; }
+.user-avatar { display: grid; flex: 0 0 auto; width: 36px; height: 36px; color: #fff; border-radius: 50%; background: var(--purple); font-size: 13px; font-weight: 700; place-items: center; }
+.icon-action { display: grid; width: 34px; height: 34px; padding: 0; color: var(--muted); border-radius: 9px; background: transparent; place-items: center; }
+.logout-action { color: #ef5f61; }
+.icon-action:hover { background: #f6f3fb; }
+.workspace-content { display: flex; flex: 1; flex-direction: column; min-width: 0; min-height: 0; overflow: hidden; }

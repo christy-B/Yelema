@@ -1,0 +1,7 @@
+[
+  { "id": "c_1", "userId": "u_12", "agentId": "analyse", "title": "Rapport trimestriel Q1", "preview": "« Quels sont les 3 risques majeurs… »", "owner": "Aïcha Koné", "time": "il y a 2 h", "createdAt": "2026-06-28T10:00:00Z", "updatedAt": "2026-06-30T08:00:00Z" },
+  { "id": "c_2", "userId": "u_18", "agentId": "analyse", "title": "Note de cadrage budget", "preview": "« Reprends les hypothèses de recettes… »", "owner": "Bakary Diallo", "time": "il y a 5 j", "createdAt": "2026-06-25T10:00:00Z", "updatedAt": "2026-06-25T16:30:00Z" },
+  { "id": "c_3", "userId": "u_12", "agentId": "courrier", "title": "Lettre de réponse au partenaire", "preview": "« Rédige une réponse formelle à… »", "owner": "Aïcha Koné", "time": "hier", "createdAt": "2026-06-29T09:00:00Z", "updatedAt": "2026-06-29T09:00:00Z" },
+  { "id": "c_4", "userId": "u_12", "agentId": "verif", "title": "Vérification des chiffres budget", "preview": "« Les totaux du tableau 4 sont-ils… »", "owner": "Aïcha Koné", "time": "il y a 3 j", "createdAt": "2026-06-27T14:00:00Z", "updatedAt": "2026-06-27T14:00:00Z" },
+  { "id": "c_5", "userId": "u_12", "agentId": "synthese", "title": "Synthèse réunion du conseil", "preview": "« Résume les décisions prises en… »", "owner": "Aïcha Koné", "time": "1 sem.", "createdAt": "2026-06-22T11:00:00Z", "updatedAt": "2026-06-22T11:00:00Z" }
+]

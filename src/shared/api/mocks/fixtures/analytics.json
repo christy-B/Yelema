@@ -1,0 +1,55 @@
+{
+  "stats": [
+    { "label": "Conversations", "value": "1 248", "delta": "+18% vs. mai" },
+    { "label": "Crédits consommés", "value": "48 200", "delta": "sur 60 000 inclus" },
+    { "label": "Membres actifs", "value": "5", "delta": "sur 6 membres" },
+    { "label": "Temps estimé gagné", "value": "312 h", "delta": "+22% vs. mai" }
+  ],
+  "series": {
+    "month": {
+      "title": "Conversations par mois",
+      "sub": "12 derniers mois",
+      "points": [
+        { "label": "juil.", "value": 62 }, { "label": "août", "value": 78 }, { "label": "sept.", "value": 70 },
+        { "label": "oct.", "value": 95 }, { "label": "nov.", "value": 88 }, { "label": "déc.", "value": 106 },
+        { "label": "janv.", "value": 99 }, { "label": "févr.", "value": 120 }, { "label": "mars", "value": 112 },
+        { "label": "avr.", "value": 134 }, { "label": "mai", "value": 126 }, { "label": "juin", "value": 150 }
+      ]
+    },
+    "quarter": {
+      "title": "Conversations par trimestre",
+      "sub": "4 derniers trimestres",
+      "points": [
+        { "label": "T3 25", "value": 210 }, { "label": "T4 25", "value": 283 },
+        { "label": "T1 26", "value": 331 }, { "label": "T2 26", "value": 410 }
+      ]
+    },
+    "year": {
+      "title": "Conversations par an",
+      "sub": "3 dernières années",
+      "points": [
+        { "label": "2024", "value": 640 }, { "label": "2025", "value": 980 }, { "label": "2026", "value": 1248 }
+      ]
+    }
+  },
+  "topAgents": [
+    { "name": "Analyse documentaire", "count": 420 },
+    { "name": "Synthèse & notes", "count": 318 },
+    { "name": "Courrier administratif", "count": 236 },
+    { "name": "Vérification d'infos", "count": 174 },
+    { "name": "Aide à la décision", "count": 100 }
+  ],
+  "creditsByUser": [
+    { "userId": "u_12", "name": "Aïcha Koné", "initials": "AK", "credits": 18600 },
+    { "userId": "u_18", "name": "Bakary Diallo", "initials": "BD", "credits": 13100 },
+    { "userId": "u_24", "name": "Fatou Sangaré", "initials": "FS", "credits": 9800 },
+    { "userId": "u_21", "name": "Clarisse Touré", "initials": "CT", "credits": 6700 }
+  ],
+  "creditsByAgent": [
+    { "agentId": "analyse", "name": "Analyse documentaire", "credits": 18600 },
+    { "agentId": "synthese", "name": "Synthèse & notes", "credits": 12100 },
+    { "agentId": "decision", "name": "Aide à la décision", "credits": 8400 },
+    { "agentId": "courrier", "name": "Courrier administratif", "credits": 5600 },
+    { "agentId": "verif", "name": "Vérification d'infos", "credits": 3500 }
+  ]
+}

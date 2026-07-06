@@ -1,0 +1,10 @@
+{
+  "id": "ws_3",
+  "name": "Ministère du Plan",
+  "domain": "plan.gouv.ci",
+  "plan": "Organisation",
+  "seats": 25,
+  "hosting": "cloud-public",
+  "logoUrl": "/mock-assets/logos/ws_3.png",
+  "restrictDomain": true
+}

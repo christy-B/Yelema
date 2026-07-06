@@ -1,0 +1,20 @@
+{
+  "summary": {
+    "plan": "Organisation",
+    "consumption": 182,
+    "included": 400,
+    "currency": "USD",
+    "next": { "amount": 0, "date": "2026-07-01" }
+  },
+  "usage": [
+    { "model": "Opus", "cost": 95, "pct": 52 },
+    { "model": "Sonnet", "cost": 58, "pct": 32 },
+    { "model": "Haiku", "cost": 29, "pct": 16 }
+  ],
+  "invoices": [
+    { "id": "inv_6", "period": "Juin 2026", "amount": 182, "status": "pending", "lines": [{ "label": "Opus", "detail": "Tâches complexes", "amount": 95 }, { "label": "Sonnet", "detail": "Usage courant", "amount": 58 }, { "label": "Haiku", "detail": "Tâches simples", "amount": 29 }] },
+    { "id": "inv_5", "period": "Mai 2026", "amount": 341, "status": "paid", "lines": [{ "label": "Opus", "detail": "Tâches complexes", "amount": 190 }, { "label": "Sonnet", "detail": "Usage courant", "amount": 101 }, { "label": "Haiku", "detail": "Tâches simples", "amount": 50 }] },
+    { "id": "inv_4", "period": "Avril 2026", "amount": 298, "status": "paid", "lines": [{ "label": "Opus", "detail": "Tâches complexes", "amount": 165 }, { "label": "Sonnet", "detail": "Usage courant", "amount": 88 }, { "label": "Haiku", "detail": "Tâches simples", "amount": 45 }] },
+    { "id": "inv_3", "period": "Mars 2026", "amount": 256, "status": "paid", "lines": [{ "label": "Opus", "detail": "Tâches complexes", "amount": 140 }, { "label": "Sonnet", "detail": "Usage courant", "amount": 76 }, { "label": "Haiku", "detail": "Tâches simples", "amount": 40 }] }
+  ]
+}

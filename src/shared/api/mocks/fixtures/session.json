@@ -1,0 +1,18 @@
+{
+  "user": {
+    "id": "u_12",
+    "name": "Aïcha Koné",
+    "email": "a.kone@plan.gouv.ci",
+    "language": "fr",
+    "avatarUrl": "/mock-assets/avatars/u_12.png"
+  },
+  "workspace": {
+    "id": "ws_3",
+    "name": "Ministère du Plan",
+    "domain": "plan.gouv.ci",
+    "plan": "Organisation",
+    "hosting": "cloud-public",
+    "logoUrl": "/mock-assets/logos/ws_3.png"
+  },
+  "capabilities": ["members", "billing", "analytics", "workspace"]
+}

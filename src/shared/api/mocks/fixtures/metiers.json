@@ -1,0 +1,8 @@
+[
+  { "id": "direction", "name": "Direction & Stratégie", "agentIds": ["decision", "synthese", "analyse"] },
+  { "id": "finance", "name": "Finance & Budget", "agentIds": ["verif", "donnees", "analyse"] },
+  { "id": "rh", "name": "Ressources Humaines", "agentIds": ["courrier", "support", "synthese"] },
+  { "id": "juridique", "name": "Juridique & Conformité", "agentIds": ["veille", "analyse", "verif"] },
+  { "id": "comm", "name": "Communication", "agentIds": ["synthese", "traduction", "courrier"] },
+  { "id": "invest", "name": "Investissement (VC)", "agentIds": ["decision", "donnees", "analyse"] }
+]

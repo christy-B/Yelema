@@ -1,0 +1,6 @@
+[
+  { "key": "members", "label": "Gérer les membres" },
+  { "key": "billing", "label": "Gérer la facturation" },
+  { "key": "analytics", "label": "Consulter les analytics" },
+  { "key": "workspace", "label": "Paramètres du workspace" }
+]

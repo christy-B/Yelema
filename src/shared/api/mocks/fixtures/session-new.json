@@ -1,0 +1,16 @@
+{
+  "user": {
+    "id": "u_99",
+    "name": "Mariam Coulibaly",
+    "email": "m.coulibaly@plan.gouv.ci",
+    "language": "fr"
+  },
+  "workspace": {
+    "id": "ws_3",
+    "name": "Ministère du Plan",
+    "domain": "plan.gouv.ci",
+    "plan": "Organisation",
+    "hosting": "cloud-public"
+  },
+  "capabilities": []
+}
