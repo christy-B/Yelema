@@ -1,0 +1,31 @@
+# Configuration Netlify.
+#
+# Netlify n'exécute PAS le workflow GitHub Actions : il lance son propre build.
+# Les variables posées par ce workflow ne s'appliquent donc pas ici, et doivent
+# être déclarées à nouveau.
+
+[build]
+  command = "npm run build"
+  publish = "dist"
+
+[build.environment]
+  # Déploiement sans control-plane : l'API est servie par MSW dans le navigateur.
+  # SANS cette variable, le build de production coupe les mocks et l'application
+  # appelle une API absente — la connexion échoue alors sur « Une erreur est
+  # survenue ».
+  VITE_ENABLE_MSW = "true"
+
+  # Même version que le workflow GitHub, pour que les deux builds se comportent
+  # de la même façon.
+  NODE_VERSION = "24"
+
+  # VITE_BASE_PATH n'est pas posée : le site est servi à la racine du domaine,
+  # la valeur par défaut « / » convient. Elle n'est utile que sur GitHub Pages,
+  # qui publie sous /<nom-du-dépôt>/.
+
+# Repli d'application monopage. Il double `public/_redirects`, conservé pour les
+# hébergeurs qui ne lisent que ce fichier.
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
