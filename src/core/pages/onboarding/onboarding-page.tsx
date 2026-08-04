@@ -1,11 +1,11 @@
-import { ArrowLeft, ArrowRight, Bot, Diamond, FolderClock, Loader, PartyPopper } from 'lucide-react'
+import { ArrowLeft, ArrowRight, Bot, Diamond, Loader, PartyPopper } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router'
 
 /** Marqueur « présentation vue » (session navigateur) — évite de re-rediriger vers l'onboarding. */
 export const ONBOARDING_SEEN_KEY = 'yelema.onboarding.seen'
 
-import logo from '../../../assets/brand/logo-lockup-white.png'
+import logo from '../../../assets/brand/yelema_logo_final_long_blanc.svg'
 import { Button } from '../../../shared/components/button/button'
 import { DEFAULT_WORKSPACE_ID, paths } from '../../routes/paths'
 
@@ -14,31 +14,23 @@ const steps = [
     key: 'welcome',
     navLabel: 'Bienvenue',
     title: 'Bienvenue sur Yelema',
-    body: "Yelema met des agents IA prêts à l'emploi au service de vos équipes : analyse de documents, synthèses, courriers, vérification, et bien plus — en français, adaptés à vos métiers.",
+    body: "Yelema met des experts IA prêts à l'emploi au service de vos équipes : analyse de documents, synthèses, courriers, vérification, et bien plus — en français, adaptés à vos métiers.",
     note: 'En une minute, voyons comment ça marche.',
     icon: Loader,
   },
   {
     key: 'agents',
-    navLabel: 'Les agents',
-    title: 'Comment fonctionne un agent',
-    body: 'Choisissez un agent, décrivez votre besoin en une fois, puis obtenez un résultat clair et sourcé.',
-    note: 'Chaque agent est spécialisé dans une tâche métier précise.',
+    navLabel: 'Les experts IA',
+    title: 'Comment fonctionne un expert IA',
+    body: 'Choisissez un expert IA, décrivez votre besoin en une fois, puis obtenez un résultat clair et sourcé.',
+    note: 'Chaque expert IA est spécialisé dans une tâche métier précise.',
     icon: Bot,
-  },
-  {
-    key: 'spaces',
-    navLabel: 'Vos espaces',
-    title: 'Retrouvez tout au même endroit',
-    body: 'Vos conversations, vos fichiers et leur suivi restent accessibles depuis le menu de gauche.',
-    note: 'Vous pouvez reprendre votre travail à tout moment.',
-    icon: FolderClock,
   },
   {
     key: 'done',
     navLabel: "C'est parti",
     title: 'Vous êtes prêt',
-    body: 'Ouvrez un agent et lancez votre première demande dès maintenant.',
+    body: 'Ouvrez un expert IA et lancez votre première demande dès maintenant.',
     note: 'Yelema vous accompagne dans vos tâches quotidiennes.',
     icon: PartyPopper,
   },

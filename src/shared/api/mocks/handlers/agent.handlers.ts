@@ -1,55 +1,176 @@
 import { http, HttpResponse } from 'msw'
 
-import type { AgentDetail, Metier } from '../../agent/contracts'
-import agentsFixture from '../fixtures/agents.json'
-import metiersFixture from '../fixtures/metiers.json'
-import { API_BASE, forbidden, getAuthenticatedUserId, notFound, requireAuth } from './helpers'
-import { excludedAgentIdsFor } from './member-store'
+import { ROSTER, type RosterExpert } from '../../../../features/agents/roster'
+import { AVATAR_AXES, DEFAULT_PROFILE, getProfile, PORTRAIT_CROPS, setProfile, type ProfileSettings } from '../stores/agent-profile.store'
+import { API_BASE, notFound, requireAuth, validationError } from './helpers'
 
-const agents = structuredClone(agentsFixture) as AgentDetail[]
-const metiers = structuredClone(metiersFixture) as Metier[]
+// Provider (clé du logo) dérivé du nom d'affichage de l'intégration.
+const providerSlug = (name: string) => name.toLocaleLowerCase('fr').normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')
+
+/**
+ * EXPERTS IA — roster mock servi sur /agents (décoré du back en attendant le
+ * modèle « expert IA » côté control-plane). Forme alignée sur le DTO réel
+ * (id, displayName, type, suite, channels…) + description/skills pour la fiche.
+ * À retirer quand le back exposera les experts nommés.
+ */
+const AGENT_TYPES = [
+  { value: 'dust-agent', label: 'Agent Dust' },
+  { value: 'native-agent', label: 'Agent natif' },
+  { value: 'n8n-workflow', label: 'Workflow n8n' },
+  { value: 'openclaw', label: 'OpenClaw' },
+]
+
+/**
+ * Experts rattachés à l'organisation (son équipe). Les autres experts du
+ * catalogue Yelema relèvent de la marketplace : l'organisation peut demander à
+ * les recruter. Ce rattachement est un état d'organisation, pas une propriété
+ * de l'expert — il viendra du control-plane (plan souscrit).
+ */
+const TEAM_AGENT_IDS = new Set(['exp_kouassi', 'exp_awa', 'exp_mamadou', 'exp_salif'])
+const teamAgents = () => ROSTER.filter((expert) => TEAM_AGENT_IDS.has(expert.id))
+const marketplaceAgents = () => ROSTER.filter((expert) => !TEAM_AGENT_IDS.has(expert.id))
+
+
+// Réglages par expert : magasin partagé avec /agents/:id/resources.
+const TONES = ['direct', 'chaleureux', 'formel']
+const LANGUAGES = ['fr', 'en', 'bilingue']
+const DETAILS = ['court', 'standard', 'detaille']
+
+function toListDto(expert: RosterExpert) {
+  return {
+    id: expert.id,
+    displayName: expert.name,
+    type: expert.type,
+    suite: { key: expert.metierKey, label: expert.metier, icon: null },
+    channels: expert.channels,
+    sovereignCapable: true,
+    description: expert.description,
+  }
+}
+
+/** Fiche complète : connecteurs = intégrations (nom d'affichage → provider slugifié pour le logo). */
+function toDetailDto(expert: RosterExpert) {
+  return {
+    ...toListDto(expert),
+    gender: expert.gender,
+    fonction: expert.fonction,
+    daily: expert.daily,
+    usecase: expert.usecase,
+    skills: expert.skills,
+    approvals: expert.approvals,
+    connectors: expert.connectors.map((name) => ({ provider: providerSlug(name), name })),
+  }
+}
 
 export const agentHandlers = [
-  http.get(`${API_BASE}/metiers`, ({ request }) => {
-    const unauthorized = requireAuth(request)
-    return unauthorized ?? HttpResponse.json(metiers)
+  http.get(`${API_BASE}/agents`, async ({ request }) => {
+    const unauthorized = await requireAuth(request)
+    if (unauthorized) return unauthorized
+    return HttpResponse.json(teamAgents().map(toListDto))
   }),
 
-  http.get(`${API_BASE}/agents`, ({ request }) => {
-    const unauthorized = requireAuth(request)
+  http.get(`${API_BASE}/agents/types`, async ({ request }) => {
+    const unauthorized = await requireAuth(request)
+    return unauthorized ?? HttpResponse.json(AGENT_TYPES)
+  }),
+
+  // Marketplace : experts du catalogue non encore rattachés à l'organisation.
+  // Déclaré avant /agents/:id pour ne pas être capté par le paramètre d'id.
+  http.get(`${API_BASE}/agents/marketplace`, async ({ request }) => {
+    const unauthorized = await requireAuth(request)
     if (unauthorized) return unauthorized
+    return HttpResponse.json(marketplaceAgents().map(toListDto))
+  }),
 
-    // Accès agent appliqué côté serveur : agents du workspace − agents retirés au membre.
-    const excluded = excludedAgentIdsFor(getAuthenticatedUserId(request))
-    const accessible = agents.filter((agent) => !excluded.includes(agent.id))
+  // Fiche d'un expert de la marketplace : sa présentation, consultable avant recrutement.
+  http.get(`${API_BASE}/agents/marketplace/:id`, async ({ request, params }) => {
+    const unauthorized = await requireAuth(request)
+    if (unauthorized) return unauthorized
+    const id = String(params.id)
+    const expert = marketplaceAgents().find((item) => item.id === id)
+    if (!expert) return notFound('Expert IA introuvable.')
+    return HttpResponse.json(toDetailDto(expert))
+  }),
 
-    const searchParams = new URL(request.url).searchParams
-    const metier = searchParams.get('metier')
-    const query = searchParams.get('q')?.trim().toLocaleLowerCase('fr')
+  // Recrutement : l'expert rejoint l'équipe immédiatement et quitte le catalogue.
+  http.post(`${API_BASE}/agents/:id/recruit`, async ({ request, params }) => {
+    const unauthorized = await requireAuth(request)
+    if (unauthorized) return unauthorized
+    const id = String(params.id)
+    const expert = marketplaceAgents().find((item) => item.id === id)
+    if (!expert) return notFound('Expert IA introuvable.')
 
-    let result = accessible
-    // La recherche prime sur le filtre métier (comme le prototype).
-    if (query) {
-      result = accessible.filter((agent) => `${agent.name} ${agent.description} ${agent.tags.join(' ')}`.toLocaleLowerCase('fr').includes(query))
-    } else if (metier && metier !== 'all') {
-      const group = metiers.find((item) => item.id === metier)
-      const ids = group?.agentIds ?? []
-      result = ids.map((id) => accessible.find((agent) => agent.id === id)).filter((agent): agent is AgentDetail => Boolean(agent))
+    const body = (await request.json()) as { channel?: unknown }
+    const channel = typeof body.channel === 'string' ? body.channel : ''
+    if (!channel) return validationError('Choisissez un canal de déploiement.')
+    // On n'accepte qu'un canal effectivement pris en charge par l'expert.
+    if (!expert.channels.includes(channel)) return validationError(`Canal non pris en charge par ${expert.name} : ${channel}.`)
+
+    TEAM_AGENT_IDS.add(id)
+    setProfile(id, { ...DEFAULT_PROFILE, channel })
+    return HttpResponse.json(toListDto(expert), { status: 201 })
+  }),
+
+  // Réglages de personnalité — déclarés avant /agents/:id (segment supplémentaire).
+  http.get(`${API_BASE}/agents/:id/profile`, async ({ request, params }) => {
+    const unauthorized = await requireAuth(request)
+    if (unauthorized) return unauthorized
+    const id = String(params.id)
+    if (!teamAgents().some((expert) => expert.id === id)) return notFound('Expert IA introuvable.')
+    return HttpResponse.json(getProfile(id))
+  }),
+
+  http.patch(`${API_BASE}/agents/:id/profile`, async ({ request, params }) => {
+    const unauthorized = await requireAuth(request)
+    if (unauthorized) return unauthorized
+    const id = String(params.id)
+    const expert = teamAgents().find((item) => item.id === id)
+    if (!expert) return notFound('Expert IA introuvable.')
+
+    const body = (await request.json()) as Partial<ProfileSettings>
+    const current = getProfile(id)
+    const pick = (value: unknown, allowed: string[], fallback: string) =>
+      typeof value === 'string' && allowed.includes(value) ? value : fallback
+    const instructions = typeof body.instructions === 'string' ? body.instructions.trim() : current.instructions
+    if (instructions.length > 2000) return validationError('Les consignes ne peuvent pas dépasser 2000 caractères.')
+
+    const next: ProfileSettings = {
+      active: typeof body.active === 'boolean' ? body.active : current.active,
+      // Un canal non pris en charge par l'expert est refusé.
+      channel: pick(body.channel, expert.channels, current.channel),
+      tone: pick(body.tone, TONES, current.tone),
+      language: pick(body.language, LANGUAGES, current.language),
+      detail: pick(body.detail, DETAILS, current.detail),
+      instructions,
+      requireApproval: typeof body.requireApproval === 'boolean' ? body.requireApproval : current.requireApproval,
+      shareResources: typeof body.shareResources === 'boolean' ? body.shareResources : current.shareResources,
+      // Portrait : chaque axe est validé contre ses valeurs admises.
+      avatar: Object.fromEntries(
+        Object.entries(AVATAR_AXES).map(([axis, allowed]) => {
+          const sent = (body.avatar as Record<string, unknown> | undefined)?.[axis]
+          const kept = current.avatar[axis as keyof typeof current.avatar]
+          return [axis, typeof sent === 'string' && allowed.includes(sent) ? sent : kept]
+        }),
+      ) as ProfileSettings['avatar'],
+      // Proposition retenue : cadrage borné, null remet le portrait du catalogue.
+      portrait: (() => {
+        if (body.portrait === null) return null
+        const sent = body.portrait as { url?: unknown; crop?: unknown } | undefined
+        if (!sent) return current.portrait
+        const crop = typeof sent.crop === 'string' && PORTRAIT_CROPS.includes(sent.crop) ? sent.crop : 'buste'
+        return { url: typeof sent.url === 'string' ? sent.url : null, crop }
+      })(),
     }
-
-    return HttpResponse.json(result)
+    setProfile(id, next)
+    return HttpResponse.json(next)
   }),
 
-  http.get(`${API_BASE}/agents/:agentId`, ({ request, params }) => {
-    const unauthorized = requireAuth(request)
+  http.get(`${API_BASE}/agents/:id`, async ({ request, params }) => {
+    const unauthorized = await requireAuth(request)
     if (unauthorized) return unauthorized
-
-    const agent = agents.find((item) => item.id === params.agentId)
-    if (!agent) return notFound('Agent introuvable.')
-
-    const excluded = excludedAgentIdsFor(getAuthenticatedUserId(request))
-    if (excluded.includes(agent.id)) return forbidden('Vous n’avez pas accès à cet agent.')
-
-    return HttpResponse.json(agent)
+    // Seuls les experts de l'équipe ont une fiche accessible.
+    const expert = teamAgents().find((item) => item.id === String(params.id))
+    if (!expert) return notFound('Expert IA introuvable.')
+    return HttpResponse.json(toDetailDto(expert))
   }),
 ]

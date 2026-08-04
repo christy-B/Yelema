@@ -1,0 +1,133 @@
+{
+  "Analyste financier": {
+    "description": "Employé IA spécialisé en analyse financière : il lit vos états financiers, calcule les indicateurs clés et signale ce qui mérite votre attention.",
+    "skills": [
+      {
+        "key": "analyse-bilan",
+        "label": "Analyse de bilan",
+        "description": "Lit un bilan ou un compte de résultat et en extrait les ratios et tendances.",
+        "inputs": ["États financiers (PDF, Excel)", "Période à analyser"],
+        "outputs": ["Note d'analyse commentée", "Tableau des ratios clés"]
+      },
+      {
+        "key": "detection-anomalies",
+        "label": "Détection d'anomalies",
+        "description": "Contrôle la cohérence des écritures et repère les écarts inhabituels.",
+        "inputs": ["Grand livre ou relevés comptables"],
+        "outputs": ["Liste des anomalies signalées", "Alertes à vérifier"]
+      }
+    ]
+  },
+  "Rédacteur juridique": {
+    "description": "Employé IA juridique : il rédige et relit vos documents contractuels dans le registre attendu.",
+    "skills": [
+      {
+        "key": "redaction-contrat",
+        "label": "Rédaction de contrat",
+        "description": "Produit un projet de contrat à partir de vos consignes.",
+        "inputs": ["Type de contrat", "Clauses et conditions souhaitées"],
+        "outputs": ["Projet de contrat prêt à relecture"]
+      },
+      {
+        "key": "relecture-conformite",
+        "label": "Relecture de conformité",
+        "description": "Relit un document juridique et signale les clauses à risque.",
+        "inputs": ["Document juridique (PDF, Word)"],
+        "outputs": ["Avis de conformité annoté", "Liste des clauses à revoir"]
+      }
+    ]
+  },
+  "Assistant RH": {
+    "description": "Employé IA au service des équipes RH : il répond aux questions des collaborateurs et prépare vos documents RH.",
+    "skills": [
+      {
+        "key": "reponse-collaborateurs",
+        "label": "Réponse aux collaborateurs",
+        "description": "Répond aux questions courantes en s'appuyant sur vos documents internes.",
+        "inputs": ["Question du collaborateur", "Règlement intérieur / accords (optionnel)"],
+        "outputs": ["Réponse sourcée et homogène"]
+      },
+      {
+        "key": "redaction-offre",
+        "label": "Rédaction d'offre d'emploi",
+        "description": "Transforme une fiche de poste en offre publiable.",
+        "inputs": ["Fiche de poste", "Ton souhaité (optionnel)"],
+        "outputs": ["Offre d'emploi prête à publier"]
+      }
+    ]
+  },
+  "Screening de deals": {
+    "description": "Employé IA d'aide à l'investissement : il analyse les dossiers entrants et objective vos décisions.",
+    "skills": [
+      {
+        "key": "analyse-pitch",
+        "label": "Analyse de pitch deck",
+        "description": "Évalue un dossier d'investissement et en dégage forces, risques et scoring.",
+        "inputs": ["Pitch deck (PDF)", "Critères d'investissement (optionnel)"],
+        "outputs": ["Mémo d'investissement", "Scoring du dossier"]
+      },
+      {
+        "key": "note-marche",
+        "label": "Note de marché",
+        "description": "Synthétise un secteur ou une géographie pour situer le deal.",
+        "inputs": ["Secteur et géographie visés"],
+        "outputs": ["Note de marché synthétique"]
+      }
+    ]
+  },
+  "Générateur de contenu": {
+    "description": "Employé IA marketing : il produit vos contenus éditoriaux au ton de votre marque.",
+    "skills": [
+      {
+        "key": "redaction-post",
+        "label": "Rédaction de posts",
+        "description": "Rédige des posts réseaux sociaux à partir d'un brief.",
+        "inputs": ["Brief ou sujet", "Ton et canal visés"],
+        "outputs": ["Posts prêts à publier (variantes)"]
+      },
+      {
+        "key": "newsletter",
+        "label": "Newsletter",
+        "description": "Assemble les actualités du mois en newsletter structurée.",
+        "inputs": ["Actualités et liens du mois"],
+        "outputs": ["Newsletter prête à envoyer"]
+      }
+    ]
+  },
+  "Rapprochement bancaire": {
+    "description": "Employé IA comptable : il rapproche vos relevés bancaires de votre comptabilité.",
+    "skills": [
+      {
+        "key": "rapprochement",
+        "label": "Rapprochement bancaire",
+        "description": "Croise relevés et écritures pour identifier les écarts.",
+        "inputs": ["Relevé bancaire (PDF, CSV)", "Grand livre ou export comptable"],
+        "outputs": ["État de rapprochement", "Liste des écarts à traiter"]
+      }
+    ]
+  },
+  "Analyse de contrats": {
+    "description": "Employé IA juridique : il décortique vos contrats et met en évidence les clauses importantes.",
+    "skills": [
+      {
+        "key": "extraction-clauses",
+        "label": "Extraction de clauses",
+        "description": "Repère et classe les clauses clés d'un contrat.",
+        "inputs": ["Contrat (PDF, Word)"],
+        "outputs": ["Tableau des clauses clés", "Alertes sur les clauses sensibles"]
+      }
+    ]
+  },
+  "Onboarding bot": {
+    "description": "Employé IA d'accueil : il accompagne les nouveaux arrivants dans leurs premiers pas.",
+    "skills": [
+      {
+        "key": "parcours-onboarding",
+        "label": "Parcours d'onboarding",
+        "description": "Personnalise le parcours d'arrivée et répond aux questions pratiques.",
+        "inputs": ["Profil du nouvel arrivant", "Documents d'accueil (optionnel)"],
+        "outputs": ["Checklist d'arrivée personnalisée", "Réponses aux questions fréquentes"]
+      }
+    ]
+  }
+}

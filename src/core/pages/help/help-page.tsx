@@ -8,16 +8,16 @@ import { PageBody, PageHeader } from '../../../shared/components/page/page'
 import { DEFAULT_WORKSPACE_ID, paths } from '../../routes/paths'
 
 const categories = [
-  { name: 'Démarrer avec Yelema', desc: 'Premiers pas, métiers et agents.', icon: Sparkles },
-  { name: 'Agents & conversations', desc: 'Lancer une demande, reprendre un échange.', icon: MessageSquareText },
+  { name: 'Démarrer avec Yelema', desc: 'Premiers pas, métiers et experts IA.', icon: Sparkles },
+  { name: 'Experts IA & conversations', desc: 'Lancer une demande, reprendre un échange.', icon: MessageSquareText },
   { name: 'Facturation & accès', desc: 'Consommation, factures, rôles des membres.', icon: CreditCard },
 ]
 const faqs = [
-  { question: 'Comment donner accès à un agent à un collègue ?', answer: 'Dans Membres, ouvrez le profil de la personne puis activez le ou les agents auxquels vous voulez lui donner accès.' },
-  { question: 'Qui peut voir mes conversations ?', answer: 'Vos conversations sont privées. Un administrateur gère les accès aux agents mais ne voit pas le contenu de vos échanges.' },
-  { question: 'Comment est calculée la consommation ?', answer: 'Elle dépend du modèle utilisé (Opus, Sonnet, Haiku) et du volume traité. Le détail figure dans Facturation.' },
-  { question: 'Puis-je importer mes propres documents ?', answer: 'Oui, depuis l\'écran Fichiers ou directement dans une conversation via le panneau Contexte.' },
-  { question: 'Comment ajouter un collègue ?', answer: 'Dans Membres, cliquez sur « Inviter un membre » : il recevra un e-mail pour définir son mot de passe et accéder au workspace.' },
+  { question: 'Comment donner accès à un expert IA à un collègue ?', answer: 'Dans Membres, ouvrez le profil de la personne puis activez le ou les experts IA auxquels vous voulez lui donner accès.' },
+  { question: 'Qui peut voir mes conversations ?', answer: 'Vos conversations sont privées. Un administrateur gère les accès aux experts IA mais ne voit pas le contenu de vos échanges.' },
+  { question: 'Comment est calculée la consommation ?', answer: 'Elle dépend du volume traité et de la complexité des tâches confiées. Le détail figure dans Facturation.' },
+  { question: 'Puis-je importer mes propres documents ?', answer: 'Oui. Ouvrez l\'expert concerné, allez dans Sources de données et cliquez sur « Ajouter un document ». Vous pouvez importer un fichier ou reprendre une ressource qu\'un autre expert partage.' },
+  { question: 'Comment ajouter un collègue ?', answer: 'Dans Membres, cliquez sur « Inviter un membre » : il recevra un e-mail pour définir son mot de passe et accéder à votre espace.' },
 ]
 
 export function HelpPage() {

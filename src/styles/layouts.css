@@ -1,15 +1,23 @@
 .workspace-shell { display: flex; width: 100%; height: 100%; background: var(--surface); }
 .sidebar { display: flex; flex: 0 0 248px; flex-direction: column; width: 248px; padding: 18px 16px 14px; border-right: 1px solid var(--line); background: #fff; }
+.sidebar-brand { width: 84px; height: auto; margin: 2px 0 22px 4px; }
 .workspace-selector { display: flex; align-items: center; gap: 10px; min-height: 55px; padding: 9px 12px; border: 1px solid var(--line); border-radius: 11px; background: #f7f8fb; }
-.workspace-mark { display: grid; flex: 0 0 auto; width: 31px; height: 31px; color: #fff; border-radius: 8px; background: var(--primary); font-weight: 700; font-size: 14px; place-items: center; }
+.workspace-mark { display: grid; flex: 0 0 auto; width: 31px; height: 31px; overflow: hidden; color: #fff; border-radius: 8px; background: var(--primary); font-weight: 700; font-size: 14px; place-items: center; }
+.workspace-mark img { width: 100%; height: 100%; object-fit: cover; }
 .workspace-selector-copy { display: flex; flex: 1; flex-direction: column; min-width: 0; }
 .workspace-selector-copy strong { overflow: hidden; font-size: 13.5px; text-overflow: ellipsis; white-space: nowrap; }
 .workspace-selector-copy small, .user-summary small { margin-top: 1px; color: var(--faint); font-size: 11px; }
 .workspace-selector > svg { color: #8d93a5; }
-.sidebar-nav { display: flex; flex-direction: column; gap: 4px; margin-top: 18px; }
-.sidebar-link { display: flex; align-items: center; gap: 12px; min-height: 42px; padding: 0 13px; color: #596178; border-radius: 10px; font-size: 14px; font-weight: 500; }
-.sidebar-link:hover { color: var(--primary); background: #f5f3fc; }
-.sidebar-link.is-active { color: #fff; background: var(--primary); font-weight: 600; }
+/* Menu principal : même dessin que la navigation d'un expert (wk-nav-link) —
+   icône discrète, libellé sobre, teinte légère pour l'onglet courant. */
+.sidebar-nav { display: flex; flex-direction: column; gap: 2px; margin-top: 26px; }
+.sidebar-link { display: flex; align-items: center; gap: 11px; min-height: 38px; padding: 0 10px; color: #596178; border-radius: 9px; font-size: 13.5px; font-weight: 500; }
+.sidebar-link svg { flex: 0 0 auto; color: var(--faint); }
+.sidebar-link:hover { color: var(--primary); background: #f7f6fc; }
+.sidebar-link:hover svg { color: var(--primary); }
+.sidebar-link.is-active svg { color: var(--primary); }
+/* Onglet courant : teinte très légère et libellé violet — un repère, pas un bouton. */
+.sidebar-link.is-active { color: var(--primary); background: #efedf8; font-weight: 600; }
 .sidebar-footer { display: flex; flex-direction: column; margin-top: auto; }
 .user-menu { display: flex; align-items: center; gap: 6px; margin-top: 9px; padding: 11px 3px 0 8px; border-top: 1px solid var(--line); }
 .user-summary { display: flex; align-items: center; gap: 10px; flex: 1; min-width: 0; }

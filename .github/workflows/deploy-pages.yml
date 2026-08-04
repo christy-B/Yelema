@@ -40,6 +40,10 @@ jobs:
         run: npm run build
         env:
           VITE_BASE_PATH: /${{ github.event.repository.name }}/
+          # Déploiement sans control-plane : l'API est servie par MSW dans le
+          # navigateur. Sans cette variable, le build de production coupe les
+          # mocks et l'application appelle une API qui n'existe pas.
+          VITE_ENABLE_MSW: 'true'
 
       - name: Add SPA fallback
         run: cp dist/index.html dist/404.html

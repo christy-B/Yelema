@@ -1,22 +1,338 @@
 {
   "c_1": [
-    { "id": "m_1", "role": "user", "text": "Quels sont les trois principaux risques ?" },
-    { "id": "m_2", "role": "agent", "text": "Voici les trois risques identifiés dans le rapport.", "sources": ["Rapport_Q1.pdf · p. 7"] }
+    {
+      "id": "c_1_m1",
+      "role": "user",
+      "text": "Relance des devis de mai"
+    },
+    {
+      "id": "c_1_m2",
+      "role": "agent",
+      "text": "7 relances envoyées, 2 clients ont déjà répondu."
+    }
   ],
   "c_2": [
-    { "id": "m_3", "role": "user", "text": "Reprends les hypothèses de recettes du budget prévisionnel." },
-    { "id": "m_4", "role": "agent", "text": "Les hypothèses de recettes reposent sur trois postes principaux, résumés ci-dessous.", "sources": ["Budget_previsionnel_2027.xlsx · onglet 2"] }
+    {
+      "id": "c_2_m1",
+      "role": "user",
+      "text": "Prospection distributeurs Bouaké"
+    },
+    {
+      "id": "c_2_m2",
+      "role": "agent",
+      "text": "12 profils qualifiés, message d'approche prêt pour chacun."
+    }
   ],
   "c_3": [
-    { "id": "m_5", "role": "user", "text": "Rédige une réponse formelle à la lettre du partenaire." },
-    { "id": "m_6", "role": "agent", "text": "Voici un projet de courrier au registre administratif attendu.", "sources": ["Courrier_partenaire_v2.docx"] }
+    {
+      "id": "c_3_m1",
+      "role": "user",
+      "text": "Offre grossiste supermarché Cocody"
+    },
+    {
+      "id": "c_3_m2",
+      "role": "agent",
+      "text": "Devis à 4,2 M FCFA avec remise volume — prêt à envoyer."
+    }
   ],
   "c_4": [
-    { "id": "m_7", "role": "user", "text": "Les totaux du tableau 4 sont-ils cohérents ?" },
-    { "id": "m_8", "role": "agent", "text": "Deux écarts ont été repérés sur les totaux du tableau 4.", "sources": ["Annexe_budget_2026.xlsx · onglet 3"] }
+    {
+      "id": "c_4_m1",
+      "role": "user",
+      "text": "Qualifier les demandes WhatsApp"
+    },
+    {
+      "id": "c_4_m2",
+      "role": "agent",
+      "text": "9 demandes triées : 3 chaudes, 4 à relancer, 2 hors cible."
+    }
   ],
   "c_5": [
-    { "id": "m_9", "role": "user", "text": "Résume les décisions prises en réunion du conseil." },
-    { "id": "m_10", "role": "agent", "text": "Voici les décisions et les actions à suivre issues de la réunion." }
+    {
+      "id": "c_5_m1",
+      "role": "user",
+      "text": "Grille de prix zone UEMOA"
+    },
+    {
+      "id": "c_5_m2",
+      "role": "agent",
+      "text": "Grille en FCFA avec benchmark régional, 3 paliers."
+    }
+  ],
+  "c_6": [
+    {
+      "id": "c_6_m1",
+      "role": "user",
+      "text": "Préparer le rendez-vous Ivoire Digital"
+    },
+    {
+      "id": "c_6_m2",
+      "role": "agent",
+      "text": "Fiche commerciale et argumentaire prêts pour jeudi 10h."
+    }
+  ],
+  "c_7": [
+    {
+      "id": "c_7_m1",
+      "role": "user",
+      "text": "Scoring du pipeline du mois"
+    },
+    {
+      "id": "c_7_m2",
+      "role": "agent",
+      "text": "18 pistes notées, 5 au-dessus de 80."
+    }
+  ],
+  "c_8": [
+    {
+      "id": "c_8_m1",
+      "role": "user",
+      "text": "Répondre aux messages de la nuit"
+    },
+    {
+      "id": "c_8_m2",
+      "role": "agent",
+      "text": "14 messages traités, 2 escalades laissées à l'équipe."
+    }
+  ],
+  "c_9": [
+    {
+      "id": "c_9_m1",
+      "role": "user",
+      "text": "Suivi de la commande #4820"
+    },
+    {
+      "id": "c_9_m2",
+      "role": "agent",
+      "text": "Client informé, lien de suivi envoyé, rappel programmé."
+    }
+  ],
+  "c_10": [
+    {
+      "id": "c_10_m1",
+      "role": "user",
+      "text": "FAQ livraison et retours"
+    },
+    {
+      "id": "c_10_m2",
+      "role": "agent",
+      "text": "8 réponses types rédigées, prêtes à publier."
+    }
+  ],
+  "c_11": [
+    {
+      "id": "c_11_m1",
+      "role": "user",
+      "text": "Réclamation colis abîmé"
+    },
+    {
+      "id": "c_11_m2",
+      "role": "agent",
+      "text": "Geste commercial proposé, en attente de votre validation."
+    }
+  ],
+  "c_12": [
+    {
+      "id": "c_12_m1",
+      "role": "user",
+      "text": "Parcours WhatsApp d'accueil"
+    },
+    {
+      "id": "c_12_m2",
+      "role": "agent",
+      "text": "Flux en 5 étapes : accueil, besoin, devis, paiement, suivi."
+    }
+  ],
+  "c_13": [
+    {
+      "id": "c_13_m1",
+      "role": "user",
+      "text": "Clients à risque ce mois"
+    },
+    {
+      "id": "c_13_m2",
+      "role": "agent",
+      "text": "4 comptes en alerte, séquence de rétention prête."
+    }
+  ],
+  "c_14": [
+    {
+      "id": "c_14_m1",
+      "role": "user",
+      "text": "Analyse des retours clients"
+    },
+    {
+      "id": "c_14_m2",
+      "role": "agent",
+      "text": "NPS à 42, deux irritants récurrents identifiés."
+    }
+  ],
+  "c_15": [
+    {
+      "id": "c_15_m1",
+      "role": "user",
+      "text": "Prévisionnel pour la demande de crédit"
+    },
+    {
+      "id": "c_15_m2",
+      "role": "agent",
+      "text": "Prévisionnel 3 ans prêt : résultat, trésorerie, remboursement."
+    }
+  ],
+  "c_16": [
+    {
+      "id": "c_16_m1",
+      "role": "user",
+      "text": "Point de trésorerie à 30 jours"
+    },
+    {
+      "id": "c_16_m2",
+      "role": "agent",
+      "text": "Besoin de 6,8 M FCFA en semaine 3, deux leviers proposés."
+    }
+  ],
+  "c_17": [
+    {
+      "id": "c_17_m1",
+      "role": "user",
+      "text": "Coût employeur d'un commercial"
+    },
+    {
+      "id": "c_17_m2",
+      "role": "agent",
+      "text": "À 400 000 net : environ 610 000 FCFA de coût total."
+    }
+  ],
+  "c_18": [
+    {
+      "id": "c_18_m1",
+      "role": "user",
+      "text": "Marge par gamme de produits"
+    },
+    {
+      "id": "c_18_m2",
+      "role": "agent",
+      "text": "Gamme B sous les 12 % — détail ligne par ligne."
+    }
+  ],
+  "c_19": [
+    {
+      "id": "c_19_m1",
+      "role": "user",
+      "text": "Dossier de subvention PME"
+    },
+    {
+      "id": "c_19_m2",
+      "role": "agent",
+      "text": "Pièces réunies, business plan joint, prêt à déposer."
+    }
+  ],
+  "c_20": [
+    {
+      "id": "c_20_m1",
+      "role": "user",
+      "text": "Rapprochement bancaire de juin"
+    },
+    {
+      "id": "c_20_m2",
+      "role": "agent",
+      "text": "3 écarts trouvés, dont un double prélèvement."
+    }
+  ],
+  "c_21": [
+    {
+      "id": "c_21_m1",
+      "role": "user",
+      "text": "Structurer la comptabilité OHADA"
+    },
+    {
+      "id": "c_21_m2",
+      "role": "agent",
+      "text": "Plan de comptes proposé et journal paramétré."
+    }
+  ],
+  "c_22": [
+    {
+      "id": "c_22_m1",
+      "role": "user",
+      "text": "Relancer les impayés de mai"
+    },
+    {
+      "id": "c_22_m2",
+      "role": "agent",
+      "text": "7 factures relancées, 2,3 M FCFA en jeu."
+    }
+  ],
+  "c_23": [
+    {
+      "id": "c_23_m1",
+      "role": "user",
+      "text": "Facturation du mois"
+    },
+    {
+      "id": "c_23_m2",
+      "role": "agent",
+      "text": "23 factures émises et envoyées automatiquement."
+    }
+  ],
+  "c_24": [
+    {
+      "id": "c_24_m1",
+      "role": "user",
+      "text": "Alerte stock savon et détergent"
+    },
+    {
+      "id": "c_24_m2",
+      "role": "agent",
+      "text": "12 jours de couverture, commande fournisseur préparée."
+    }
+  ],
+  "c_25": [
+    {
+      "id": "c_25_m1",
+      "role": "user",
+      "text": "Indicateurs de la semaine"
+    },
+    {
+      "id": "c_25_m2",
+      "role": "agent",
+      "text": "Tableau de bord à jour : 4 indicateurs en hausse."
+    }
+  ],
+  "c_26": [
+    {
+      "id": "c_26_m1",
+      "role": "user",
+      "text": "Commande fournisseur Abidjan"
+    },
+    {
+      "id": "c_26_m2",
+      "role": "agent",
+      "text": "Bon de commande prêt, en attente de validation."
+    }
+  ],
+  "c_27": [
+    {
+      "id": "c_27_m1",
+      "role": "user",
+      "text": "Tâches issues de la réunion"
+    },
+    {
+      "id": "c_27_m2",
+      "role": "agent",
+      "text": "11 tâches créées et assignées dans Notion."
+    }
+  ],
+  "c_28": [
+    {
+      "id": "c_28_m1",
+      "role": "user",
+      "text": "Cartographie des clients actifs"
+    },
+    {
+      "id": "c_28_m2",
+      "role": "agent",
+      "text": "126 clients classés par zone et par volume."
+    }
   ]
 }

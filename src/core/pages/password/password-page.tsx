@@ -1,9 +1,9 @@
 import { ArrowLeft, ArrowRight } from 'lucide-react'
 import { useState } from 'react'
-import { useNavigate } from 'react-router'
+import { useNavigate, useSearchParams } from 'react-router'
 
-import logo from '../../../assets/brand/logo-lockup-dark.png'
-import { requestPasswordReset } from '../../../shared/api/auth/api'
+import logo from '../../../assets/brand/yelema_logo_final_long.svg'
+import { requestPasswordReset, resetPassword } from '../../../features/auth/api/api'
 import { Button } from '../../../shared/components/button/button'
 import { Input } from '../../../shared/components/input/input'
 import { paths } from '../../routes/paths'
@@ -16,14 +16,35 @@ const copy = {
 
 export function PasswordPage({ mode }: { mode: keyof typeof copy }) {
   const navigate = useNavigate()
-  const [value, setValue] = useState(mode === 'forgot' ? 'a.kone@plan.gouv.ci' : '')
+  const [searchParams] = useSearchParams()
+  const token = searchParams.get('token') ?? ''
+  const [value, setValue] = useState('')
   const [sent, setSent] = useState(false)
+  const [submitting, setSubmitting] = useState(false)
+  const [error, setError] = useState('')
   const content = copy[mode]
 
   const submit = async (event: React.FormEvent) => {
     event.preventDefault()
-    if (mode === 'forgot') await requestPasswordReset(value)
-    setSent(true)
+    setSubmitting(true)
+    setError('')
+    try {
+      if (mode === 'forgot') {
+        await requestPasswordReset(value)
+        setSent(true)
+      } else {
+        if (!token) {
+          setError('Le lien de réinitialisation est invalide : aucun token trouvé.')
+          return
+        }
+        await resetPassword(token, value)
+        navigate(paths.login, { replace: true, state: { passwordReset: true } })
+      }
+    } catch (reason) {
+      setError(reason instanceof Error ? reason.message : 'La demande a échoué. Réessayez.')
+    } finally {
+      setSubmitting(false)
+    }
   }
 
   return (
@@ -32,8 +53,9 @@ export function PasswordPage({ mode }: { mode: keyof typeof copy }) {
         <img src={logo} alt="Yelema" />
         <h1>{sent ? 'Demande enregistrée' : content.title}</h1>
         <p>{sent ? 'Consultez votre boîte e-mail pour poursuivre.' : content.text}</p>
-        {!sent && <Input id="credential" label={mode === 'forgot' ? 'Adresse e-mail' : 'Nouveau mot de passe'} type={mode === 'forgot' ? 'email' : 'password'} value={value} onChange={(event) => setValue(event.target.value)} required />}
-        {!sent && <Button type="submit" size="large" trailingIcon={<ArrowRight size={18} />}>{content.button}</Button>}
+        {!sent && <Input id="credential" label={mode === 'forgot' ? 'Adresse e-mail' : 'Nouveau mot de passe'} type={mode === 'forgot' ? 'email' : 'password'} autoComplete={mode === 'forgot' ? 'email' : 'new-password'} value={value} onChange={(event) => setValue(event.target.value)} minLength={mode === 'forgot' ? undefined : 8} required />}
+        {error && <p className="form-error" role="alert">{error}</p>}
+        {!sent && <Button type="submit" size="large" disabled={submitting} trailingIcon={<ArrowRight size={18} />}>{submitting ? 'Envoi…' : content.button}</Button>}
         <button className="back-link" type="button" onClick={() => navigate(paths.login)}><ArrowLeft size={17} /> Retour à la connexion</button>
       </form>
     </main>

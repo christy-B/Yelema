@@ -1,0 +1,168 @@
+[
+  {
+    "id": "auto_1",
+    "userId": "u_12",
+    "name": "Relance des devis en attente",
+    "agentName": "Kouassi",
+    "instruction": "Relancer les devis sans réponse depuis 5 jours, avec le ton juste.",
+    "trigger": {
+      "kind": "cron",
+      "frequency": "weekly",
+      "time": "08:00"
+    },
+    "active": true,
+    "lastRunAt": "2026-07-28T08:00:00Z"
+  },
+  {
+    "id": "auto_2",
+    "userId": "u_12",
+    "name": "Tri des demandes entrantes",
+    "agentName": "Kouassi",
+    "instruction": "Trier les demandes reçues la nuit et pousser les plus chaudes.",
+    "trigger": {
+      "kind": "cron",
+      "frequency": "daily",
+      "time": "07:30"
+    },
+    "active": true,
+    "lastRunAt": "2026-07-30T08:00:00Z"
+  },
+  {
+    "id": "auto_3",
+    "userId": "u_12",
+    "name": "Veille des signaux d’achat",
+    "agentName": "Kouassi",
+    "instruction": "Repérer les comptes qui recrutent ou s’étendent.",
+    "trigger": {
+      "kind": "cron",
+      "frequency": "weekly",
+      "time": "09:00"
+    },
+    "active": false,
+    "lastRunAt": "2026-07-21T08:00:00Z"
+  },
+  {
+    "id": "auto_4",
+    "userId": "u_12",
+    "name": "Réponses de nuit",
+    "agentName": "Awa",
+    "instruction": "Répondre aux messages reçus entre 20h et 7h et noter les escalades.",
+    "trigger": {
+      "kind": "cron",
+      "frequency": "daily",
+      "time": "07:00"
+    },
+    "active": true,
+    "lastRunAt": "2026-07-30T08:00:00Z"
+  },
+  {
+    "id": "auto_5",
+    "userId": "u_12",
+    "name": "Enquête de satisfaction",
+    "agentName": "Awa",
+    "instruction": "Envoyer le questionnaire aux clients servis cette semaine.",
+    "trigger": {
+      "kind": "cron",
+      "frequency": "weekly",
+      "time": "17:00"
+    },
+    "active": true,
+    "lastRunAt": "2026-07-26T08:00:00Z"
+  },
+  {
+    "id": "auto_6",
+    "userId": "u_12",
+    "name": "Import de relevé bancaire",
+    "agentName": "Mamadou",
+    "instruction": "Analyser tout relevé déposé et signaler les écarts.",
+    "trigger": {
+      "kind": "event",
+      "event": "fichier-importe"
+    },
+    "active": true,
+    "lastRunAt": "2026-07-29T08:00:00Z"
+  },
+  {
+    "id": "auto_7",
+    "userId": "u_12",
+    "name": "Point de trésorerie hebdomadaire",
+    "agentName": "Mamadou",
+    "instruction": "Projeter la trésorerie à 30 jours et alerter si tension.",
+    "trigger": {
+      "kind": "cron",
+      "frequency": "weekly",
+      "time": "08:00"
+    },
+    "active": true,
+    "lastRunAt": "2026-07-27T08:00:00Z"
+  },
+  {
+    "id": "auto_8",
+    "userId": "u_12",
+    "name": "Clôture mensuelle",
+    "agentName": "Mamadou",
+    "instruction": "Préparer les écritures de clôture et le tableau de marge.",
+    "trigger": {
+      "kind": "cron",
+      "frequency": "monthly",
+      "time": "08:30"
+    },
+    "active": false,
+    "lastRunAt": "2026-07-04T08:00:00Z"
+  },
+  {
+    "id": "auto_9",
+    "userId": "u_12",
+    "name": "Relance des impayés",
+    "agentName": "Salif",
+    "instruction": "Relancer les factures échues avec une escalade graduée.",
+    "trigger": {
+      "kind": "cron",
+      "frequency": "weekly",
+      "time": "08:00"
+    },
+    "active": true,
+    "lastRunAt": "2026-07-28T08:00:00Z"
+  },
+  {
+    "id": "auto_10",
+    "userId": "u_12",
+    "name": "Contrôle des stocks",
+    "agentName": "Salif",
+    "instruction": "Vérifier les couvertures et alerter avant rupture.",
+    "trigger": {
+      "kind": "cron",
+      "frequency": "daily",
+      "time": "06:30"
+    },
+    "active": true,
+    "lastRunAt": "2026-07-30T08:00:00Z"
+  },
+  {
+    "id": "auto_11",
+    "userId": "u_12",
+    "name": "Facture émise",
+    "agentName": "Salif",
+    "instruction": "Archiver la facture et programmer le suivi de paiement.",
+    "trigger": {
+      "kind": "event",
+      "event": "facture-emise"
+    },
+    "active": true,
+    "lastRunAt": "2026-07-29T08:00:00Z"
+  },
+  {
+    "id": "auto_12",
+    "userId": "u_12",
+    "name": "Indicateurs de la semaine",
+    "agentName": "Salif",
+    "instruction": "Produire le tableau de bord brandé du lundi.",
+    "trigger": {
+      "kind": "cron",
+      "frequency": "weekly",
+      "time": "07:00"
+    },
+    "active": true,
+    "lastRunAt": "2026-07-27T08:00:00Z"
+  }
+]

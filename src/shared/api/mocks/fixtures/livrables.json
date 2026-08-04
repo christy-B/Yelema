@@ -1,0 +1,167 @@
+[
+  {
+    "id": "liv_1",
+    "userId": "u_12",
+    "title": "Offre grossiste — Supermarché Cocody",
+    "type": "pdf",
+    "format": "Devis",
+    "agentName": "Kouassi",
+    "skill": "Pricing local (FCFA)",
+    "createdAt": "2026-07-29T15:00:00Z",
+    "size": "96 Ko"
+  },
+  {
+    "id": "liv_2",
+    "userId": "u_12",
+    "title": "Séquence de relance — 3 messages",
+    "type": "docx",
+    "format": "Séquence",
+    "agentName": "Kouassi",
+    "skill": "Séquences de relance",
+    "createdAt": "2026-07-28T15:00:00Z",
+    "size": "48 Ko"
+  },
+  {
+    "id": "liv_3",
+    "userId": "u_12",
+    "title": "Liste de prospects — Bouaké",
+    "type": "xlsx",
+    "format": "Tableau",
+    "agentName": "Kouassi",
+    "skill": "Prospection B2B",
+    "createdAt": "2026-07-25T15:00:00Z",
+    "size": "132 Ko"
+  },
+  {
+    "id": "liv_4",
+    "userId": "u_12",
+    "title": "Playbook de vente 2026",
+    "type": "pdf",
+    "format": "Playbook",
+    "agentName": "Kouassi",
+    "skill": "Playbook de vente",
+    "createdAt": "2026-07-18T15:00:00Z",
+    "size": "210 Ko"
+  },
+  {
+    "id": "liv_5",
+    "userId": "u_12",
+    "title": "FAQ livraison et retours",
+    "type": "md",
+    "format": "FAQ",
+    "agentName": "Awa",
+    "skill": "FAQ & articles d’aide",
+    "createdAt": "2026-07-29T15:00:00Z",
+    "size": "22 Ko"
+  },
+  {
+    "id": "liv_6",
+    "userId": "u_12",
+    "title": "Réponses types — service client",
+    "type": "docx",
+    "format": "Modèles",
+    "agentName": "Awa",
+    "skill": "Tri des tickets",
+    "createdAt": "2026-07-26T15:00:00Z",
+    "size": "64 Ko"
+  },
+  {
+    "id": "liv_7",
+    "userId": "u_12",
+    "title": "Rapport de satisfaction — juillet",
+    "type": "pdf",
+    "format": "Rapport",
+    "agentName": "Awa",
+    "skill": "Analyse de satisfaction (NPS)",
+    "createdAt": "2026-07-24T15:00:00Z",
+    "size": "118 Ko"
+  },
+  {
+    "id": "liv_8",
+    "userId": "u_12",
+    "title": "Prévisionnel 3 ans — dossier de crédit",
+    "type": "xlsx",
+    "format": "Prévisionnel",
+    "agentName": "Mamadou",
+    "skill": "Modélisation financière",
+    "createdAt": "2026-07-29T15:00:00Z",
+    "size": "186 Ko"
+  },
+  {
+    "id": "liv_9",
+    "userId": "u_12",
+    "title": "Plan de trésorerie à 30 jours",
+    "type": "xlsx",
+    "format": "Tableau",
+    "agentName": "Mamadou",
+    "skill": "Prévision de trésorerie",
+    "createdAt": "2026-07-28T15:00:00Z",
+    "size": "92 Ko"
+  },
+  {
+    "id": "liv_10",
+    "userId": "u_12",
+    "title": "Coût employeur — commercial confirmé",
+    "type": "pdf",
+    "format": "Note",
+    "agentName": "Mamadou",
+    "skill": "Comptabilité OHADA",
+    "createdAt": "2026-07-25T15:00:00Z",
+    "size": "54 Ko"
+  },
+  {
+    "id": "liv_11",
+    "userId": "u_12",
+    "title": "Business plan — extension Bouaké",
+    "type": "pdf",
+    "format": "Business plan",
+    "agentName": "Mamadou",
+    "skill": "Business plan",
+    "createdAt": "2026-07-16T15:00:00Z",
+    "size": "268 Ko"
+  },
+  {
+    "id": "liv_12",
+    "userId": "u_12",
+    "title": "Relances impayés — mai",
+    "type": "csv",
+    "format": "Export",
+    "agentName": "Salif",
+    "skill": "Relance des impayés",
+    "createdAt": "2026-07-28T15:00:00Z",
+    "size": "18 Ko"
+  },
+  {
+    "id": "liv_13",
+    "userId": "u_12",
+    "title": "Commande fournisseur — détergents",
+    "type": "pdf",
+    "format": "Bon de commande",
+    "agentName": "Salif",
+    "skill": "Approvisionnements",
+    "createdAt": "2026-07-27T15:00:00Z",
+    "size": "46 Ko"
+  },
+  {
+    "id": "liv_14",
+    "userId": "u_12",
+    "title": "Indicateurs de la semaine 30",
+    "type": "pdf",
+    "format": "Tableau de bord",
+    "agentName": "Salif",
+    "skill": "KPI hebdomadaires",
+    "createdAt": "2026-07-27T15:00:00Z",
+    "size": "88 Ko"
+  },
+  {
+    "id": "liv_15",
+    "userId": "u_12",
+    "title": "Cartographie clients par zone",
+    "type": "xlsx",
+    "format": "Tableau",
+    "agentName": "Salif",
+    "skill": "Cartographie clients",
+    "createdAt": "2026-07-22T15:00:00Z",
+    "size": "154 Ko"
+  }
+]

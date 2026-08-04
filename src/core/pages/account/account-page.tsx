@@ -1,13 +1,13 @@
 import { useEffect, useState } from 'react'
 
-import { getAccount, updateAccount, updatePreferences } from '../../../shared/api/account/api'
-import type { Account } from '../../../shared/api/account/contracts'
+import { getAccount, updateAccount, updatePreferences } from '../../../features/account/api/api'
+import type { Account } from '../../../features/account/api/contracts'
 import { Button } from '../../../shared/components/button/button'
 import { Card } from '../../../shared/components/card/card'
 import { Input } from '../../../shared/components/input/input'
 import { LoadError } from '../../../shared/components/load-error/load-error'
 import { PageBody, PageHeader } from '../../../shared/components/page/page'
-import { useSession } from '../../providers/session-context'
+import { useSession } from '../../../features/auth/providers/session-context'
 
 export function AccountPage() {
   const { refreshSession } = useSession()

@@ -1,5 +1,28 @@
 const API_BASE_URL = import.meta.env.VITE_API_BASE ?? '/api/v1'
 const AUTH_TOKEN_KEY = 'yelema.auth.token'
+export const SESSION_EXPIRED_KEY = 'yelema.session-expired'
+
+// Doit rester égal à paths.login (on ne peut pas importer core/ depuis shared/).
+const LOGIN_URL = '/espace-client/login'
+
+/**
+ * Endpoints d'auth dont le 401 est « normal » (identifiants invalides, token
+ * de lien expiré…) : ils ne signalent pas une session expirée.
+ */
+const AUTH_FLOW_PATHS = ['/auth/login', '/auth/logout', '/auth/activate', '/auth/activation', '/auth/verify', '/auth/password/forgot', '/auth/password/reset']
+
+/**
+ * L'API v1 n'a pas de refresh token : un 401 avec un jeton en poche signifie
+ * que la session a expiré (ou a été révoquée). On purge et on renvoie au
+ * login, en mémorisant la page en cours pour y revenir après reconnexion.
+ */
+function handleExpiredSession(path: string): void {
+  if (AUTH_FLOW_PATHS.some((authPath) => path.startsWith(authPath))) return
+  if (!getAuthToken()) return
+  setAuthToken(null)
+  sessionStorage.setItem(SESSION_EXPIRED_KEY, window.location.pathname)
+  window.location.assign(LOGIN_URL)
+}
 
 export interface ApiErrorBody {
   code: string
@@ -52,12 +75,22 @@ export async function apiFetch(path: string, init: RequestInit = {}): Promise<Re
   })
 
   if (!response.ok) {
+    if (response.status === 401) {
+      handleExpiredSession(path)
+    }
     const fallback: ApiErrorBody = {
       code: 'http_error',
       message: response.statusText || 'Une erreur est survenue.',
     }
-    const body = (await response.json().catch(() => fallback)) as ApiErrorBody
-    throw new ApiError(response.status, body)
+    const raw = (await response.json().catch(() => fallback)) as ApiErrorBody & { error?: ApiErrorBody }
+    // L'API réelle enveloppe l'erreur ({ error: { code, message, status } }),
+    // les mocks restants renvoient la forme plate — on accepte les deux.
+    const body = raw.error ?? raw
+    throw new ApiError(response.status, {
+      code: body.code ?? fallback.code,
+      message: body.message ?? fallback.message,
+      details: body.details,
+    })
   }
 
   return response

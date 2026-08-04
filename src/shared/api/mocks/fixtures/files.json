@@ -1,10 +1,347 @@
 {
-  "storage": { "used": "4,7 Mo", "quota": "2 Go", "count": 5, "percent": 1 },
+  "storage": {
+    "used": "8,3 Mo",
+    "quota": "2 Go",
+    "count": 11,
+    "percent": 1
+  },
+  "connectors": [
+    {
+      "id": "cx_notion",
+      "provider": "notion",
+      "name": "Notion",
+      "status": "connected",
+      "count": 42,
+      "category": "Productivité & Documents",
+      "metier": "Productivité & Documents"
+    },
+    {
+      "id": "cx_gdrive",
+      "provider": "gdrive",
+      "name": "Google Drive",
+      "status": "connected",
+      "count": 128,
+      "category": "Productivité & Documents",
+      "metier": "Productivité & Documents"
+    },
+    {
+      "id": "cx_sharepoint",
+      "provider": "sharepoint",
+      "name": "SharePoint",
+      "status": "available",
+      "count": null,
+      "category": "Productivité & Documents",
+      "metier": "Productivité & Documents"
+    },
+    {
+      "id": "cx_confluence",
+      "provider": "confluence",
+      "name": "Confluence",
+      "status": "available",
+      "count": null,
+      "category": "Productivité & Documents",
+      "metier": "Productivité & Documents"
+    },
+    {
+      "id": "cx_slack",
+      "provider": "slack",
+      "name": "Slack",
+      "status": "connected",
+      "count": 18,
+      "category": "Communication",
+      "metier": "Communication"
+    },
+    {
+      "id": "cx_teams",
+      "provider": "teams",
+      "name": "Microsoft Teams",
+      "status": "available",
+      "count": null,
+      "category": "Communication",
+      "metier": "Communication"
+    },
+    {
+      "id": "cx_gmail",
+      "provider": "gmail",
+      "name": "Gmail",
+      "status": "available",
+      "count": null,
+      "category": "Communication",
+      "metier": "Communication"
+    },
+    {
+      "id": "cx_outlook",
+      "provider": "outlook",
+      "name": "Outlook",
+      "status": "available",
+      "count": null,
+      "category": "Communication",
+      "metier": "Communication"
+    },
+    {
+      "id": "cx_salesforce",
+      "provider": "salesforce",
+      "name": "Salesforce",
+      "status": "available",
+      "count": null,
+      "category": "CRM & Ventes",
+      "metier": "Ventes"
+    },
+    {
+      "id": "cx_hubspot",
+      "provider": "hubspot",
+      "name": "HubSpot",
+      "status": "connected",
+      "count": 64,
+      "category": "CRM & Ventes",
+      "metier": "Ventes"
+    },
+    {
+      "id": "cx_pipedrive",
+      "provider": "pipedrive",
+      "name": "Pipedrive",
+      "status": "available",
+      "count": null,
+      "category": "CRM & Ventes",
+      "metier": "Ventes"
+    },
+    {
+      "id": "cx_quickbooks",
+      "provider": "quickbooks",
+      "name": "QuickBooks",
+      "status": "available",
+      "count": null,
+      "category": "Finance & Comptabilité",
+      "metier": "Finance"
+    },
+    {
+      "id": "cx_sage",
+      "provider": "sage",
+      "name": "Sage",
+      "status": "available",
+      "count": null,
+      "category": "Finance & Comptabilité",
+      "metier": "Finance"
+    },
+    {
+      "id": "cx_stripe",
+      "provider": "stripe",
+      "name": "Stripe",
+      "status": "connected",
+      "count": 210,
+      "category": "Finance & Comptabilité",
+      "metier": "Finance"
+    },
+    {
+      "id": "cx_postgres",
+      "provider": "postgres",
+      "name": "PostgreSQL",
+      "status": "available",
+      "count": null,
+      "category": "Bases de données",
+      "metier": "Bases de données"
+    },
+    {
+      "id": "cx_mysql",
+      "provider": "mysql",
+      "name": "MySQL",
+      "status": "available",
+      "count": null,
+      "category": "Bases de données",
+      "metier": "Bases de données"
+    },
+    {
+      "id": "cx_bigquery",
+      "provider": "bigquery",
+      "name": "BigQuery",
+      "status": "available",
+      "count": null,
+      "category": "Bases de données",
+      "metier": "Bases de données"
+    },
+    {
+      "id": "cx_snowflake",
+      "provider": "snowflake",
+      "name": "Snowflake",
+      "status": "available",
+      "count": null,
+      "category": "Bases de données",
+      "metier": "Bases de données"
+    },
+    {
+      "id": "cx_s3",
+      "provider": "s3",
+      "name": "Amazon S3",
+      "status": "connected",
+      "count": 512,
+      "category": "Stockage cloud",
+      "metier": "Stockage cloud"
+    },
+    {
+      "id": "cx_dropbox",
+      "provider": "dropbox",
+      "name": "Dropbox",
+      "status": "available",
+      "count": null,
+      "category": "Stockage cloud",
+      "metier": "Stockage cloud"
+    },
+    {
+      "id": "cx_onedrive",
+      "provider": "onedrive",
+      "name": "OneDrive",
+      "status": "available",
+      "count": null,
+      "category": "Stockage cloud",
+      "metier": "Stockage cloud"
+    },
+    {
+      "id": "cx_whatsapp",
+      "provider": "whatsapp",
+      "name": "WhatsApp",
+      "status": "connected",
+      "count": 36,
+      "category": "Réseaux sociaux & Messagerie",
+      "metier": "Communication"
+    },
+    {
+      "id": "cx_facebook",
+      "provider": "facebook",
+      "name": "Facebook",
+      "status": "available",
+      "count": null,
+      "category": "Réseaux sociaux & Messagerie",
+      "metier": "Marketing"
+    },
+    {
+      "id": "cx_instagram",
+      "provider": "instagram",
+      "name": "Instagram",
+      "status": "available",
+      "count": null,
+      "category": "Réseaux sociaux & Messagerie",
+      "metier": "Marketing"
+    },
+    {
+      "id": "cx_tiktok",
+      "provider": "tiktok",
+      "name": "TikTok",
+      "status": "available",
+      "count": null,
+      "category": "Réseaux sociaux & Messagerie",
+      "metier": "Marketing"
+    }
+  ],
   "files": [
-    { "id": "f_1", "name": "Rapport_trimestriel_Q1.pdf", "kind": "PDF · 28 pages", "agent": "Analyse documentaire", "size": "2,4 Mo", "date": "12 juin 2026", "storageKey": "s3://yelema/ws_3/f_1" },
-    { "id": "f_2", "name": "Annexe_budget_2026.xlsx", "kind": "Tableur · 3 onglets", "agent": "Vérification d'infos", "size": "840 Ko", "date": "12 juin 2026", "storageKey": "s3://yelema/ws_3/f_2" },
-    { "id": "f_3", "name": "Convention_partenariat.docx", "kind": "Document · 14 pages", "agent": "Analyse documentaire", "size": "312 Ko", "date": "5 juin 2026", "storageKey": "s3://yelema/ws_3/f_3" },
-    { "id": "f_4", "name": "Note_cadrage_strategie.pdf", "kind": "PDF · 9 pages", "agent": "Synthèse & notes", "size": "1,1 Mo", "date": "2 juin 2026", "storageKey": "s3://yelema/ws_3/f_4" },
-    { "id": "f_5", "name": "Courrier_partenaire_v2.docx", "kind": "Document · 2 pages", "agent": "Courrier administratif", "size": "86 Ko", "date": "28 mai 2026", "storageKey": "s3://yelema/ws_3/f_5" }
+    {
+      "id": "f_1",
+      "name": "Fichier_clients_actifs.xlsx",
+      "type": "xlsx",
+      "kind": "Excel · 126 lignes",
+      "agent": "Kouassi",
+      "size": "142 Ko",
+      "date": "24 juillet 2026",
+      "storageKey": "s3://yelema/ws_3/f_1"
+    },
+    {
+      "id": "f_2",
+      "name": "Catalogue_produits_2026.pdf",
+      "type": "pdf",
+      "kind": "PDF · 34 pages",
+      "agent": "Kouassi",
+      "size": "2,1 Mo",
+      "date": "12 juillet 2026",
+      "storageKey": "s3://yelema/ws_3/f_2"
+    },
+    {
+      "id": "f_3",
+      "name": "Grille_tarifaire_UEMOA.xlsx",
+      "type": "xlsx",
+      "kind": "Excel · 3 onglets",
+      "agent": "Kouassi",
+      "size": "88 Ko",
+      "date": "18 juillet 2026",
+      "storageKey": "s3://yelema/ws_3/f_3"
+    },
+    {
+      "id": "f_4",
+      "name": "Historique_tickets_support.csv",
+      "type": "csv",
+      "kind": "CSV · 1 240 lignes",
+      "agent": "Awa",
+      "size": "310 Ko",
+      "date": "22 juillet 2026",
+      "storageKey": "s3://yelema/ws_3/f_4"
+    },
+    {
+      "id": "f_5",
+      "name": "Politique_retours.docx",
+      "type": "docx",
+      "kind": "Word · 6 pages",
+      "agent": "Awa",
+      "size": "64 Ko",
+      "date": "9 juillet 2026",
+      "storageKey": "s3://yelema/ws_3/f_5"
+    },
+    {
+      "id": "f_6",
+      "name": "Balance_generale_juin.xlsx",
+      "type": "xlsx",
+      "kind": "Excel · 4 onglets",
+      "agent": "Mamadou",
+      "size": "196 Ko",
+      "date": "5 juillet 2026",
+      "storageKey": "s3://yelema/ws_3/f_6"
+    },
+    {
+      "id": "f_7",
+      "name": "Releve_bancaire_juin.pdf",
+      "type": "pdf",
+      "kind": "PDF · 12 pages",
+      "agent": "Mamadou",
+      "size": "780 Ko",
+      "date": "3 juillet 2026",
+      "storageKey": "s3://yelema/ws_3/f_7"
+    },
+    {
+      "id": "f_8",
+      "name": "Etats_financiers_2025.pdf",
+      "type": "pdf",
+      "kind": "PDF · 48 pages",
+      "agent": "Mamadou",
+      "size": "3,4 Mo",
+      "date": "20 juin 2026",
+      "storageKey": "s3://yelema/ws_3/f_8"
+    },
+    {
+      "id": "f_9",
+      "name": "Factures_emises_mai.csv",
+      "type": "csv",
+      "kind": "CSV · 23 lignes",
+      "agent": "Salif",
+      "size": "26 Ko",
+      "date": "2 juillet 2026",
+      "storageKey": "s3://yelema/ws_3/f_9"
+    },
+    {
+      "id": "f_10",
+      "name": "Inventaire_stock.xlsx",
+      "type": "xlsx",
+      "kind": "Excel · 214 lignes",
+      "agent": "Salif",
+      "size": "168 Ko",
+      "date": "26 juillet 2026",
+      "storageKey": "s3://yelema/ws_3/f_10"
+    },
+    {
+      "id": "f_11",
+      "name": "Contacts_fournisseurs.xlsx",
+      "type": "xlsx",
+      "kind": "Excel · 38 lignes",
+      "agent": "Salif",
+      "size": "72 Ko",
+      "date": "15 juillet 2026",
+      "storageKey": "s3://yelema/ws_3/f_11"
+    }
   ]
 }

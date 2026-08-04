@@ -2,7 +2,7 @@ import type { ButtonHTMLAttributes, ReactNode } from "react";
 
 interface ButtonProps extends Omit<ButtonHTMLAttributes<HTMLButtonElement>, "children"> {
   children: ReactNode;
-  variant?: "primary" | "secondary" | "tertiary";
+  variant?: "primary" | "secondary" | "tertiary" | "danger";
   size?: "small" | "medium" | "large";
   leadingIcon?: ReactNode;
   trailingIcon?: ReactNode;

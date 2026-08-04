@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 
-import { getAnalyticsOverview } from '../../../shared/api/analytics/api'
-import type { AnalyticsOverview, AnalyticsPeriod } from '../../../shared/api/analytics/contracts'
+import { getAnalyticsOverview } from '../../../features/analytics/api/api'
+import type { AnalyticsOverview, AnalyticsPeriod } from '../../../features/analytics/api/contracts'
 import { Card } from '../../../shared/components/card/card'
 import { LoadError } from '../../../shared/components/load-error/load-error'
 import { PageBody, PageHeader } from '../../../shared/components/page/page'
@@ -46,7 +46,7 @@ export function AnalyticsPage() {
                 </div>
               </Card>
               <Card className="rank-card">
-                <h2>Agents les plus sollicités</h2>
+                <h2>Experts IA les plus sollicités</h2>
                 {overview.topAgents.map((agent) => (
                   <div key={agent.name} className="rank-row"><span className="rank-name">{agent.name}</span><span className="rank-value">{fmt.format(agent.count)}</span><span className="rank-bar"><span style={{ width: `${(agent.count / topMax) * 100}%` }} /></span></div>
                 ))}
@@ -60,7 +60,7 @@ export function AnalyticsPage() {
                 ))}
               </Card>
               <Card>
-                <h2>Crédits par agent</h2>
+                <h2>Crédits par expert IA</h2>
                 {overview.creditsByAgent.map((agent) => (
                   <div key={agent.agentId} className="rank-row"><span className="rank-name">{agent.name}</span><span className="rank-value">{fmt.format(agent.credits)} cr.</span><span className="rank-bar"><span style={{ width: `${(agent.credits / agentMax) * 100}%` }} /></span></div>
                 ))}

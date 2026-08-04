@@ -26,6 +26,7 @@
 .login-form .button { width: 100%; margin-top: 0; border-radius: 11px; }
 .login-help { margin-top: 25px !important; color: var(--faint) !important; text-align: center; font-size: 12.5px !important; line-height: 1.3; }
 .login-success { margin: -18px 0 18px !important; padding: 9px 11px; color: #17663a !important; border-radius: 9px; background: #e8f6ee; font-size: 12px !important; line-height: 1.35 !important; }
+.login-info { margin: -18px 0 18px !important; padding: 9px 11px; color: #7a5a12 !important; border-radius: 9px; background: #fdf3dd; font-size: 12px !important; line-height: 1.35 !important; }
 .simple-auth-page { display: grid; min-height: 100%; padding: 30px; background: radial-gradient(circle at top right, #e7e6ff, var(--surface) 55%); place-items: center; }
 .simple-auth-card { display: flex; flex-direction: column; width: min(100%, 480px); padding: 42px; border: 1px solid var(--line); border-radius: 20px; background: #fff; box-shadow: var(--shadow); }
 .simple-auth-card img { width: 130px; object-fit: contain; object-position: left; }
@@ -63,65 +64,117 @@
 .onboarding-actions > div .button { min-width: 163px; }
 .onboarding-back:disabled { visibility: hidden; }
 .skip-link { padding: 0; color: var(--faint); background: transparent; font-size: 13.5px; font-weight: 500; }
-.home-page, .agents-page { display: flex; flex: 1; flex-direction: column; min-height: 0; }
-.home-hero, .agents-hero { position: relative; flex: 0 0 auto; padding: 31px 40px 26px; overflow: hidden; color: #fff; background: linear-gradient(130deg, #3556ce, var(--primary)); }
-.home-hero .eyebrow { color: #c7c4fa; font-size: 11px; }
+/* Marge latérale unique pour l'en-tête et le corps : leurs bords gauches
+   s'alignent par construction, quelle que soit la largeur de l'écran. */
+.home-page, .agents-page { --page-x: clamp(24px, 3.4vw, 44px); display: flex; flex: 1; flex-direction: column; min-height: 0; }
+/* En-tête clair : les portraits des experts sont le seul point de couleur fort de la
+   page — l'en-tête reste discret pour ne pas entrer en conflit avec eux. La couleur
+   choisie par le client (`--hero-from`) subsiste en voile très léger. */
+.home-hero, .agents-hero { position: relative; flex: 0 0 auto; padding: 31px var(--page-x) 26px; overflow: hidden; color: var(--ink); background: linear-gradient(130deg, color-mix(in oklab, var(--hero-from, #5b34c4) 12%, #fff), #fff 70%); border-bottom: 1px solid var(--line); }
+.agents-hero h1 { font-size: clamp(22px, 2vw, 28px); letter-spacing: -0.015em; }
+.agents-hero p { max-width: 62ch; margin-top: 6px; color: var(--muted); font-size: 14px; line-height: 1.5; }
+.home-hero .eyebrow { color: #5b34c4; font-size: 11px; }
 .home-hero h1 { margin-top: 8px; font-size: 29px; }
-.home-hero p { margin-top: 4px; color: #c9c8f9; font-size: 15px; }
-.home-body, .agents-body { flex: 1; min-height: 0; padding: 26px 40px 40px; overflow: auto; }
-.welcome-banner { display: grid; align-items: center; grid-template-columns: auto minmax(0, 1fr) auto auto; gap: 18px; min-height: 130px; padding: 24px; color: #fff; border-radius: 16px; background: linear-gradient(120deg, #3558d3, #331674); }
-.welcome-icon { display: grid; width: 46px; height: 46px; border-radius: 12px; background: rgba(255,255,255,.14); place-items: center; }
-.welcome-banner h2 { font-size: 16px; line-height: 1.25; }
-.welcome-banner p { max-width: 360px; margin-top: 5px; color: #d0cdfb; font-size: 13px; line-height: 1.45; }
-.welcome-banner .button--secondary { color: var(--primary); background: #fff; }
-.banner-close { display: grid; width: 34px; height: 34px; padding: 0; color: #fff; border-radius: 9px; background: rgba(255,255,255,.14); place-items: center; }
-.metric-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-top: 26px; }
-.metric-card { display: grid; align-items: center; grid-template-columns: auto auto 1fr; gap: 12px; min-height: 96px; padding: 18px; }
-.metric-card > span { display: grid; width: 43px; height: 43px; color: var(--primary); border-radius: 11px; background: var(--purple-100); place-items: center; }
-.metric-card strong { font-size: 23px; }
-.metric-card small { color: var(--faint); font-size: 12.5px; line-height: 1.25; }
-.resume-section { margin-top: 28px; }
+.home-hero p { margin-top: 4px; color: var(--muted); font-size: 15px; }
+
+/* Accueil tourné vers le recrutement — sobre : aligné à gauche, sans effet. */
+.home-hero--recruit { padding: clamp(24px, 4.2vh, 42px) var(--page-x) clamp(20px, 3.4vh, 34px); }
+.home-hero--recruit h1 { margin: 0; font-size: clamp(24px, 2.3vw, 32px); line-height: 1.15; letter-spacing: -0.015em; text-wrap: balance; }
+.home-hero--recruit p { max-width: 62ch; margin: 8px 0 0; font-size: 14.5px; line-height: 1.55; }
+.need-form { display: flex; align-items: center; gap: 8px; width: min(100%, 600px); margin: clamp(14px, 2.4vh, 22px) 0 0; padding: 5px 6px 5px 16px; background: #fff; border: 1px solid var(--line); border-radius: 12px; }
+.need-form:focus-within { border-color: #cbb8f5; }
+.need-input { flex: 1; min-width: 0; height: 40px; color: var(--ink); background: transparent; border: 0; outline: 0; font-family: inherit; font-size: 14.5px; }
+.need-input::placeholder { color: #949aab; }
+.need-go { display: grid; place-items: center; width: 38px; height: 38px; flex: 0 0 auto; padding: 0; color: #fff; background: var(--primary); border: 0; border-radius: 9px; }
+.need-go:hover { background: #3d1d83; }
+
+/* Intitulé de la liste — même repère typographique que le reste de l'interface. */
+.market-label { margin-bottom: 12px; color: var(--faint); font-family: 'Space Grotesk', monospace; font-size: 11px; font-weight: 500; letter-spacing: .14em; text-transform: uppercase; }
+
+.home-body, .agents-body { flex: 1; min-height: 0; padding: clamp(18px, 2.8vh, 28px) var(--page-x) clamp(24px, 3.4vh, 40px); overflow: auto; }
+/* Statistiques d'accueil — affichage à plat (sans carte), séparées par un filet. */
 .section-heading { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
 .section-heading h2 { font-size: 16px; }
 .section-heading button { display: inline-flex; align-items: center; gap: 6px; color: var(--primary); background: transparent; font-size: 12.5px; font-weight: 600; }
-.conversation-preview-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
-.conversation-preview { display: flex; gap: 13px; min-width: 0; }
-.conversation-preview h3 { overflow: hidden; font-size: 14.5px; text-overflow: ellipsis; white-space: nowrap; }
-.conversation-preview p { display: -webkit-box; margin-top: 5px; overflow: hidden; color: var(--muted); font-size: 12.5px; line-height: 1.4; -webkit-box-orient: vertical; -webkit-line-clamp: 2; }
-.conversation-preview small { display: block; margin-top: 10px; color: var(--faint); font-size: 11.5px; }
-.agents-hero h1 { font-size: 29px; }
-.agents-hero > p { margin-top: 5px; color: #c9c8f9; }
-.agents-hero .field { width: min(100%, 580px); margin-top: 20px; }
-.agents-hero .input-shell { min-height: 50px; border: 0; }
+
+/* Marketplace : experts du catalogue non encore rattachés à l'organisation. */
+.market-recruit { display: inline-flex; align-items: center; gap: 7px; margin-top: 12px; padding: 8px 14px; color: var(--primary); background: #fff; border-radius: 10px; font-size: 13px; font-weight: 600; transition: background .16s ease; }
+.agent-card.card--interactive:hover .market-recruit { background: var(--purple-100); }
+/* Action de recrutement — zone à part, détachée du choix du canal : on choisit,
+   puis on décide. D'où le filet et l'air au-dessus. */
+.recruit-action { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin-top: clamp(14px, 2.4vh, 28px); padding-top: clamp(12px, 2vh, 22px); border-top: 1px solid var(--line); }
+.recruit-action small { color: var(--faint); font-size: 12px; line-height: 1.45; }
+
+/* Choix des canaux de déploiement — dans la fiche de recrutement. */
+/* Fiche de recrutement : le contenu occupe toute la hauteur disponible et le bloc
+   de décision est ancré en bas — l'espace libre d'un grand écran est réparti au
+   lieu de s'accumuler sous le contenu. (Réservé à cette fiche.) */
+.work-fill { display: flex; flex-direction: column; min-height: 100%; }
+.work-fill .work-top { align-items: start; }
+.work-fill .work-top-main { display: flex; flex-direction: column; }
+/* Le bloc de recrutement suit le contenu au lieu d'être poussé en bas de colonne.
+   Un `margin-top: auto` ouvrait tout l'espace restant au-dessus, d'une hauteur
+   qui variait d'un expert à l'autre selon son nombre de compétences. */
+.work-fill .recruit-block { margin-top: var(--gap-section, 32px); }
+
+/* Bloc de choix des canaux — dans la colonne de gauche, sous le quotidien. */
+.recruit-block { margin-top: var(--gap-section, 32px); }
+.recruit-note { margin: 0 0 var(--gap-block, 16px); color: var(--muted); font-size: 13.5px; line-height: 1.55; }
+/* Canaux : tuiles sobres (cadre fin, sans ombre) — le canal retenu porte une
+   bordure violette, un fond très légèrement teinté et une pastille ✓ en coin. */
+/* Une seule ligne, toujours : les tuiles se partagent la largeur à parts égales
+   et ne passent jamais à la ligne. La borne de 190 px évite qu'un expert à deux
+   canaux se retrouve avec deux pavés géants. */
+.chan-tiles { display: flex; gap: 10px; }
+.chan-tiles > .chan-tile { flex: 1 1 0; min-width: 0; max-width: 190px; }
+.chan-tile { position: relative; display: flex; flex-direction: column; align-items: center; min-width: 0; padding: clamp(15px, 1.4vw, 20px) 12px clamp(13px, 1.2vw, 18px); text-align: center; border: 1px solid var(--line); border-radius: 14px; background: #fff; transition: border-color .16s ease, background .16s ease; }
+button.chan-tile:hover { border-color: #cbb8f5; }
+.chan-tile.is-on { border-color: #a98cf0; background: #faf8ff; }
+.chan-tile-tick { position: absolute; top: 8px; right: 8px; display: grid; place-items: center; width: 17px; height: 17px; color: #fff; border-radius: 50%; background: #5b34c4; }
+.chan-tile-ic { display: grid; place-items: center; width: 28px; height: 28px; margin-bottom: 9px; color: #5b34c4; }
+.chan-tile-ic img { width: 26px; height: 26px; object-fit: contain; }
+.chan-tile strong { color: var(--ink); font-size: 13.5px; }
+.chan-tile.is-on strong { color: var(--primary); }
+.chan-tile small { margin-top: 3px; color: var(--faint); font-size: 11.5px; line-height: 1.35; }
+
+/* Demande de recrutement (modale). */
 .filters-row, .list-toolbar { display: flex; align-items: center; gap: 10px; margin-bottom: 21px; }
 .list-toolbar .field { width: min(330px, 100%); margin-right: auto; }
 .list-toolbar .input-shell { min-height: 40px; }
-.agents-hero form { width: min(100%, 580px); margin-top: 20px; }
-.agents-hero form .field { width: 100%; margin-top: 0; }
-.agents-hero .input-shell { padding-right: 6px; }
-.search-button { display: inline-flex; align-items: center; gap: 7px; height: 40px; padding: 0 16px; color: #fff; background: var(--primary); border-radius: 9px; font-size: 13.5px; font-weight: 600; white-space: nowrap; }
-.search-button:hover { background: #3d1d83; }
-.agents-toolbar { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 18px; }
-.agents-toolbar > span { color: var(--ink); font-size: 16px; font-weight: 600; }
-.agents-toolbar > span em { color: var(--faint); font-weight: 400; font-style: normal; }
+.agents-toolbar { display: flex; align-items: center; justify-content: flex-end; gap: 12px; margin-bottom: 18px; }
 .agents-toolbar-actions { display: flex; align-items: center; gap: 12px; }
 .link-button { color: var(--primary); font-size: 13px; font-weight: 500; }
 .agents-empty { padding: 46px 20px; text-align: center; }
 .agents-empty strong { display: block; color: var(--muted); font-size: 15px; }
 .agents-empty span { display: block; margin-top: 6px; color: var(--faint); font-size: 13.5px; }
-.chip-row { display: flex; flex-wrap: wrap; gap: 9px; margin-bottom: 22px; }
-.chip { display: inline-flex; align-items: center; gap: 8px; padding: 8px 14px; border-radius: 999px; font-size: 13px; font-weight: 500; color: var(--muted); background: #fff; border: 1px solid var(--line); transition: background .14s ease, border-color .14s ease; }
-.chip.is-active { color: #fff; background: var(--primary); border-color: transparent; }
-.chip-count { padding: 1px 7px; border-radius: 999px; font-size: 11.5px; font-weight: 600; color: var(--faint); background: var(--surface); }
-.chip.is-active .chip-count { color: #fff; background: rgba(255, 255, 255, .22); }
-.agent-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
-.agent-card { min-height: 205px; }
-.agent-card h2 { margin-top: 16px; font-size: 16px; }
-.agent-card p { min-height: 42px; margin-top: 6px; color: var(--muted); font-size: 13px; line-height: 1.5; }
-.agent-card > div:last-child { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 14px; }
-.agent-card > div:last-child span, .tag-row span { padding: 4px 10px; color: var(--primary); border-radius: 999px; background: var(--purple-100); font-size: 11.5px; font-weight: 500; }
+/* Filtres métier — épurés : du texte, rien d'autre. Le filtre actif se lit à sa
+   couleur violette. Partagé par l'accueil et le catalogue. */
+.chip-row { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: clamp(14px, 2.2vh, 22px); }
+.chip { display: inline-flex; align-items: center; gap: 7px; padding: 7px 13px; color: var(--muted); background: none; border: 0; border-radius: 999px; font-size: 13px; font-weight: 500; transition: color .14s ease, background .14s ease; }
+.chip:hover { color: var(--ink); background: #f4f3f8; }
+.chip.is-active { color: var(--primary); background: #efedf8; font-weight: 600; }
+.chip-count { color: var(--faint); font-size: 11.5px; font-weight: 600; font-variant-numeric: tabular-nums; }
+.chip.is-active .chip-count { color: #7a5ad8; }
+/* Carte expert : portrait plein (image entière) + texte superposé en bas. */
+/* Cartes experts : plus compactes, et jamais plus larges que la résolution native
+   des portraits (400 px) — l'image est ainsi réduite, jamais agrandie, donc nette.
+   Le ratio suit celui des portraits : rien n'est rogné. */
+.agent-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 20px; }
+.agent-card { max-width: 400px; padding: 0; overflow: hidden; border-radius: 20px; }
+.agent-card-photo { position: relative; aspect-ratio: 400 / 717; overflow: hidden; background: #7a5a76; }
+.agent-card-cover { display: block; width: 100%; height: 100%; object-fit: contain; }
+.agent-card-photo-empty { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; color: rgba(255, 255, 255, .65); }
+.agent-card-photo-label { font-size: 14px; }
+.agent-card-overlay { position: absolute; left: 0; right: 0; bottom: 0; padding: 46px 20px 20px; color: #fff; background: linear-gradient(to top, rgba(16, 6, 34, .95) 0%, rgba(16, 6, 34, .72) 46%, transparent 100%); }
+.agent-card-overlay h2 { font-size: 20px; line-height: 1.15; color: #fff; }
+.agent-card-metier { display: block; margin-top: 4px; color: #cbb8f5; font-size: 12px; font-weight: 600; letter-spacing: .04em; }
+.agent-card-overlay p { display: -webkit-box; margin: 9px 0 0; overflow: hidden; color: rgba(255, 255, 255, .82); font-size: 13.5px; line-height: 1.45; -webkit-box-orient: vertical; -webkit-line-clamp: 2; }
+.agent-card-link { display: inline-flex; align-items: center; gap: 6px; margin-top: 12px; color: #fff; font-size: 13px; font-weight: 700; }
+.agent-card-link svg { transition: transform .16s ease; }
+.agent-card.card--interactive:hover .agent-card-link svg { transform: translateX(3px); }
+.tag-row span { padding: 4px 10px; color: var(--primary); border-radius: 999px; background: var(--purple-100); font-size: 11.5px; font-weight: 500; }
 .agent-detail-page { flex: 1; padding: 30px 40px; overflow: auto; }
-.agent-detail-breadcrumb { display: flex; align-items: center; gap: 14px; margin-bottom: 22px; }
+.agent-detail-breadcrumb { display: flex; flex: 0 0 auto; align-items: center; gap: 14px; padding: 13px 30px; border-bottom: 1px solid var(--line); }
 .breadcrumb { display: flex; align-items: center; gap: 7px; color: var(--muted); font-size: 13px; }
 .breadcrumb button { color: var(--muted); }
 .breadcrumb svg { color: var(--faint); }
@@ -152,6 +205,10 @@
 .agent-needs-users { margin-top: 15px; padding-top: 15px; border-top: 1px solid #f0f2f7; }
 .agent-needs-users .agent-needs-head span { color: var(--muted); font-weight: 400; font-size: 13px; }
 .user-chips { display: flex; flex-wrap: wrap; gap: 7px; }
+.agent-connectors { display: flex; flex-wrap: wrap; gap: 7px; }
+.agent-connector { display: inline-flex; align-items: center; gap: 7px; padding: 5px 11px 5px 6px; border: 1px solid var(--line); border-radius: 999px; background: #fff; font-size: 12px; color: var(--body); }
+.agent-connector img { width: 18px; height: 18px; object-fit: contain; }
+.agent-connector-dot { display: grid; width: 18px; height: 18px; color: #fff; border-radius: 5px; background: var(--primary); font-size: 10px; font-weight: 700; place-items: center; }
 .user-chips span { padding: 4px 10px; color: var(--primary); background: var(--purple-100); border-radius: 999px; font-size: 11.5px; font-weight: 500; }
 .agent-resume h3 { margin-bottom: 14px; color: var(--muted); font-family: 'Space Grotesk', monospace; font-size: 11px; font-weight: 500; letter-spacing: .14em; text-transform: uppercase; }
 .agent-resume > div { display: flex; flex-direction: column; gap: 10px; }
@@ -159,6 +216,547 @@
 .agent-resume-row:hover { border-color: #cfd5e2; }
 .agent-resume-row strong { display: block; color: var(--ink); font-size: 14px; font-weight: 600; }
 .agent-resume-row small { display: block; margin-top: 4px; color: var(--faint); font-size: 12px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+
+/* Espace d'un expert IA — onglets internes. */
+.expert-page { display: flex; flex: 1; flex-direction: column; min-height: 0; }
+
+/* Bannière d'identité horizontale (incarne l'employé IA) — un seul menu vertical à l'écran (la sidebar). */
+.expert-banner { position: relative; display: flex; flex: 0 0 auto; align-items: center; gap: 22px; padding: 24px 34px; overflow: hidden; color: #fff; background: linear-gradient(120deg, #3a2a86, #241056); }
+.expert-banner::after { content: ""; position: absolute; right: 8%; top: -80px; width: 240px; height: 240px; border-radius: 50%; background: radial-gradient(circle, rgba(139, 118, 233, .45), transparent 70%); pointer-events: none; }
+.expert-banner > * { position: relative; }
+.expert-banner .agent-avatar { width: 84px; height: 84px; flex: 0 0 auto; border-radius: 22px; box-shadow: 0 14px 30px -12px rgba(0, 0, 0, .5); }
+.expert-banner-id { flex: 1; min-width: 0; }
+.expert-banner-metier { color: #cbc2f7; font-size: 11.5px; font-weight: 600; letter-spacing: .02em; }
+.expert-banner-title { display: flex; align-items: center; gap: 14px; margin-top: 5px; }
+.expert-banner-title h1 { color: #fff; font-size: 25px; letter-spacing: -0.02em; }
+.expert-banner-status { display: inline-flex; align-items: center; gap: 7px; color: #d7cffb; font-size: 12px; }
+.expert-banner-dot { width: 7px; height: 7px; border-radius: 50%; background: #4be0a2; }
+.expert-banner-desc { margin-top: 7px; max-width: 78ch; color: #d3cbf0; font-size: 13.5px; line-height: 1.55; }
+.expert-banner-channels { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 13px; }
+.expert-banner-channels span { padding: 3px 9px; border: 1px solid rgba(255, 255, 255, .22); border-radius: 6px; color: #e4dffb; font-size: 11px; }
+.expert-banner > .button { flex: 0 0 auto; align-self: center; color: var(--primary); background: #fff; }
+.expert-banner > .button:hover { background: #f0edff; }
+
+/* Onglets internes — tiennent sur une seule ligne (défilement horizontal en secours) */
+.expert-tabs { display: flex; flex: 0 0 auto; gap: 2px; flex-wrap: nowrap; padding: 0 34px; border-bottom: 1px solid var(--line); overflow-x: auto; scrollbar-width: thin; }
+.expert-tab { display: inline-flex; align-items: center; gap: 8px; padding: 16px 14px; border: 0; background: none; color: var(--muted); font-size: 13px; font-weight: 500; border-bottom: 2px solid transparent; margin-bottom: -1px; white-space: nowrap; flex: 0 0 auto; }
+.expert-tab--icon { padding-left: 16px; padding-right: 16px; }
+.expert-tab svg { color: var(--faint); }
+.expert-tab:hover { color: var(--ink); }
+.expert-tab.is-active { color: var(--primary); border-bottom-color: var(--primary); font-weight: 600; }
+.expert-tab.is-active svg { color: var(--primary); }
+.expert-tab-count { padding: 1px 7px; border-radius: 999px; background: var(--surface); color: var(--faint); font-size: 11px; font-weight: 600; }
+.expert-tab.is-active .expert-tab-count { background: var(--purple-100); color: var(--primary); }
+.expert-panel { flex: 1; min-height: 0; overflow-y: auto; padding: 28px 34px 44px; }
+
+/* Fiche expert — vue unique (une seule page qui défile). */
+.expert-single { display: flex; flex: 1; min-height: 0; flex-direction: column; overflow-y: auto; background: #fff; }
+.expert-body { padding: 30px 40px 56px; }
+.expert-eyebrow--h { display: block; margin-top: 34px; margin-bottom: 14px; }
+.expert-side-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 12px; }
+.expert-side-head h3 { margin: 0; }
+.expert-add-mini { display: inline-flex; align-items: center; gap: 5px; color: #5b34c4; font-size: 12.5px; font-weight: 600; background: none; border: 0; }
+.expert-add-mini:hover { text-decoration: underline; }
+.expert-side-empty { margin: 0; color: var(--faint); font-size: 13px; }
+
+/* Espace de travail : tuiles opérationnelles + dépliage en place. */
+.expert-ws { margin-top: 42px; padding-top: 28px; border-top: 1px solid var(--line); }
+.ws-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
+.ws-tile { display: flex; flex-direction: column; gap: 9px; padding: 15px 16px; border: 1px solid var(--line); border-radius: 14px; background: #fcfcfe; text-align: left; transition: border-color .16s ease, box-shadow .16s ease, transform .16s ease; }
+.ws-tile:hover { border-color: #cbb8f5; box-shadow: 0 12px 30px -18px rgba(48, 22, 103, .35); transform: translateY(-2px); }
+.ws-tile.is-open { border-color: var(--primary); box-shadow: 0 12px 30px -18px rgba(48, 22, 103, .4); }
+.ws-tile-h { display: flex; align-items: center; gap: 9px; }
+.ws-tile-ic { display: grid; place-items: center; width: 34px; height: 34px; flex: 0 0 auto; color: #5b34c4; background: var(--purple-100); border-radius: 10px; }
+.ws-tile-h b { font-size: 14px; color: var(--ink); }
+.ws-tile-n { margin-left: auto; font-size: 18px; font-weight: 700; color: var(--ink); font-variant-numeric: tabular-nums; }
+.ws-tile-h svg { color: var(--faint); }
+.ws-tile small { color: var(--faint); font-size: 12px; line-height: 1.4; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ws-panel { margin-top: 18px; }
+@media (max-width: 820px) { .ws-grid { grid-template-columns: 1fr 1fr; } }
+/* Vue d'ensemble — présentation « employé IA ». */
+.expert-eyebrow { font-family: 'Space Grotesk', monospace; font-size: 11px; font-weight: 600; letter-spacing: .16em; text-transform: uppercase; color: #5b34c4; }
+.expert-fonction { margin: 0; max-width: 66ch; color: var(--body); font-size: 14.5px; line-height: 1.55; }
+.expert-metrics { display: flex; flex-wrap: wrap; gap: 26px; margin: 24px 0 0; padding: 16px 0; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+.expert-metric { display: flex; align-items: baseline; gap: 8px; padding: 0; border: 0; background: none; }
+.expert-metric b { font-size: 20px; color: var(--ink); font-variant-numeric: tabular-nums; }
+.expert-metric span { color: var(--faint); font-size: 12.5px; }
+.expert-metric:hover b, .expert-metric:hover span { color: var(--primary); }
+.expert-cols { display: grid; grid-template-columns: minmax(0, 1fr) 300px; align-items: start; gap: 28px; margin-top: 30px; }
+.expert-daily { margin-top: 22px; padding: 15px 18px; border: 1px solid var(--line); border-radius: 14px; background: #f6f4fd; }
+.expert-daily h3, .expert-side h3 { margin: 0 0 11px; color: var(--ink); font-size: 13px; font-weight: 600; }
+.expert-daily ul { display: flex; flex-direction: column; gap: 8px; margin: 0; padding: 0; list-style: none; }
+.expert-daily li { display: flex; gap: 10px; color: var(--body); font-size: 13.5px; line-height: 1.4; }
+.expert-ck { display: grid; flex: 0 0 auto; place-items: center; width: 22px; height: 22px; border-radius: 7px; color: #5b34c4; background: #fff; box-shadow: 0 1px 0 rgba(48, 22, 103, .06); }
+.expert-side { display: flex; flex-direction: column; gap: 24px; }
+.expert-side--full { flex-direction: row; flex-wrap: wrap; gap: 40px; margin-top: 30px; }
+.expert-chans { display: flex; flex-wrap: wrap; gap: 8px; }
+.expert-chan { padding: 5px 11px; border: 1px solid var(--line); border-radius: 8px; background: #fff; color: var(--muted); font-size: 12px; }
+.expert-sk-head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; margin: 34px 0 14px; }
+.expert-link { color: #5b34c4; font-size: 13px; font-weight: 600; background: none; border: 0; white-space: nowrap; }
+.expert-link:hover { text-decoration: underline; }
+.expert-list { display: flex; flex-direction: column; gap: 10px; }
+.expert-list-row { display: flex; align-items: center; gap: 13px; width: 100%; text-align: left; padding: 13px 16px; border: 1px solid var(--line); border-radius: 12px; background: #fff; }
+button.expert-list-row:hover { border-color: #cfd5e2; }
+.expert-list-row--static { cursor: default; }
+.expert-list-icon { display: grid; width: 34px; height: 34px; flex: 0 0 auto; place-items: center; color: var(--primary); background: var(--purple-100); border-radius: 9px; }
+.expert-list-main { flex: 1; min-width: 0; }
+.expert-list-main strong { display: block; font-size: 14px; color: var(--ink); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.expert-list-main small { display: block; margin-top: 3px; color: var(--faint); font-size: 12.5px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.expert-list-meta { color: var(--faint); font-size: 12.5px; white-space: nowrap; flex: 0 0 auto; }
+.expert-list-action { display: grid; width: 34px; height: 34px; flex: 0 0 auto; place-items: center; color: var(--faint); border: 1px solid var(--line); border-radius: 9px; background: #fff; }
+.expert-list-action:hover { color: var(--primary); border-color: #c9baf3; }
+.expert-connectors { padding-top: 2px; }
+.expert-empty { display: flex; flex-direction: column; align-items: center; gap: 12px; padding: 54px 20px; color: var(--faint); text-align: center; }
+.expert-empty p { color: var(--muted); }
+
+/* « En action » : capture d'écran de téléphone (Telegram) — châssis, barre d'état,
+   fil de discussion qui occupe la hauteur, barre de saisie décorative. */
+/* Écran de téléphone : hauteur donnée par la conversation elle-même (assez longue
+   pour être crédible), sans hauteur imposée qui creuserait un vide. */
+/* Hauteur FIXE, jamais dictée par le contenu : la carte fait la même taille pour
+   les douze experts, quelle que soit la longueur de leur échange de démonstration.
+   Les messages les plus anciens sortent par le haut, comme dans une vraie
+   conversation (le corps est aligné en bas). */
+.demo-phone { display: flex; flex-direction: column; width: clamp(300px, 24vw, 352px); height: clamp(430px, 58vh, 580px); overflow: hidden; border: 1px solid #dbe2ea; border-radius: 18px; background: #e5ebf2; box-shadow: 0 20px 44px -26px rgba(20, 22, 31, .35); }
+.demo-phone-status { display: flex; align-items: center; justify-content: space-between; padding: 7px 15px 4px; color: #2b3440; background: #fff; font-size: 10.5px; font-weight: 600; font-variant-numeric: tabular-nums; }
+.demo-phone-signal { display: inline-flex; align-items: center; gap: 4px; opacity: .8; }
+.demo-phone-top { display: flex; align-items: center; gap: 10px; padding: 7px 13px 10px; color: #17212b; background: #fff; border-bottom: 1px solid #e4e9ef; }
+.demo-phone-top > svg { flex: 0 0 auto; color: #3390ec; }
+.demo-phone-av { width: 32px; height: 32px; flex: 0 0 auto; border-radius: 50%; object-fit: cover; object-position: top center; background: #7a5a76; }
+.demo-phone-av.agent-avatar--monogram { display: grid; place-items: center; font-size: 12px; }
+.demo-phone-id { flex: 1; min-width: 0; line-height: 1.25; }
+.demo-phone-id b { display: block; font-size: 13px; }
+.demo-phone-id span { color: #3390ec; font-size: 10.5px; }
+.demo-phone-app { display: inline-flex; align-items: center; gap: 4px; flex: 0 0 auto; color: #3390ec; font-size: 10.5px; font-weight: 600; }
+.demo-phone-app img { width: 15px; height: 15px; object-fit: contain; }
+/* Fond de discussion Telegram : dégradé bleu + texture légère (papier peint). */
+.demo-phone-body { display: flex; flex: 1; flex-direction: column; justify-content: flex-end; gap: 7px; padding: 14px 12px; overflow: hidden; background: #f1f4f8; }
+.demo-phone-day { align-self: center; margin-bottom: 4px; padding: 3px 11px; color: #7b8794; border-radius: 999px; background: #e4e9ef; font-size: 9.5px; font-weight: 600; }
+.demo-bub { max-width: 82%; padding: 7px 11px 6px; font-size: 12px; line-height: 1.42; box-shadow: 0 1px 2px rgba(23, 33, 43, .08); }
+.demo-bub--in { align-self: flex-start; color: #17212b; background: #fff; border-radius: 13px 13px 13px 4px; }
+.demo-bub--out { align-self: flex-end; color: #fff; background: linear-gradient(135deg, #52a5f2, #3f83e0); border-radius: 13px 13px 4px 13px; }
+.demo-bub-meta { display: inline-flex; align-items: center; gap: 2px; margin-left: 7px; color: #8fa3b0; font-size: 9px; font-variant-numeric: tabular-nums; vertical-align: bottom; }
+.demo-bub--out .demo-bub-meta { color: rgba(255, 255, 255, .8); }
+.demo-phone-composer { display: flex; align-items: center; gap: 10px; padding: 10px 13px; color: #8b97a3; background: #fff; border-top: 1px solid #e4e9ef; }
+.demo-phone-composer span { flex: 1; font-size: 12px; }
+.demo-phone-composer > svg:last-child { color: #3390ec; }
+
+/* « En action » — fiche d'un expert de L'ÉQUIPE (indépendant de la fiche marketplace). */
+.uc-phone { max-width: 280px; overflow: hidden; border-radius: 18px; border: 1px solid var(--line); background: #ece5dd; box-shadow: 0 16px 36px -22px rgba(48, 22, 103, .5); }
+.uc-phone-top { display: flex; align-items: center; gap: 9px; padding: 9px 12px; color: #fff; background: #075e54; }
+.uc-av { width: 28px; height: 28px; flex: 0 0 auto; border-radius: 50%; object-fit: cover; object-position: top center; }
+.uc-phone-id { flex: 1; min-width: 0; line-height: 1.2; }
+.uc-phone-id b { display: block; font-size: 12.5px; }
+.uc-phone-id span { font-size: 10.5px; opacity: .85; }
+.uc-wa { font-size: 10px; opacity: .85; }
+.uc-phone-body { display: flex; flex-direction: column; gap: 5px; padding: 11px; }
+.uc-bub { max-width: 85%; padding: 5px 8px; font-size: 11px; line-height: 1.35; border-radius: 9px; box-shadow: 0 1px 1px rgba(0, 0, 0, .06); }
+.uc-bub--in { align-self: flex-start; color: var(--ink); background: #fff; border-top-left-radius: 3px; }
+.uc-bub--out { align-self: flex-end; color: #0b3d2e; background: #d9fdd3; border-top-right-radius: 3px; }
+.uc-time { margin-left: 8px; font-size: 9.5px; opacity: .55; }
+.work-phone { width: clamp(260px, 22vw, 300px); max-width: 100%; }
+
+/* « En action » : dans le rail (avec Connecté à / Disponible sur) — mini-conversation WhatsApp compacte. */
+
+/* En-tête de panneau (titre + bouton « Ajouter »). */
+.expert-panel-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 16px; }
+.expert-panel-head h2 { font-size: 15px; color: var(--ink); }
+
+/* Sélecteur (modale) : ajouter une source / un connecteur, créer une automatisation. */
+.picker-overlay { position: fixed; inset: 0; z-index: 60; display: grid; place-items: center; padding: 24px; background: rgba(14, 18, 32, .45); }
+.picker-modal { display: flex; flex-direction: column; width: min(480px, 100%); max-height: 82vh; overflow: hidden; background: #fff; border-radius: 16px; box-shadow: 0 30px 70px -30px rgba(48, 22, 103, .5); }
+.picker-head { display: flex; align-items: center; justify-content: space-between; padding: 17px 20px; border-bottom: 1px solid var(--line); }
+.picker-head h3 { font-size: 16px; color: var(--ink); }
+.picker-close { display: grid; place-items: center; width: 32px; height: 32px; color: var(--muted); border-radius: 9px; background: var(--surface); }
+.picker-close:hover { color: var(--ink); }
+.picker-list { display: flex; flex-direction: column; gap: 8px; padding: 16px 20px; overflow-y: auto; }
+/* Le défilement porte sur l'ensemble des groupes, pas sur chaque liste : sinon
+   un long catalogue se coupe entre deux métiers. Le pied du sélecteur reste fixe. */
+.picker-scroll { display: flex; flex: 1; flex-direction: column; min-height: 0; padding-bottom: 8px; overflow-y: auto; }
+.picker-scroll .picker-list { overflow: visible; }
+/* Un seul champ pour le métier, l'auteur et le nom du fichier — il reste fixe
+   au-dessus de la zone qui défile. */
+.picker-search { display: flex; align-items: center; gap: 8px; margin: 10px 20px 0; padding: 0 11px; border: 1px solid var(--line); border-radius: 10px; background: #fff; }
+.picker-search:focus-within { border-color: #c9baf3; }
+.picker-search > svg { flex: 0 0 auto; color: var(--faint); }
+.picker-search input { flex: 1; min-width: 0; height: 36px; color: var(--ink); background: none; border: 0; font-size: 13.5px; }
+.picker-search input::-webkit-search-cancel-button { cursor: pointer; }
+.picker-search input:focus { outline: none; }
+.picker-empty { margin: 16px 20px; color: var(--faint); font-size: 12.5px; line-height: 1.45; }
+.picker-row { display: flex; align-items: center; gap: 12px; width: 100%; text-align: left; padding: 11px 13px; border: 1px solid var(--line); border-radius: 11px; background: #fff; }
+.picker-row:hover { border-color: #c9baf3; box-shadow: var(--shadow); }
+.picker-row-ic { display: grid; place-items: center; width: 36px; height: 36px; flex: 0 0 auto; color: var(--primary); background: var(--purple-100); border-radius: 9px; font-size: 13px; font-weight: 700; overflow: hidden; }
+.picker-row-ic img { width: 20px; height: 20px; object-fit: contain; }
+.picker-row-main { flex: 1; min-width: 0; }
+.picker-row-main strong { display: block; font-size: 14px; color: var(--ink); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.picker-row-main small { color: var(--faint); font-size: 12.5px; }
+.picker-row-add { color: var(--primary); flex: 0 0 auto; }
+.picker-empty { padding: 34px 22px; color: var(--faint); text-align: center; font-size: 13.5px; line-height: 1.5; }
+/* Expert imposé dans la modale d'automatisation (depuis la fiche). */
+.modal-locked-agent { padding: 10px 13px; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); color: var(--ink); font-size: 14px; font-weight: 500; }
+@media (max-width: 720px) {
+  .expert-banner { flex-wrap: wrap; padding: 20px; }
+  .expert-banner > .button { width: 100%; }
+  .expert-tabs { padding: 0 20px; }
+  .expert-panel { padding: 22px 20px 40px; }
+  .expert-body { padding: 24px 20px 44px; }
+  .expert-cols { grid-template-columns: 1fr; }
+}
+/* ===== Fiche expert — mode focus (plein écran, rail vertical de l'expert) ===== */
+.expert-focus { display: flex; height: 100vh; min-height: 0; overflow: hidden; background: var(--surface); }
+/* Rail : largeur fluide — il s'étire avec l'écran au lieu d'une valeur figée. */
+.expert-nav { display: flex; flex: 0 0 clamp(290px, 22vw, 360px); flex-direction: column; padding: 0; overflow-y: auto; background: #fff; border-right: 1px solid var(--line); }
+.expert-nav-back { display: inline-flex; align-items: center; align-self: flex-start; gap: 7px; margin: 14px 10px 12px; padding: 6px 8px; color: var(--muted); font-size: 13px; font-weight: 500; background: none; border: 0; border-radius: 8px; }
+.expert-nav-back:hover { color: var(--ink); background: var(--surface); }
+.expert-nav-photo { display: block; width: min(84%, clamp(150px, 26vh, 240px)); aspect-ratio: 1; height: auto; margin: 10px auto 0; border-radius: 50%; object-fit: cover; object-position: center 15%; background: #7a5a76; }
+.expert-nav-photo.agent-avatar--monogram { display: grid; place-items: center; font-size: 54px; }
+.expert-nav-meta { display: flex; flex-direction: column; align-items: center; gap: 3px; padding: 14px 18px 4px; text-align: center; }
+.expert-nav-meta strong { font-size: 17px; color: var(--ink); }
+.expert-nav-metier { color: var(--faint); font-size: 12.5px; }
+.expert-nav-status { display: inline-flex; align-items: center; gap: 6px; margin-top: 5px; color: #22916a; font-size: 12px; }
+.expert-nav-status .expert-banner-dot { background: #22b07d; }
+.expert-nav-channels { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px; margin-top: 12px; }
+.nav-chan { display: inline-flex; align-items: center; gap: 5px; padding: 4px 10px; color: var(--muted); font-size: 11.5px; font-weight: 500; background: #fff; border: 1px solid var(--line); border-radius: 999px; }
+.nav-chan svg { flex: 0 0 auto; color: #5b34c4; }
+.nav-chan-logo { width: 14px; height: 14px; flex: 0 0 auto; object-fit: contain; }
+.expert-nav-tagline { margin: 14px 0 0; color: var(--muted); font-size: 12.5px; line-height: 1.5; }
+/* Repères chiffrés — badges d'information horizontaux, centrés, qui passent à la
+   ligne selon la largeur du rail. */
+/* Badges alignés à gauche, sur la même verticale que la phrase du dessus : le
+   troisième passe à la ligne sans se retrouver isolé au milieu. */
+.expert-nav-stats { display: flex; flex-wrap: wrap; gap: 6px; margin: 18px 0 0; padding-top: 16px; border-top: 1px solid var(--line); }
+.expert-nav-stats > div { display: inline-flex; align-items: baseline; gap: 4px; padding: 5px 10px; border: 1px solid var(--line); border-radius: 999px; background: #fff; white-space: nowrap; }
+.expert-nav-stats strong { color: var(--primary); font-size: 12.5px; font-variant-numeric: tabular-nums; }
+.expert-nav-stats span { color: var(--muted); font-size: 11.5px; }
+.expert-nav-list { display: flex; flex-direction: column; gap: 3px; padding-top: 10px; border-top: 1px solid var(--line); }
+.expert-nav-link { display: flex; align-items: center; gap: 11px; min-height: 40px; padding: 0 12px; color: #596178; font-size: 14px; font-weight: 500; text-align: left; background: none; border: 0; border-radius: 10px; }
+.expert-nav-link svg { flex: 0 0 auto; color: var(--faint); }
+.expert-nav-link span { flex: 1; min-width: 0; }
+.expert-nav-link:hover { color: var(--primary); background: #f5f3fc; }
+.expert-nav-link.is-active { color: var(--primary); background: var(--purple-100); font-weight: 600; }
+.expert-nav-link.is-active svg { color: var(--primary); }
+.expert-nav-count { font-style: normal; font-size: 11.5px; font-weight: 600; color: var(--faint); }
+.expert-nav-link.is-active .expert-nav-count { color: var(--primary); }
+/* L'action suit le contenu du rail (pas collée en bas de l'écran, ce qui creusait
+   un grand vide quand le rail est court). */
+.expert-nav-foot { margin: 26px 0 0; padding: 0 16px 22px; }
+.expert-nav-foot .button { width: 100%; padding-left: 12px; padding-right: 12px; font-size: 13.5px; white-space: nowrap; }
+.expert-nav-foot .button svg { flex: 0 0 auto; }
+
+.expert-main { flex: 1; min-width: 0; overflow-y: auto; }
+
+/* ===== Espace d'un expert de l'équipe : rail · activité · routines =====
+   Échelle d'espacement unique, fluide en hauteur d'écran :
+   --gap-tight   : entre un libellé et son contenu (ils forment un tout)
+   --gap-block   : entre deux blocs d'une même section
+   --gap-section : entre deux sections distinctes
+   Un écart plus grand au-dessus qu'en dessous d'un libellé : c'est ce qui fait
+   comprendre à quoi il se rapporte. */
+.expert-focus { --gap-tight: 8px; --gap-block: clamp(16px, 2.4vh, 26px); --gap-section: clamp(24px, 3.8vh, 42px); }
+
+.wk-rail { display: flex; flex: 0 0 clamp(250px, 19vw, 300px); flex-direction: column; padding: 0 14px 18px; overflow-y: auto; background: #fff; border-right: 1px solid var(--line); }
+.wk-card { position: relative; overflow: hidden; border-radius: 16px; background: #7a5a76; }
+/* Portrait entier : les visuels sont des illustrations plein pied, un recadrage
+   n'en montrerait que la tête. La carte prend donc la hauteur de l'image, et
+   aucun fond n'apparaît autour d'elle. */
+.wk-photo { display: block; width: 100%; height: auto; object-fit: initial; background: #7a5a76; }
+/* Sans portrait, le monogramme conserve le rapport des illustrations (400×717),
+   sans quoi une hauteur automatique le ferait s'effondrer. */
+.wk-photo.agent-avatar--monogram { display: grid; aspect-ratio: 400 / 717; place-items: center; color: #fff; font-size: 46px; }
+.wk-card-id { position: absolute; left: 0; right: 0; bottom: 0; padding: 34px 14px 12px; color: #fff; background: linear-gradient(to top, rgba(16, 6, 34, .92), transparent); }
+.wk-card-id strong { display: block; font-size: 15.5px; }
+.wk-card-id span { display: block; margin-top: 2px; color: rgba(255, 255, 255, .78); font-size: 10.5px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; }
+.wk-card-dot { position: absolute; right: 12px; bottom: 14px; width: 12px; height: 12px; border: 2px solid #fff; border-radius: 50%; background: #22b07d; }
+/* Action principale du rail — discrète : contour fin, libellé violet, sans fond
+   plein (elle ne doit pas dominer le portrait ni concurrencer la navigation). */
+.wk-rail-actions { margin-top: 14px; }
+.wk-rail-actions .button { width: 100%; min-height: 38px; padding-left: 12px; padding-right: 12px; border-radius: 10px; box-shadow: none; color: var(--primary); font-size: 13px; white-space: nowrap; }
+.wk-rail-actions .button:hover { color: var(--primary); border-color: #cbb8f5; background: #f7f6fc; }
+/* Marge franche : l'action est d'un côté, la navigation de l'autre (le bouton
+   étant en contour, un filet n'est plus nécessaire pour les distinguer). */
+.wk-nav { display: flex; flex-direction: column; gap: 2px; margin-top: 26px; }
+.wk-nav-label { margin: 0 8px 8px; color: var(--faint); font-family: 'Space Grotesk', monospace; font-size: 10.5px; font-weight: 500; letter-spacing: .14em; text-transform: uppercase; }
+.wk-nav-link { display: flex; align-items: center; gap: 11px; min-height: 38px; padding: 0 10px; color: #596178; font-size: 13.5px; font-weight: 500; text-align: left; background: none; border: 0; border-radius: 9px; }
+.wk-nav-link svg { flex: 0 0 auto; color: var(--faint); }
+.wk-nav-link span { flex: 1; min-width: 0; }
+.wk-nav-link em { font-style: normal; font-size: 11.5px; font-weight: 600; color: var(--faint); }
+.wk-nav-link:hover { color: var(--primary); background: #f7f6fc; }
+.wk-nav-link:hover svg, .wk-nav-link:hover em { color: var(--primary); }
+/* Vue courante : teinte discrète — ne doit pas se lire comme un second bouton
+   juste sous « Demander à … ». */
+.wk-nav-link.is-active { color: var(--primary); background: #efedf8; font-weight: 600; }
+.wk-nav-link.is-active svg { color: var(--primary); }
+.wk-nav .wk-nav-label { margin-top: 18px; }
+
+/* Vues Compétences · Suivi · Profil */
+.wk-view-head { margin-bottom: var(--gap-block); }
+/* En-tête de vue avec son action à droite (« Ajouter un document »…), en fin. */
+.wk-view-head--action { display: flex; align-items: flex-start; justify-content: space-between; gap: 20px; }
+.wk-view-head--action > .button { flex: 0 0 auto; min-height: 32px; padding: 0 12px; border-radius: 9px; font-size: 12.5px; font-weight: 500; white-space: nowrap; }
+.wk-view-head h2 { font-size: 18px; color: var(--ink); }
+.wk-view-head p { max-width: 66ch; margin-top: 4px; color: var(--muted); font-size: 13px; line-height: 1.5; }
+/* Listes de la zone principale (artefacts, sources) : lignes espacées, pas collées. */
+.wk-rows { display: flex; flex-direction: column; gap: var(--gap-tight); }
+
+/* Suivi — graphique large, jauges de répartition et faits marquants. */
+.wk-chart-wide { display: flex; align-items: flex-end; gap: 10px; height: 96px; max-width: 640px; margin-bottom: var(--gap-section); }
+.wk-splits { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: var(--gap-tight) clamp(28px, 3.6vw, 56px); }
+.wk-meter { display: grid; grid-template-columns: minmax(0, 1fr) 110px 28px; align-items: center; gap: 12px; padding: 7px 0; }
+.wk-meter-txt { overflow: hidden; color: var(--body); font-size: 13px; text-overflow: ellipsis; white-space: nowrap; }
+.wk-meter-bar { height: 6px; overflow: hidden; border-radius: 999px; background: #edebf5; }
+.wk-meter-bar i { display: block; height: 100%; border-radius: 999px; background: linear-gradient(90deg, #8f6ff0, #5b34c4); }
+.wk-meter-n { color: var(--faint); font-size: 12px; font-weight: 600; font-variant-numeric: tabular-nums; text-align: right; }
+.wk-facts { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: var(--gap-block); margin-top: var(--gap-section); padding-top: var(--gap-block); border-top: 1px solid var(--line); }
+/* Premier jour d'un expert : rien à mesurer encore — on l'annonce clairement. */
+.wk-blank { display: flex; flex-direction: column; align-items: flex-start; gap: 10px; max-width: 56ch; padding: clamp(22px, 3.4vh, 34px) clamp(20px, 2.4vw, 30px); border: 1px dashed #dcd7ee; border-radius: 16px; background: #fbfaff; }
+.wk-blank-ic { display: grid; place-items: center; width: 40px; height: 40px; color: #5b34c4; background: var(--purple-100); border-radius: 12px; }
+.wk-blank strong { color: var(--ink); font-size: 15px; }
+.wk-blank p { margin: 0; color: var(--muted); font-size: 13.5px; line-height: 1.6; }
+.wk-blank .button { margin-top: 4px; }
+
+.wk-facts small { display: block; color: var(--faint); font-size: 12px; }
+.wk-facts strong { display: block; margin-top: 4px; color: var(--ink); font-size: 14.5px; }
+/* Fenêtre « Ajouter un document » : depuis l'ordinateur, ou parmi ceux déjà là. */
+.picker-drop { display: flex; align-items: center; justify-content: center; gap: 10px; margin: 16px 20px 0; padding: 20px 16px; color: #7f6bb0; text-align: center; border: 1.5px dashed #cfc6ea; border-radius: 12px; background: #fbfaff; font-size: 13.5px; font-weight: 500; cursor: pointer; }
+.picker-drop:hover { color: var(--primary); border-color: #b9a7e8; background: #f7f5fe; }
+.picker-or { margin: 16px 20px 0; color: var(--faint); font-size: 11.5px; font-weight: 500; letter-spacing: .04em; text-transform: uppercase; }
+/* Deux natures de ressources dans le sélecteur : un intertitre discret, d'un
+   cran plus bas que l'intitulé de section au-dessus. */
+.picker-group-label { display: block; margin: 14px 20px 0; color: var(--muted); font-size: 12px; font-weight: 600; }
+.picker-group .picker-list { padding-top: 8px; }
+.wk-view-sub { margin: var(--gap-section) 0 var(--gap-tight); color: var(--faint); font-family: 'Space Grotesk', monospace; font-size: 11px; font-weight: 500; letter-spacing: .14em; text-transform: uppercase; }
+
+/* Compétences : cartes en grille. Un liseré violet se révèle au survol et la carte
+   se soulève légèrement — assez de matière pour ne pas faire « documentation ». */
+.wk-skills { display: grid; grid-template-columns: repeat(auto-fit, minmax(255px, 1fr)); gap: var(--gap-block); max-width: 1100px; }
+.wk-skill { position: relative; overflow: hidden; padding: 16px 17px 15px; border: 1px solid var(--line); border-radius: 15px; background: #fff; transition: border-color .16s ease, box-shadow .16s ease, transform .16s ease; }
+.wk-skill::before { content: ""; position: absolute; top: 0; bottom: 0; left: 0; width: 3px; background: linear-gradient(#8f6ff0, #5b34c4); opacity: 0; transition: opacity .16s ease; }
+.wk-skill:hover { border-color: #cbb8f5; box-shadow: 0 14px 30px -20px rgba(48, 22, 103, .38); transform: translateY(-2px); }
+.wk-skill:hover::before { opacity: 1; }
+.wk-skill-ic { display: grid; place-items: center; width: 30px; height: 30px; margin-bottom: 11px; color: #5b34c4; background: var(--purple-100); border-radius: 9px; }
+.wk-skill strong { display: block; color: var(--ink); font-size: 14px; }
+.wk-skill p { margin: 5px 0 0; color: var(--muted); font-size: 12.5px; line-height: 1.5; }
+.wk-view-head h2 em { margin-left: 6px; color: var(--faint); font-style: normal; font-size: 14px; font-weight: 500; }
+
+/* Profil : réglages en lignes (libellé à gauche, contrôle à droite), regroupés
+   dans un cadre — même idiome que les paramètres de l'espace. */
+.wk-form { display: flex; flex-direction: column; gap: var(--gap-block); max-width: 720px; }
+.wk-settings { padding: 2px 16px; border: 1px solid var(--line); border-radius: 13px; background: #fff; }
+.wk-settings--stack { display: flex; flex-direction: column; gap: 6px; padding: 11px 16px; }
+/* Les réglages qui se comprennent d'eux-mêmes tiennent sur une ligne : seuls
+   ceux dont l'effet est invisible portent une phrase. */
+.wk-set-row { display: flex; align-items: center; justify-content: space-between; gap: 18px; width: 100%; padding: 9px 0; text-align: left; background: none; border: 0; }
+.wk-set-row + .wk-set-row { border-top: 1px solid #f0f2f7; }
+.wk-set-txt { min-width: 0; }
+.wk-set-txt strong { display: block; color: var(--ink); font-size: 13.5px; }
+.wk-set-txt small { display: block; margin-top: 2px; max-width: 48ch; color: var(--muted); font-size: 12px; line-height: 1.4; }
+
+/* Expert désactivé : pastille grise dans le rail + rappel sous l'action. */
+.wk-card-dot.is-off { background: #9aa3b2; }
+/* Retouche du portrait : discrète sur la photo, elle se révèle au survol du rail. */
+.wk-card-edit { position: absolute; top: 8px; right: 8px; display: grid; place-items: center; width: 28px; height: 28px; padding: 0; color: #fff; background: rgba(20, 22, 31, .38); border: 0; border-radius: 8px; opacity: 0; transition: opacity .12s ease, background .12s ease; }
+.wk-card:hover .wk-card-edit, .wk-card-edit:focus-visible { opacity: 1; }
+.wk-card-edit:hover { background: rgba(20, 22, 31, .58); }
+
+/* Ressources partagées par l'équipe : un intertitre, le nom du propriétaire sur
+   chaque ligne. */
+.wk-group-label { display: block; margin: var(--gap-section) 0 var(--gap-tight); color: var(--faint); font-family: 'Space Grotesk', monospace; font-size: 10.5px; font-weight: 500; letter-spacing: .14em; text-transform: uppercase; }
+.wk-owner { flex: 0 0 auto; padding: 3px 9px; color: var(--primary); background: #f4f2fc; border-radius: 999px; font-size: 11.5px; font-weight: 500; white-space: nowrap; }
+.wk-seg { display: inline-flex; flex: 0 0 auto; overflow: hidden; border: 1px solid var(--line); border-radius: 9px; background: #fff; }
+.wk-seg button { padding: 7px 13px; color: var(--muted); background: none; border: 0; font-size: 12.5px; font-weight: 500; white-space: nowrap; }
+.wk-seg button + button { border-left: 1px solid var(--line); }
+.wk-seg button.is-on { color: #fff; background: var(--primary); font-weight: 600; }
+/* Deux lignes suffisent à l'écrit courant ; le champ s'étire à la demande. */
+/* Limite contractuelle : signalée parmi les réglages, sans commande associée. */
+.wk-set-mark { flex: 0 0 auto; color: #9aa3b2; }
+
+/* ===== Portrait d'un expert : aperçu à gauche, axes de réglage à droite ===== */
+.av-modal { display: flex; flex-direction: column; width: min(780px, 100%); max-height: 88vh; overflow: hidden; background: #fff; border-radius: 16px; box-shadow: 0 30px 70px -30px rgba(48, 22, 103, .5); }
+.av-body { display: grid; flex: 1; grid-template-columns: minmax(0, 240px) minmax(0, 1fr); gap: 22px; min-height: 0; padding: 18px 20px; overflow-y: auto; }
+.av-preview { display: flex; flex-direction: column; gap: 10px; }
+.av-frame { position: relative; overflow: hidden; border: 1px solid var(--line); border-radius: 14px; }
+.av-photo { display: block; width: 100%; height: clamp(200px, 30vh, 300px); object-fit: cover; object-position: center 12%; }
+.av-photo.agent-avatar--monogram { display: grid; place-items: center; color: #fff; font-size: 46px; }
+/* Attente de génération : la référence s'estompe, le temps que les propositions arrivent. */
+.av-photo.is-working { opacity: .4; filter: saturate(.5); transition: opacity .2s ease; }
+/* Image de référence : ce dont part la génération. Une ligne, pas un bloc. */
+.av-source { display: flex; flex-direction: column; gap: 4px; }
+.av-source-pick { display: flex; align-items: center; gap: 7px; padding: 7px 9px; color: var(--muted); background: #fbfaff; border: 1px dashed #cfc6ea; border-radius: 9px; font-size: 12px; cursor: pointer; }
+.av-source-pick:hover { color: var(--primary); border-color: #b9a7e8; }
+.av-source-pick svg { flex: 0 0 auto; }
+.av-source-pick span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.av-source { flex-direction: row; align-items: center; }
+.av-source-pick { flex: 1; min-width: 0; }
+/* Retrait de la référence : une croix sur l'étiquette, pas une ligne de plus. */
+.av-source-drop { display: grid; place-items: center; width: 28px; height: 28px; flex: 0 0 auto; padding: 0; color: var(--faint); background: none; border: 1px solid var(--line); border-radius: 8px; }
+.av-source-drop:hover { color: var(--primary); border-color: #cbb8f5; background: #faf9fe; }
+/* Attente de génération : un mouvement au centre de l'aperçu, sans compteur. */
+.av-spinner { position: absolute; inset: 0; display: grid; place-items: center; color: var(--primary); }
+.av-spinner svg { animation: av-spin 1s linear infinite; }
+@keyframes av-spin { to { transform: rotate(360deg); } }
+.av-status { margin: 0; color: #c0483f; font-size: 12.5px; line-height: 1.45; }
+/* Image produite par le modèle : le cadre prend sa forme, sans hauteur imposée.
+   Aucun vide autour d'elle, donc aucun second fond visible derrière. Les
+   vignettes, elles, restent rognées : ce sont des sélecteurs, pas des aperçus. */
+.av-photo.is-whole { height: auto; object-fit: initial; }
+.av-axes { display: flex; flex-direction: column; gap: 16px; min-width: 0; }
+.av-axis-label { display: block; margin-bottom: 7px; color: var(--faint); font-family: 'Space Grotesk', monospace; font-size: 10.5px; font-weight: 500; letter-spacing: .14em; text-transform: uppercase; }
+.av-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(96px, 1fr)); gap: 7px; }
+.av-opt { display: flex; align-items: center; flex-direction: column; gap: 6px; min-height: 62px; padding: 9px 6px; color: var(--muted); background: #fff; border: 1px solid var(--line); border-radius: 11px; font-size: 12px; font-weight: 500; text-align: center; line-height: 1.3; }
+.av-opt svg { color: #8b8fa3; }
+.av-opt:hover { border-color: #cbb8f5; background: #faf9fe; }
+.av-opt.is-on { color: var(--primary); border-color: #b9a7e8; background: #f4f2fc; }
+.av-opt.is-on svg { color: var(--primary); }
+.av-swatch { width: 20px; height: 20px; border: 1px solid rgba(20, 22, 31, .12); border-radius: 50%; }
+.av-foot { display: flex; justify-content: flex-end; gap: 9px; padding: 13px 20px; border-top: 1px solid var(--line); }
+
+@media (max-width: 720px) {
+  .av-body { grid-template-columns: 1fr; }
+}
+
+.wk-textarea { width: 100%; padding: 9px 12px; color: var(--ink); border: 1px solid var(--line); border-radius: 10px; background: #fff; font-family: inherit; font-size: 13.5px; line-height: 1.45; outline: 0; resize: vertical; }
+.wk-textarea:focus { border-color: #cbb8f5; }
+.wk-count { align-self: flex-end; color: var(--faint); font-size: 11.5px; font-variant-numeric: tabular-nums; }
+.wk-form-foot { display: flex; align-items: center; gap: 14px; }
+@media (max-width: 760px) {
+  .wk-set-row { flex-direction: column; align-items: flex-start; gap: 10px; }
+}
+.wk-saved { display: inline-flex; align-items: center; gap: 6px; color: #108044; font-size: 13px; font-weight: 600; }
+
+.wk-main { flex: 1; min-width: 0; overflow-y: auto; padding: clamp(16px, 2.4vh, 28px) clamp(18px, 2.2vw, 30px); }
+/* Écran d'une conversation reprise depuis la liste (en-tête + chat). */
+.chat-shell { display: flex; flex: 1; flex-direction: column; min-width: 0; }
+
+/* Échange avec l'expert : fenêtre sobre par-dessus son espace — pas d'avatar,
+   pas de pilule, pas de gros relief. Le nom, un lien discret, la fermeture. */
+/* Fenêtre de conversation : posée au-dessus de l'espace de l'expert, pas un
+   plein écran. Elle reste assez petite pour qu'on voie encore le contexte
+   derrière, et assez discrète pour ne pas écraser la page. */
+.chat-modal-overlay { position: fixed; inset: 0; z-index: 60; display: grid; place-items: center; padding: clamp(12px, 3vh, 36px) clamp(12px, 3vw, 48px); background: rgba(14, 18, 32, .14); }
+.chat-modal { display: flex; flex-direction: column; width: min(620px, 100%); height: min(560px, 100%); overflow: hidden; background: #fff; border: 1px solid var(--line); border-radius: 14px; box-shadow: 0 12px 32px -26px rgba(20, 22, 31, .2); }
+.chat-modal-head { display: flex; align-items: center; gap: 10px; padding: 9px 10px 9px 13px; border-bottom: 1px solid var(--line); }
+.chat-modal-av { width: 28px; height: 28px; flex: 0 0 auto; border-radius: 50%; object-fit: cover; object-position: center 15%; background: #7a5a76; }
+.chat-modal-av.agent-avatar--monogram { display: grid; place-items: center; color: #fff; font-size: 11px; }
+.chat-modal-id { flex: 1; min-width: 0; overflow: hidden; color: var(--ink); font-size: 14px; font-weight: 600; text-overflow: ellipsis; white-space: nowrap; }
+.chat-modal-new { flex: 0 0 auto; padding: 0; color: var(--muted); background: none; border: 0; font-size: 12.5px; font-weight: 500; white-space: nowrap; }
+.chat-modal-new:hover { color: var(--primary); text-decoration: underline; }
+.chat-modal-x { display: grid; place-items: center; width: 28px; height: 28px; flex: 0 0 auto; padding: 0; color: var(--faint); background: none; border: 0; border-radius: 8px; }
+.chat-modal-x:hover { color: var(--ink); background: var(--surface); }
+.chat-modal .chat-main { flex: 1; min-height: 0; }
+/* Intérieur épuré : fond blanc, champ de saisie discret. */
+.chat-modal .chat-thread { background: #fff; padding: 16px 18px; }
+.chat-modal .message-row { margin: 14px auto; }
+.chat-modal .chat-composer-area { padding: 8px 16px 14px; }
+.chat-modal .chat-composer { min-height: 44px; border-width: 1px; border-radius: 12px; }
+.wk-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: var(--gap-tight); }
+.wk-stat { display: flex; flex-direction: column; padding: 15px 17px; border: 1px solid var(--line); border-radius: 14px; background: #fff; }
+.wk-stat small { color: var(--muted); font-size: 12.5px; }
+.wk-stat strong { margin-top: 8px; font-size: 25px; line-height: 1.05; font-variant-numeric: tabular-nums; }
+.wk-stat span { margin-top: 5px; color: var(--faint); font-size: 11.5px; }
+.wk-stat--chart { justify-content: space-between; }
+.wk-bars { display: flex; align-items: flex-end; gap: 6px; height: 54px; margin-top: 10px; }
+.wk-bar { display: flex; flex: 1; flex-direction: column; align-items: center; justify-content: flex-end; gap: 5px; height: 100%; }
+.wk-bar > span { width: 100%; min-height: 3px; border-radius: 4px; background: var(--line); }
+.wk-bar > span.is-on { background: var(--primary); }
+.wk-bar em { color: var(--faint); font-style: normal; font-size: 9.5px; font-weight: 600; }
+
+.wk-timeline { margin-top: var(--gap-section); }
+.wk-day-group + .wk-day-group { margin-top: var(--gap-block); }
+.wk-day { margin-bottom: var(--gap-tight); color: var(--faint); font-size: 12px; font-weight: 600; }
+.wk-row { display: flex; align-items: center; gap: 13px; width: 100%; min-height: 38px; padding: 6px 10px 6px 0; text-align: left; background: none; border: 0; border-radius: 9px; }
+.wk-row:hover { background: #fff; }
+.wk-row-time { flex: 0 0 auto; color: var(--faint); font-family: 'Space Grotesk', monospace; font-size: 12px; font-variant-numeric: tabular-nums; }
+.wk-row-dot { flex: 0 0 auto; width: 7px; height: 7px; border-radius: 50%; background: #22b07d; }
+.wk-row-title { flex: 0 0 auto; max-width: 46%; overflow: hidden; color: var(--ink); font-size: 14px; text-overflow: ellipsis; white-space: nowrap; }
+.wk-row-preview { flex: 1; min-width: 0; overflow: hidden; color: var(--faint); font-size: 12.5px; text-overflow: ellipsis; white-space: nowrap; }
+
+.wk-side { display: flex; flex: 0 0 clamp(280px, 25vw, 380px); flex-direction: column; gap: 10px; padding: clamp(20px, 3vh, 34px) clamp(18px, 1.8vw, 26px); overflow-y: auto; border-left: 1px solid var(--line); }
+.wk-side-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.wk-side-head h2 { font-size: 15px; color: var(--ink); }
+.wk-side-head h2 em { color: var(--faint); font-style: normal; font-weight: 500; }
+.wk-side-head .act-more { display: inline-flex; align-items: center; gap: 5px; }
+.wk-routine { display: flex; align-items: center; gap: 11px; padding: 11px 12px; border: 1px solid var(--line); border-radius: 13px; background: #fff; }
+.wk-routine.is-paused { opacity: .62; }
+.wk-routine-av { width: 32px; height: 32px; flex: 0 0 auto; border-radius: 50%; object-fit: cover; object-position: top center; background: #7a5a76; }
+.wk-routine-av.agent-avatar--monogram { display: grid; place-items: center; color: #fff; font-size: 12px; }
+.wk-routine-txt { flex: 1; min-width: 0; }
+.wk-routine-txt strong { display: block; overflow: hidden; color: var(--ink); font-size: 13.5px; text-overflow: ellipsis; white-space: nowrap; }
+.wk-routine-txt small { display: flex; align-items: center; gap: 5px; margin-top: 3px; color: var(--faint); font-size: 11.5px; }
+.wk-routine-btn { display: grid; place-items: center; width: 28px; height: 28px; flex: 0 0 auto; padding: 0; color: var(--muted); background: var(--surface); border: 0; border-radius: 8px; }
+.wk-routine-btn:hover { color: var(--primary); }
+.wk-routine-btn--danger:hover { color: #b4402f; background: #fdeceb; }
+
+@media (max-width: 1180px) {
+  .wk-side { flex: 0 0 300px; }
+}
+@media (max-width: 980px) {
+  .expert-focus { flex-wrap: wrap; overflow-y: auto; }
+  .wk-side { flex: 1 1 100%; border-left: 0; border-top: 1px solid var(--line); }
+}
+
+/* Libellés partagés de l'espace expert. */
+.act-more { padding: 0; color: #5b34c4; background: none; border: 0; font-size: 12px; font-weight: 600; white-space: nowrap; }
+.act-more:hover { text-decoration: underline; }
+.act-empty { margin: 0; padding: 4px 0 2px; color: var(--faint); font-size: 13px; line-height: 1.5; }
+
+/* Fiche expert — contenu fluide. Le rythme vertical suit la HAUTEUR de la fenêtre
+   (unités vh) : sur un écran court tout se resserre au lieu d'être coupé. */
+.expert-work-inner { max-width: 1280px; padding: clamp(20px, 3vh, 44px) clamp(24px, 3.4vw, 56px) clamp(20px, 3vh, 44px); }
+.expert-work-inner .expert-eyebrow { margin: clamp(18px, 3.2vh, 40px) 0 clamp(7px, 1.2vh, 15px); }
+.expert-work-inner .expert-eyebrow:first-child { margin-top: 0; }
+.work-fonction { max-width: 64ch; margin: 0; color: var(--body); font-size: 16px; line-height: 1.7; }
+.work-daily { display: flex; flex-direction: column; gap: clamp(7px, 1.3vh, 13px); margin: 0; padding: 0; list-style: none; }
+.work-daily li { display: flex; gap: 11px; color: var(--body); font-size: 14.5px; line-height: 1.5; }
+.work-daily svg { flex: 0 0 auto; margin-top: 3px; color: #5b34c4; }
+/* La limite qui encadre le travail quotidien : une ligne sous la liste, plus
+   sobre qu'elle — elle informe d'une borne, elle ne vend pas une capacité. */
+.work-approval { display: flex; align-items: flex-start; gap: 8px; margin: 8px 0 0; color: var(--faint); font-size: 12.5px; line-height: 1.5; }
+.work-approval svg { flex: 0 0 auto; margin-top: 2px; color: #9aa3b2; }
+
+/* « Ses compétences » + « En action » sur une même ligne, largement aérés. */
+.work-top { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: clamp(28px, 4vw, 60px); align-items: start; margin-top: clamp(18px, 3.2vh, 40px); }
+.work-top-main { min-width: 0; }
+.work-top-side { min-width: 0; }
+.work-top .expert-eyebrow { margin-top: 0; }
+
+/* Compétences — colonnes fluides : 2 ou 3 selon la place disponible. */
+.skill-cols { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: clamp(8px, 1.5vh, 15px) clamp(24px, 2.6vw, 44px); margin: 0 0 clamp(18px, 3.2vh, 40px); }
+.skill-item2 { display: flex; align-items: flex-start; gap: 12px; color: var(--body); font-size: 14.5px; line-height: 1.4; }
+.skill-check { display: grid; place-items: center; width: 24px; height: 24px; flex: 0 0 auto; margin-top: 1px; color: #5b34c4; background: var(--purple-100); border-radius: 7px; }
+
+/* Raccourcis de travail — séparés du descriptif par un filet.
+   Grille à colonnes ÉGALES : 5 cartes identiques sur une ligne, qui se replient selon l'écran. */
+.work-rows { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 12px; margin-top: 8px; padding-top: 40px; border-top: 1px solid var(--line); }
+.work-op { display: inline-flex; align-items: center; gap: 12px; min-width: 0; padding: 14px 16px; text-align: left; background: #fff; border: 1px solid var(--line); border-radius: 14px; transition: border-color .16s ease, box-shadow .16s ease, transform .16s ease; }
+.work-op:hover { border-color: #cbb8f5; box-shadow: var(--shadow); transform: translateY(-2px); }
+.work-op-ic { display: grid; place-items: center; width: 36px; height: 36px; flex: 0 0 auto; color: #5b34c4; background: var(--purple-100); border-radius: 10px; }
+.work-op-txt { min-width: 0; }
+.work-op-txt b { display: block; font-size: 13.5px; color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.work-op-txt small { display: block; margin-top: 2px; font-size: 12.5px; font-weight: 600; color: var(--faint); }
+@media (max-width: 1080px) { .work-rows { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+@media (max-width: 620px) { .work-rows { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+
+/* Panneau latéral (détail d'un domaine). */
+@media (max-width: 860px) { .work-top { grid-template-columns: 1fr; gap: 40px; } }
+.work-row { display: flex; align-items: center; gap: 12px; width: 100%; text-align: left; padding: 10px 12px; border: 1px solid var(--line); border-radius: 11px; background: #fff; }
+button.work-row:hover { border-color: #cbb8f5; }
+.work-row--static { cursor: default; }
+.work-row-main { flex: 1; min-width: 0; }
+.work-row-main strong { display: block; font-size: 13.5px; color: var(--ink); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.work-row-main small { display: block; margin-top: 2px; font-size: 12px; color: var(--faint); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.work-row-meta { flex: 0 0 auto; font-size: 12px; color: var(--faint); white-space: nowrap; }
+.work-row-dl { display: grid; place-items: center; width: 30px; height: 30px; flex: 0 0 auto; color: var(--faint); border: 1px solid var(--line); border-radius: 8px; background: #fff; }
+.work-row-dl:hover { color: var(--primary); border-color: #cbb8f5; }
+
+/* Portrait du rail — avatar rond, généreux : sa taille suit la largeur du rail et la
+   hauteur de l'écran, pour occuper l'espace sans jamais pousser le texte hors de vue. */
+
+
+@media (max-width: 720px) {
+  .expert-focus { flex-direction: column; height: auto; min-height: 100vh; overflow: visible; }
+  .expert-nav { flex: 0 0 auto; border-right: 0; border-bottom: 1px solid var(--line); }
+}
+
 .chat-page { display: flex; flex: 1; min-height: 0; background: #fff; }
 .chat-main { display: flex; flex: 1; flex-direction: column; min-width: 0; }
 .chat-back { display: inline-flex; align-items: center; gap: 7px; height: 34px; padding: 0 13px; color: var(--muted); background: var(--surface); border-radius: 9px; font-size: 13px; font-weight: 500; }
@@ -167,6 +765,8 @@
 .chat-header h1 { font-size: 16px; }
 .chat-header h1 small { color: var(--faint); font-size: 12px; font-weight: 500; }
 .chat-header p { margin-top: 3px; color: var(--muted); font-size: 12.5px; }
+.chat-header-av { width: 32px; height: 32px; flex: 0 0 auto; border-radius: 50%; object-fit: cover; object-position: center 18%; background: #7a5a76; }
+.chat-header-av.agent-avatar--monogram { display: grid; place-items: center; font-size: 12px; }
 .chat-thread { flex: 1; min-height: 0; padding: 26px 32px; overflow: auto; background: #fafbfd; }
 .chat-empty { display: flex; align-items: center; flex-direction: column; max-width: 470px; margin: 55px auto 25px; text-align: center; }
 .chat-empty h2 { margin-top: 17px; font-size: 22px; }
@@ -183,38 +783,12 @@
 .composer-action { display: grid; padding: 4px; color: var(--faint); background: transparent; place-items: center; }
 .send-action { display: grid; flex: 0 0 auto; width: 40px; height: 40px; padding: 0; color: #fff; border-radius: 10px; background: var(--purple); place-items: center; }
 .send-action:disabled { opacity: .5; }
-/* intake */
-.intake { max-width: 720px; }
-.intake-label { margin-bottom: 11px; color: var(--faint); font-family: 'Space Grotesk', monospace; font-size: 11px; font-weight: 500; letter-spacing: .14em; text-transform: uppercase; }
-.intake-label em { color: #aeb4c4; font-style: normal; letter-spacing: 0; text-transform: none; }
-.intake-deliverables { display: grid; grid-template-columns: repeat(3, 1fr); gap: 11px; margin-bottom: 26px; }
-.deliverable { position: relative; display: flex; flex-direction: column; align-items: flex-start; padding: 15px; text-align: left; color: var(--muted); border: 1.5px solid var(--line); border-radius: 13px; background: #fff; }
-.deliverable.is-active { color: var(--primary); border-color: var(--primary); box-shadow: 0 0 0 4px rgba(48, 22, 103, .1); }
-.deliverable strong { margin-top: 9px; color: var(--ink); font-size: 13.5px; }
-.deliverable small { margin-top: 3px; color: var(--faint); font-size: 11.5px; line-height: 1.4; }
-.deliverable-tick { position: absolute; top: 13px; right: 13px; display: grid; width: 18px; height: 18px; color: #fff; border-radius: 50%; background: var(--primary); place-items: center; }
-.intake-points { display: flex; flex-wrap: wrap; gap: 9px; margin-bottom: 26px; }
-.point-chip { display: inline-flex; align-items: center; gap: 7px; padding: 9px 15px; color: var(--muted); border: 1.5px solid var(--line); border-radius: 10px; background: #fff; font-size: 13px; font-weight: 500; }
-.point-chip.is-active { color: var(--primary); border-color: var(--primary); background: var(--purple-100); }
-.point-box { display: grid; width: 16px; height: 16px; color: #fff; border: 1.5px solid #cfd5e2; border-radius: 4px; place-items: center; }
-.point-chip.is-active .point-box { border-color: var(--primary); background: var(--primary); }
-.intake-row { display: flex; gap: 32px; }
-.intake-row > div { flex: 1; }
-.segmented { display: flex; overflow: hidden; border: 1.5px solid var(--line); border-radius: 10px; background: #fff; }
-.segmented button { flex: 1; padding: 11px 0; color: var(--muted); font-size: 13px; }
-.segmented button + button { border-left: 1.5px solid var(--line); }
-.segmented button.is-active { color: #fff; background: var(--primary); font-weight: 600; }
-.intake-precisions { width: 100%; height: 44px; padding: 0 13px; color: var(--ink); border: 1.5px solid var(--line); border-radius: 10px; background: #fff; font-size: 13.5px; outline: 0; }
-.intake-launch { display: inline-flex; align-items: center; gap: 9px; height: 48px; margin-top: 26px; padding: 0 24px; color: #fff; border-radius: 12px; background: var(--primary); box-shadow: 0 12px 24px -8px rgba(48, 22, 103, .5); font-size: 14.5px; font-weight: 600; }
+/* intake — accueil aligné sur la même colonne centrale que les bulles et le champ de saisie. */
+.intake { max-width: 850px; margin: 0 auto; }
+.intake-hi { margin-bottom: 26px; }
+.intake-hi h2 { font-size: 20px; color: var(--ink); }
+.intake-hi p { margin-top: 6px; color: var(--muted); font-size: 14px; line-height: 1.5; }
 /* context panel */
-.chat-context { width: 236px; flex-shrink: 0; padding: 20px 18px; overflow: auto; background: var(--surface); border-left: 1px solid var(--line); }
-.chat-context-label { margin-bottom: 14px; color: var(--faint); font-family: 'Space Grotesk', monospace; font-size: 11px; font-weight: 500; letter-spacing: .14em; text-transform: uppercase; }
-.context-dropzone { display: flex; flex-direction: column; align-items: center; gap: 8px; margin-bottom: 16px; padding: 18px 14px; color: #8474ac; text-align: center; border: 1.5px dashed #c9c1e6; border-radius: 12px; background: #fff; font-size: 12.5px; line-height: 1.45; cursor: pointer; }
-.context-dropzone input { display: none; }
-.context-files { display: flex; flex-direction: column; gap: 9px; }
-.context-file { display: flex; align-items: center; gap: 10px; padding: 11px 12px; border: 1px solid var(--line); border-radius: 10px; background: #fff; }
-.context-file strong { display: block; color: var(--ink); font-size: 12.5px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
-.context-file small { display: block; color: var(--faint); font-size: 11px; }
 .conversation-groups { display: flex; flex-direction: column; gap: 25px; }
 .conversation-groups section > header { display: flex; align-items: center; gap: 9px; margin-bottom: 10px; }
 .conversation-groups section > header h2 { font-size: 14.5px; }
@@ -228,10 +802,25 @@
 .rename-input { flex: 1; min-width: 0; height: 40px; padding: 0 13px; color: var(--ink); border: 1.5px solid var(--primary); border-radius: 9px; font-size: 14px; outline: 0; }
 .row-menu-trigger { display: grid; width: 34px; height: 34px; color: var(--faint); border: 1px solid var(--line); border-radius: 9px; background: #fff; place-items: center; flex-shrink: 0; }
 .row-menu-trigger:hover { border-color: #cfd5e2; }
-.row-menu-item { display: flex; align-items: center; gap: 9px; width: 100%; padding: 9px 12px; color: var(--body); border-radius: 8px; font-size: 13.5px; white-space: nowrap; }
-.row-menu-item:hover { background: var(--surface); }
+.row-menu-item { display: flex; align-items: center; gap: 9px; width: 100%; padding: 9px 12px; color: var(--body); background: none; border-radius: 8px; font-size: 13.5px; white-space: nowrap; }
+.row-menu-item:hover { color: var(--primary); }
 .list-search { width: min(320px, 100%); }
 .list-search .input-shell { min-height: 40px; }
+.section-title { font-size: 15px; }
+.section-heading--flat { margin-bottom: 12px; }
+.connectors-section { margin-bottom: 30px; }
+.connectors-section .section-title { margin-bottom: 13px; }
+.connectors-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 12px; }
+.connector-card { display: flex; align-items: center; gap: 12px; padding: 13px 15px; border: 1px solid var(--line); border-radius: 13px; background: #fff; }
+.connector-icon { display: grid; flex: 0 0 auto; width: 38px; height: 38px; color: #fff; border-radius: 9px; font-size: 16px; font-weight: 700; place-items: center; overflow: hidden; }
+.connector-icon--logo { background: #fff; border: 1px solid var(--line); }
+.connector-icon--logo img { width: 70%; height: 70%; object-fit: contain; }
+.connector-copy { flex: 1; min-width: 0; }
+.connector-copy strong { display: block; font-size: 14px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.connector-copy small { display: block; color: var(--faint); font-size: 12px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.connector-badge { display: inline-flex; flex: 0 0 auto; align-items: center; gap: 5px; padding: 4px 9px; color: #108044; border-radius: 999px; background: #e6f7ed; font-size: 11.5px; font-weight: 600; white-space: nowrap; }
+.connector-add { display: inline-flex; flex: 0 0 auto; align-items: center; gap: 5px; padding: 6px 11px; color: var(--primary); border: 1px solid var(--line); border-radius: 999px; background: #fff; font-size: 12.5px; font-weight: 600; white-space: nowrap; }
+.connector-add:hover { border-color: #c9baf3; background: var(--purple-100); }
 .files-toolbar { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 12px; }
 .files-import { display: inline-flex; align-items: center; gap: 8px; height: 40px; padding: 0 18px; color: #fff; border-radius: 10px; background: var(--primary); box-shadow: 0 6px 16px -8px rgba(48, 22, 103, .5); font-size: 13.5px; font-weight: 600; }
 .files-count { margin-bottom: 14px; color: var(--faint); font-size: 12.5px; }
@@ -247,11 +836,10 @@
 .file-size, .file-date { color: var(--muted); font-family: 'Space Grotesk', monospace; font-size: 12.5px; }
 .file-date { color: var(--faint); }
 .file-icon { display: grid; width: 38px; height: 38px; color: var(--primary); border-radius: 9px; background: var(--purple-100); place-items: center; flex-shrink: 0; }
-.context-file .file-icon { width: 30px; height: 30px; border-radius: 7px; }
 .file-actions { position: relative; display: flex; justify-content: center; }
 .file-actions > button { display: grid; color: var(--faint); place-items: center; }
 .row-menu { position: absolute; top: 30px; right: 0; z-index: 20; padding: 5px; border: 1px solid var(--line); border-radius: 11px; background: #fff; box-shadow: 0 18px 40px -18px rgba(48, 22, 103, .4); }
-.row-menu-danger { display: flex; align-items: center; gap: 9px; width: 100%; padding: 9px 12px; color: #e5484d; border-radius: 8px; font-size: 13.5px; white-space: nowrap; }
+.row-menu-danger { display: flex; align-items: center; gap: 9px; width: 100%; padding: 9px 12px; color: #e5484d; background: none; border-radius: 8px; font-size: 13.5px; white-space: nowrap; }
 .row-menu-danger:hover { background: #fcebec; }
 .files-empty { padding: 36px; text-align: center; color: var(--faint); font-size: 13.5px; }
 .storage-card { width: 300px; padding: 13px 15px; border: 1px solid var(--line); border-radius: 13px; }
@@ -262,9 +850,10 @@
 .members-table { overflow: hidden; border: 1px solid var(--line); border-radius: 16px; background: #fff; }
 .members-head, .members-row { display: grid; align-items: center; grid-template-columns: 38px 2fr 1.2fr 1.4fr 28px; gap: 14px; padding: 12px 18px; width: 100%; text-align: left; }
 .members-head { background: #fafbfd; border-bottom: 1px solid var(--line); color: var(--faint); font-family: 'Space Grotesk', monospace; font-size: 11px; font-weight: 500; letter-spacing: .14em; text-transform: uppercase; }
-.members-row { border-bottom: 1px solid var(--line); background: #fff; }
+.members-row { border-bottom: 1px solid var(--line); background: #fff; cursor: pointer; }
 .members-row:last-child { border-bottom: 0; }
 .members-row:hover { background: #fafbfd; }
+.row-menu-item:disabled { color: #0ea371; }
 .member-avatar { display: grid; flex: 0 0 auto; width: 38px; height: 38px; color: #fff; border-radius: 50%; background: var(--purple); place-items: center; font-size: 13px; font-weight: 700; }
 .member-avatar.is-pending { color: var(--faint); background: var(--surface); border: 1.5px dashed #cfd5e2; }
 .member-avatar--xl { width: 64px; height: 64px; font-size: 22px; }
@@ -285,6 +874,23 @@
 .settings-head h2 { font-size: 16px; }
 .settings-head span { color: var(--faint); font-family: 'Space Grotesk', monospace; font-size: 12.5px; }
 .settings-hint { margin: 4px 0 14px; color: var(--faint); font-size: 12.5px; }
+.branding-logo-row { display: flex; align-items: center; gap: 14px; margin-bottom: 18px; }
+.settings-row { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+.api-key-list { margin-top: 16px; }
+.api-key-row { display: flex; align-items: center; gap: 12px; padding: 13px 0; border-top: 1px solid var(--line); }
+.api-key-row:first-child { border-top: 0; }
+.api-key-icon { display: grid; width: 34px; height: 34px; flex: 0 0 auto; color: var(--primary); border-radius: 9px; background: var(--purple-100); place-items: center; }
+.api-key-id { flex: 1; min-width: 0; }
+.api-key-id strong { display: block; font-size: 13.5px; }
+.api-key-id code { color: var(--faint); font-family: 'Space Grotesk', monospace; font-size: 12px; }
+.api-key-date { color: var(--faint); font-size: 12px; white-space: nowrap; }
+.api-key-delete { display: grid; width: 32px; height: 32px; flex: 0 0 auto; color: var(--faint); background: none; border-radius: 8px; place-items: center; }
+.api-key-delete:hover { color: #e5484d; background: #fcebec; }
+.settings-actions { display: flex; flex-direction: column; gap: 10px; align-items: flex-start; }
+.workspace-mark--preview { width: 52px; height: 52px; border-radius: 12px; font-size: 21px; }
+.input-shell--color { display: flex; align-items: center; gap: 10px; padding: 0 12px; }
+.input-shell--color input[type='color'] { flex: 0 0 auto; width: 34px; height: 26px; padding: 0; border: none; border-radius: 6px; background: none; cursor: pointer; }
+.input-shell--color code { color: var(--muted); font-size: 12.5px; }
 .member-agent-list { margin-top: 8px; }
 .member-agent-name { display: flex; align-items: center; gap: 10px; }
 .member-agent-name .agent-icon { width: 30px; height: 30px; }
@@ -304,6 +910,7 @@
 .modal-check-row:first-child, .modal-agent-row:first-child { border-top: 0; }
 .modal-check-row:hover, .modal-agent-row:hover { background: var(--surface); }
 .modal-check-row > span:last-child, .modal-agent-name { font-size: 13.5px; color: var(--ink); }
+.modal-role-hint { color: #aeb4c4; font-style: normal; font-size: 12px; }
 .modal-agent-name { flex: 1; min-width: 0; }
 .modal-agent-row .agent-icon { width: 30px; height: 30px; }
 .check-box { display: grid; width: 20px; height: 20px; color: #fff; border: 1.5px solid #cfd5e2; border-radius: 6px; place-items: center; flex-shrink: 0; }
@@ -395,8 +1002,8 @@
 @media (max-width: 980px) {
   .sidebar { flex-basis: 210px; width: 210px; }
   .home-body, .agents-body, .page-body { padding-right: 24px; padding-left: 24px; }
-  .home-hero, .agents-hero, .page-header { padding-right: 24px; padding-left: 24px; }
-  .agent-grid, .conversation-preview-grid { grid-template-columns: repeat(2, 1fr); }
+  .page-header { padding-right: 24px; padding-left: 24px; }
+  .agent-grid { grid-template-columns: repeat(2, 1fr); }
   .member-detail-grid { grid-template-columns: 1fr; }
   .file-drop-zone { min-height: 160px; }
   .agent-detail-main { flex-direction: column; }
@@ -428,7 +1035,7 @@
   .banner-close { position: absolute; right: 16px; top: 16px; }
   .welcome-banner { position: relative; }
   .metric-grid, .billing-stats { grid-template-columns: 1fr; }
-  .agent-grid, .conversation-preview-grid, .analytics-tables, .analytics-stats, .settings-grid { grid-template-columns: 1fr; }
+  .agent-grid, .analytics-tables, .analytics-stats, .settings-grid { grid-template-columns: 1fr; }
   .list-toolbar { align-items: stretch; flex-direction: column; }
   .list-toolbar .field, .filter { width: 100%; }
   .page-header { align-items: flex-start; flex-direction: column; gap: 16px; }

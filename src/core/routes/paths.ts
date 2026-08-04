@@ -9,10 +9,10 @@ export const paths = {
   onboarding: (workspaceId = DEFAULT_WORKSPACE_ID) => `/espace-client/${workspaceId}/onboarding`,
   agents: (workspaceId = DEFAULT_WORKSPACE_ID) => `/espace-client/${workspaceId}/agents`,
   agent: (agentId: string, workspaceId = DEFAULT_WORKSPACE_ID) => `/espace-client/${workspaceId}/agents/${agentId}`,
-  conversations: (workspaceId = DEFAULT_WORKSPACE_ID) => `/espace-client/${workspaceId}/conversations`,
+  /** Fiche d'un expert du catalogue non encore recruté (marketplace, lecture seule). */
+  marketplaceAgent: (agentId: string, workspaceId = DEFAULT_WORKSPACE_ID) => `/espace-client/${workspaceId}/marketplace/${agentId}`,
   newConversation: (agentId: string, workspaceId = DEFAULT_WORKSPACE_ID) => `/espace-client/${workspaceId}/${agentId}/conversation/new`,
   conversation: (agentId: string, conversationId: string, workspaceId = DEFAULT_WORKSPACE_ID) => `/espace-client/${workspaceId}/${agentId}/conversation/${conversationId}`,
-  files: (workspaceId = DEFAULT_WORKSPACE_ID) => `/espace-client/${workspaceId}/files`,
   members: (workspaceId = DEFAULT_WORKSPACE_ID) => `/espace-client/${workspaceId}/members`,
   member: (memberId: string, workspaceId = DEFAULT_WORKSPACE_ID) => `/espace-client/${workspaceId}/members/${memberId}`,
   billing: (workspaceId = DEFAULT_WORKSPACE_ID) => `/espace-client/${workspaceId}/billing`,

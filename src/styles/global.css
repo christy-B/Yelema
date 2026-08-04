@@ -27,6 +27,20 @@
   --shadow: 0 12px 32px rgba(48, 22, 103, .10);
 }
 
+/* Écrans d'auth (avant identification du tenant) : charte Yelema imposée,
+   quel que soit le branding tenant appliqué à la racine. display: contents
+   ⇒ aucun impact sur la mise en page, seules les variables héritent. */
+.auth-scope {
+  display: contents;
+  font-family: 'Funnel Display', Inter, system-ui, sans-serif;
+  --primary: #301667;
+  --purple: #8d68fa;
+  --button: #301667;
+  --button-hover: #3d1d83;
+  --ink: #0e1220;
+  --muted: #565e72;
+}
+
 * { box-sizing: border-box; }
 html, body, #root { min-width: 320px; min-height: 100%; height: 100%; margin: 0; }
 body { overflow: hidden; }
