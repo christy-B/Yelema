@@ -1,4 +1,4 @@
-import { Armchair, Briefcase, Footprints, Glasses, Headphones, ImagePlus, Laptop, Loader2, Shirt, Sparkles, User, UserRound, X } from 'lucide-react'
+import { Accessibility, Armchair, Briefcase, Crown, FileText, Footprints, Gem, Glasses, HardHat, Headphones, IdCard, ImagePlus, Laptop, Loader2, PersonStanding, Presentation, Shirt, Smartphone, Sparkles, Tablet, User, UserRound, X } from 'lucide-react'
 import type { ReactNode } from 'react'
 import { useEffect, useRef, useState } from 'react'
 
@@ -26,26 +26,37 @@ interface AvatarConfigModalProps {
 interface Option<T extends string> { key: T; icon: ReactNode }
 
 const POSITIONS: Option<AvatarPosition>[] = [
-  { key: 'auto', icon: <Sparkles size={17} /> },
-  { key: 'face', icon: <User size={17} /> },
-  { key: 'trois-quarts', icon: <UserRound size={17} /> },
-  { key: 'assis', icon: <Armchair size={17} /> },
-  { key: 'marche', icon: <Footprints size={17} /> },
+  { key: 'auto', icon: <Sparkles size={15} /> },
+  { key: 'face', icon: <User size={15} /> },
+  { key: 'trois-quarts', icon: <UserRound size={15} /> },
+  { key: 'profil', icon: <PersonStanding size={15} /> },
+  { key: 'bras-croises', icon: <Accessibility size={15} /> },
+  { key: 'assis', icon: <Armchair size={15} /> },
+  { key: 'marche', icon: <Footprints size={15} /> },
+  { key: 'reunion', icon: <Presentation size={15} /> },
 ]
 const STYLES: Option<AvatarStyle>[] = [
-  { key: 'auto', icon: <Sparkles size={17} /> },
-  { key: 'casual', icon: <Shirt size={17} /> },
-  { key: 'smart-casual', icon: <Shirt size={17} /> },
-  { key: 'business', icon: <Briefcase size={17} /> },
+  { key: 'auto', icon: <Sparkles size={15} /> },
+  { key: 'casual', icon: <Shirt size={15} /> },
+  { key: 'smart-casual', icon: <Shirt size={15} /> },
+  { key: 'blazer', icon: <Shirt size={15} /> },
+  { key: 'business', icon: <Briefcase size={15} /> },
+  { key: 'traditionnel', icon: <Gem size={15} /> },
+  { key: 'terrain', icon: <HardHat size={15} /> },
+  { key: 'ceremonie', icon: <Crown size={15} /> },
 ]
 const ACCESSORIES: Option<AvatarAccessory>[] = [
-  { key: 'auto', icon: <Sparkles size={17} /> },
-  { key: 'aucun', icon: <User size={17} /> },
-  { key: 'casque', icon: <Headphones size={17} /> },
-  { key: 'ordinateur', icon: <Laptop size={17} /> },
-  { key: 'lunettes', icon: <Glasses size={17} /> },
+  { key: 'auto', icon: <Sparkles size={15} /> },
+  { key: 'aucun', icon: <User size={15} /> },
+  { key: 'casque', icon: <Headphones size={15} /> },
+  { key: 'ordinateur', icon: <Laptop size={15} /> },
+  { key: 'tablette', icon: <Tablet size={15} /> },
+  { key: 'telephone', icon: <Smartphone size={15} /> },
+  { key: 'documents', icon: <FileText size={15} /> },
+  { key: 'badge', icon: <IdCard size={15} /> },
+  { key: 'lunettes', icon: <Glasses size={15} /> },
 ]
-const BACKGROUNDS: AvatarBackground[] = ['auto', 'beige', 'gris', 'fonce']
+const BACKGROUNDS: AvatarBackground[] = ['auto', 'blanc', 'beige', 'gris', 'violet', 'bleu', 'vert', 'fonce']
 
 /** Cadrage à l'affichage. `entier` = l'image est montrée telle qu'elle a été produite. */
 const CROP_POSITION: Record<PortraitVariant['crop'], string> = {

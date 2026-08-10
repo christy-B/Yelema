@@ -9,6 +9,8 @@ export const paths = {
   onboarding: (workspaceId = DEFAULT_WORKSPACE_ID) => `/espace-client/${workspaceId}/onboarding`,
   agents: (workspaceId = DEFAULT_WORKSPACE_ID) => `/espace-client/${workspaceId}/agents`,
   agent: (agentId: string, workspaceId = DEFAULT_WORKSPACE_ID) => `/espace-client/${workspaceId}/agents/${agentId}`,
+  projects: (workspaceId = DEFAULT_WORKSPACE_ID) => `/espace-client/${workspaceId}/projects`,
+  project: (projectId: string, workspaceId = DEFAULT_WORKSPACE_ID) => `/espace-client/${workspaceId}/projects/${projectId}`,
   /** Fiche d'un expert du catalogue non encore recruté (marketplace, lecture seule). */
   marketplaceAgent: (agentId: string, workspaceId = DEFAULT_WORKSPACE_ID) => `/espace-client/${workspaceId}/marketplace/${agentId}`,
   newConversation: (agentId: string, workspaceId = DEFAULT_WORKSPACE_ID) => `/espace-client/${workspaceId}/${agentId}/conversation/new`,
@@ -20,4 +22,10 @@ export const paths = {
   account: (workspaceId = DEFAULT_WORKSPACE_ID) => `/espace-client/${workspaceId}/settings/account`,
   workspaceSettings: (workspaceId = DEFAULT_WORKSPACE_ID) => `/espace-client/${workspaceId}/settings/workspace`,
   help: (workspaceId = DEFAULT_WORKSPACE_ID) => `/espace-client/${workspaceId}/help`,
+  /**
+   * Console de démonstration : provisionnement des comptes et boîte de
+   * réception simulée. Hors espace client, volontairement absente de toute
+   * navigation — on y accède en tapant l'adresse.
+   */
+  console: '/console',
 } as const

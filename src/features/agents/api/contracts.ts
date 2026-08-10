@@ -7,6 +7,12 @@ export interface AgentSummary {
   icon: string
   description: string
   tags: string[]
+  /**
+   * Grand groupe de métier — Clients & Revenus, Finance & Juridique… Il
+   * rassemble plusieurs experts et sert aux filtres du catalogue, là où
+   * `tags[0]` porte le métier propre à l'expert.
+   */
+  group?: { key: string; name: string } | null
   /** Canaux où l'expert est joignable (web, whatsapp, slack…). */
   channels: string[]
   /** Portrait de l'employé IA — fourni par le back-office (pas encore prêt) ; sinon avatar généré. */
@@ -92,10 +98,10 @@ export type AgentDetailLevel = 'court' | 'standard' | 'detaille'
  * « auto » : l'organisation laisse alors le choix à Yelema. Le portrait lui-même
  * est produit côté plateforme ; l'espace client porte la demande.
  */
-export type AvatarPosition = 'auto' | 'face' | 'trois-quarts' | 'assis' | 'marche'
-export type AvatarStyle = 'auto' | 'casual' | 'smart-casual' | 'business'
-export type AvatarAccessory = 'auto' | 'aucun' | 'casque' | 'ordinateur' | 'lunettes'
-export type AvatarBackground = 'auto' | 'beige' | 'gris' | 'fonce'
+export type AvatarPosition = 'auto' | 'face' | 'trois-quarts' | 'profil' | 'bras-croises' | 'assis' | 'marche' | 'reunion'
+export type AvatarStyle = 'auto' | 'casual' | 'smart-casual' | 'blazer' | 'business' | 'traditionnel' | 'terrain' | 'ceremonie'
+export type AvatarAccessory = 'auto' | 'aucun' | 'casque' | 'ordinateur' | 'tablette' | 'telephone' | 'documents' | 'badge' | 'lunettes'
+export type AvatarBackground = 'auto' | 'blanc' | 'beige' | 'gris' | 'violet' | 'bleu' | 'vert' | 'fonce'
 
 export interface AgentAvatarConfig {
   position: AvatarPosition
@@ -105,21 +111,27 @@ export interface AgentAvatarConfig {
 }
 
 export const AVATAR_POSITION_LABELS: Record<AvatarPosition, string> = {
-  auto: 'Auto', face: 'De face', 'trois-quarts': 'De trois quarts', assis: 'Assis', marche: 'En marche',
+  auto: 'Auto', face: 'De face', 'trois-quarts': 'De trois quarts', profil: 'De profil',
+  'bras-croises': 'Bras croisés', assis: 'Assis', marche: 'En marche', reunion: 'En réunion',
 }
 export const AVATAR_STYLE_LABELS: Record<AvatarStyle, string> = {
-  auto: 'Auto', casual: 'Décontracté', 'smart-casual': 'Ville', business: 'Costume',
+  auto: 'Auto', casual: 'Décontracté', 'smart-casual': 'Ville', blazer: 'Blazer',
+  business: 'Costume', traditionnel: 'Traditionnel', terrain: 'Terrain', ceremonie: 'Cérémonie',
 }
 export const AVATAR_ACCESSORY_LABELS: Record<AvatarAccessory, string> = {
-  auto: 'Auto', aucun: 'Aucun', casque: 'Casque', ordinateur: 'Ordinateur', lunettes: 'Lunettes',
+  auto: 'Auto', aucun: 'Aucun', casque: 'Casque', ordinateur: 'Ordinateur',
+  tablette: 'Tablette', telephone: 'Téléphone', documents: 'Documents', badge: 'Badge',
+  lunettes: 'Lunettes',
 }
 export const AVATAR_BACKGROUND_LABELS: Record<AvatarBackground, string> = {
-  auto: 'Auto', beige: 'Beige', gris: 'Gris', fonce: 'Foncé',
+  auto: 'Auto', blanc: 'Blanc', beige: 'Beige', gris: 'Gris',
+  violet: 'Violet', bleu: 'Bleu', vert: 'Vert', fonce: 'Foncé',
 }
 
 /** Teintes de fond, pour l'aperçu et les pastilles de choix. */
 export const AVATAR_BACKGROUND_COLORS: Record<AvatarBackground, string> = {
-  auto: '#e8e4d8', beige: '#e4dcc8', gris: '#dfe3ea', fonce: '#39405a',
+  auto: '#e8e4d8', blanc: '#f6f7f9', beige: '#e4dcc8', gris: '#dfe3ea',
+  violet: '#8b6bb1', bleu: '#cfe0f2', vert: '#d6e8d8', fonce: '#39405a',
 }
 
 export const DEFAULT_AVATAR_CONFIG: AgentAvatarConfig = {
@@ -135,19 +147,28 @@ export const DEFAULT_AVATAR_CONFIG: AgentAvatarConfig = {
 export const AVATAR_PROMPT_FRAGMENTS = {
   position: {
     auto: '', face: 'facing the camera, centred', 'trois-quarts': 'three-quarter view',
+    profil: 'side profile view', 'bras-croises': 'standing with arms crossed',
     assis: 'seated at a desk', marche: 'walking, mid-stride',
+    reunion: 'seated at a meeting table, presenting to colleagues',
   } satisfies Record<AvatarPosition, string>,
   style: {
     auto: '', casual: 'casual clothing', 'smart-casual': 'smart casual outfit',
-    business: 'business suit',
+    blazer: 'a blazer over a plain shirt', business: 'a formal business suit',
+    traditionnel: 'elegant West African traditional attire',
+    terrain: 'field workwear with a high-visibility vest',
+    ceremonie: 'formal ceremonial attire',
   } satisfies Record<AvatarStyle, string>,
   accessory: {
     auto: '', aucun: 'no accessories', casque: 'wearing a headset',
-    ordinateur: 'holding a laptop', lunettes: 'wearing glasses',
+    ordinateur: 'holding an open laptop', tablette: 'holding a tablet',
+    telephone: 'holding a smartphone', documents: 'holding a folder of documents',
+    badge: 'wearing a lanyard badge', lunettes: 'wearing glasses',
   } satisfies Record<AvatarAccessory, string>,
   background: {
-    auto: '', beige: 'plain beige background', gris: 'plain light grey background',
-    fonce: 'plain dark background',
+    auto: '', blanc: 'plain white background', beige: 'plain beige background',
+    gris: 'plain light grey background', violet: 'plain purple background',
+    bleu: 'plain light blue background', vert: 'plain sage green background',
+    fonce: 'plain dark navy background',
   } satisfies Record<AvatarBackground, string>,
 }
 
@@ -184,8 +205,12 @@ export interface PortraitJob {
 export interface AgentProfile {
   /** Expert en service. Désactivé, il ne répond plus et ses routines sont suspendues. */
   active: boolean
-  /** Canal par lequel l'expert échange en priorité (parmi ceux qu'il prend en charge). */
-  channel: string
+  /**
+   * Canaux sur lesquels l'expert est joignable, parmi ceux qu'il prend en
+   * charge. Plusieurs sont possibles : un expert peut répondre sur WhatsApp et
+   * par courriel à la fois. Au moins un est requis.
+   */
+  channels: string[]
   tone: AgentTone
   language: AgentLanguage
   detail: AgentDetailLevel
@@ -233,8 +258,8 @@ export const DETAIL_LABELS: Record<AgentDetailLevel, string> = { court: 'Court',
 
 /** Recrutement d'un expert : canal sur lequel il sera joignable en priorité. */
 export interface RecruitmentRequest {
-  /** Canal retenu (parmi ceux que l'expert prend en charge). */
-  channel: string
+  /** Canaux retenus, parmi ceux que l'expert prend en charge. Au moins un. */
+  channels: string[]
 }
 
 /** Un métier regroupe plusieurs agents (dérivé des suites côté API réelle). */

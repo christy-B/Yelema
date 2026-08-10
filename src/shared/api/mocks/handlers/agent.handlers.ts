@@ -2,6 +2,7 @@ import { http, HttpResponse } from 'msw'
 
 import { ROSTER, type RosterExpert } from '../../../../features/agents/roster'
 import { AVATAR_AXES, DEFAULT_PROFILE, getProfile, PORTRAIT_CROPS, setProfile, type ProfileSettings } from '../stores/agent-profile.store'
+import { queueOpening } from '../stores/recruitment.store'
 import { API_BASE, notFound, requireAuth, validationError } from './helpers'
 
 // Provider (clé du logo) dérivé du nom d'affichage de l'intégration.
@@ -42,6 +43,8 @@ function toListDto(expert: RosterExpert) {
     displayName: expert.name,
     type: expert.type,
     suite: { key: expert.metierKey, label: expert.metier, icon: null },
+    // Grand groupe de métier : c'est lui qui alimente les filtres du catalogue.
+    group: { key: expert.groupKey, label: expert.group },
     channels: expert.channels,
     sovereignCapable: true,
     description: expert.description,
@@ -100,14 +103,18 @@ export const agentHandlers = [
     const expert = marketplaceAgents().find((item) => item.id === id)
     if (!expert) return notFound('Expert IA introuvable.')
 
-    const body = (await request.json()) as { channel?: unknown }
-    const channel = typeof body.channel === 'string' ? body.channel : ''
-    if (!channel) return validationError('Choisissez un canal de déploiement.')
-    // On n'accepte qu'un canal effectivement pris en charge par l'expert.
-    if (!expert.channels.includes(channel)) return validationError(`Canal non pris en charge par ${expert.name} : ${channel}.`)
+    const body = (await request.json()) as { channels?: unknown }
+    const sent = Array.isArray(body.channels) ? body.channels.filter((value): value is string => typeof value === 'string') : []
+    if (sent.length === 0) return validationError('Choisissez au moins un canal de déploiement.')
+    // On n'accepte que des canaux effectivement pris en charge par l'expert.
+    const refused = sent.filter((value) => !expert.channels.includes(value))
+    if (refused.length > 0) return validationError(`Canaux non pris en charge par ${expert.name} : ${refused.join(', ')}.`)
 
     TEAM_AGENT_IDS.add(id)
-    setProfile(id, { ...DEFAULT_PROFILE, channel })
+    setProfile(id, { ...DEFAULT_PROFILE, channels: [...new Set(sent)] })
+    // L'expert engage la conversation : sa prise de poste l'attend dès l'arrivée
+    // dans son espace, il n'attend pas d'être sollicité.
+    queueOpening(id)
     return HttpResponse.json(toListDto(expert), { status: 201 })
   }),
 
@@ -136,8 +143,13 @@ export const agentHandlers = [
 
     const next: ProfileSettings = {
       active: typeof body.active === 'boolean' ? body.active : current.active,
-      // Un canal non pris en charge par l'expert est refusé.
-      channel: pick(body.channel, expert.channels, current.channel),
+      // Canaux : on ne garde que ceux que l'expert prend en charge, et jamais une
+      // liste vide — un expert injoignable n'aurait aucun sens.
+      channels: (() => {
+        if (!Array.isArray(body.channels)) return current.channels
+        const kept = [...new Set(body.channels.filter((value): value is string => typeof value === 'string' && expert.channels.includes(value)))]
+        return kept.length > 0 ? kept : current.channels
+      })(),
       tone: pick(body.tone, TONES, current.tone),
       language: pick(body.language, LANGUAGES, current.language),
       detail: pick(body.detail, DETAILS, current.detail),

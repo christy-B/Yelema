@@ -11,6 +11,9 @@ export interface AuthUser {
 export interface AuthWorkspace {
   id: string
   name: string
+  legalName?: string | null
+  sector?: string | null
+  country?: string | null
   domain: string
   plan: string
   hosting: 'cloud-public' | 'hybride' | 'on-prem-souverain'

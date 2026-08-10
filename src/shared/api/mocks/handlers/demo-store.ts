@@ -28,6 +28,13 @@ export interface DemoUser {
   isFirstAdmin: boolean
   roleKey: string
   preferences: { twofa: boolean; mailDigest: boolean; usageAlerts: boolean }
+  /**
+   * Jeton d'activation propre au compte, tant qu'il est « pending ». Les
+   * comptes créés depuis la console de démonstration en reçoivent chacun un —
+   * là où la démonstration d'origine n'en connaissait qu'un seul, partagé
+   * (voir ACTIVATION).
+   */
+  activationToken?: string | null
 }
 
 /** Matrice RBAC d'un rôle, telle que /auth/me la renvoie. */
@@ -110,6 +117,16 @@ export const ACTIVATION = {
   email: 'n.sow@banque-atlantique.ci',
   name: 'Nadège Sow',
 }
+
+/**
+ * Compte en attente correspondant à un jeton d'activation. Couvre les comptes
+ * créés depuis la console ; le jeton historique ACTIVATION reste valable pour
+ * ne pas casser la démonstration existante.
+ */
+export function pendingByActivationToken(token: string): DemoUser | undefined {
+  return USERS.find((user) => user.status === 'pending' && user.activationToken === token)
+}
+
 
 export interface DemoMember {
   id: string
@@ -215,4 +232,50 @@ export function userByToken(token: string): DemoUser | undefined {
 
 export function roleByKey(key: string | null): DemoRole | undefined {
   return key ? ROLES.find((role) => role.key === key) : undefined
+}
+
+/* ── Persistance des comptes provisionnés ────────────────────────────────────
+ * Les mocks vivent en mémoire, donc un rechargement de page les efface. Sans
+ * importance pour les données de démonstration figées — mais pas pour un compte
+ * créé depuis la console : son lien d'activation s'ouvre justement après un
+ * chargement complet, souvent dans un autre onglet. Les comptes provisionnés
+ * sont donc les seuls à survivre, dans le stockage local.
+ *
+ * Ce bloc est en fin de fichier À DESSEIN : il s'exécute au chargement du
+ * module et référence USERS et MEMBERS, qui doivent être déclarés avant lui. */
+const PROVISIONED_KEY = 'yelema.demo.provisioned.v1'
+
+/** Préfixe des identifiants créés depuis la console — les seuls persistés. */
+export const PROVISIONED_PREFIX = 'u_c'
+
+export function persistProvisioned(): void {
+  try {
+    localStorage.setItem(PROVISIONED_KEY, JSON.stringify({
+      users: USERS.filter((user) => user.id.startsWith(PROVISIONED_PREFIX)),
+      members: MEMBERS.filter((member) => member.id.startsWith(PROVISIONED_PREFIX)),
+    }))
+  } catch {
+    // Stockage indisponible (navigation privée…) : la console reste utilisable
+    // dans l'onglet courant, seul le rechargement perd les comptes créés.
+  }
+}
+
+export function forgetProvisioned(): void {
+  try { localStorage.removeItem(PROVISIONED_KEY) } catch { /* voir ci-dessus */ }
+  for (const list of [USERS as { id: string }[], MEMBERS as { id: string }[]]) {
+    for (let index = list.length - 1; index >= 0; index -= 1) {
+      if (list[index].id.startsWith(PROVISIONED_PREFIX)) list.splice(index, 1)
+    }
+  }
+}
+
+// Réhydratation, avant que le moindre handler ne serve une requête.
+try {
+  const saved = JSON.parse(localStorage.getItem(PROVISIONED_KEY) ?? 'null') as
+    | { users?: DemoUser[]; members?: DemoMember[] }
+    | null
+  for (const user of saved?.users ?? []) if (!USERS.some((item) => item.id === user.id)) USERS.push(user)
+  for (const member of saved?.members ?? []) if (!MEMBERS.some((item) => item.id === member.id)) MEMBERS.push(member)
+} catch {
+  try { localStorage.removeItem(PROVISIONED_KEY) } catch { /* rien de plus à faire */ }
 }

@@ -35,21 +35,28 @@ export function WorkspacePage() {
       .catch(() => setStatus('error'))
   }, [retryKey])
 
-  // Métiers réellement présents au catalogue, avec leur nombre d'experts.
+  // Grands groupes de métier présents au catalogue, avec leur nombre d'experts.
+  // Un filtre rassemble ainsi plusieurs experts, au lieu d'un seul par métier.
   const chips = useMemo(() => {
-    const counts = new Map<string, number>()
+    const counts = new Map<string, { name: string; count: number }>()
     for (const agent of marketplace) {
-      const name = agent.tags[0]
-      if (name) counts.set(name, (counts.get(name) ?? 0) + 1)
+      const group = agent.group
+      if (!group) continue
+      const entry = counts.get(group.key) ?? { name: group.name, count: 0 }
+      entry.count += 1
+      counts.set(group.key, entry)
     }
-    return [{ id: 'all', name: 'Tous les métiers', count: marketplace.length }, ...[...counts].map(([name, count]) => ({ id: name, name, count }))]
+    return [
+      { id: 'all', name: 'Tous les métiers', count: marketplace.length },
+      ...[...counts].map(([key, entry]) => ({ id: key, name: entry.name, count: entry.count })),
+    ]
   }, [marketplace])
 
-  // Filtres cumulés : métier choisi + besoin décrit (nom, métier, accroche).
+  // Filtres cumulés : groupe choisi + besoin décrit (nom, métier, accroche).
   const shown = useMemo(() => {
     const query = normalize(need.trim())
     return marketplace.filter((agent) => {
-      const matchesMetier = metier === 'all' || agent.tags[0] === metier
+      const matchesMetier = metier === 'all' || agent.group?.key === metier
       const matchesQuery = !query || normalize(`${agent.name} ${agent.tags.join(' ')} ${agent.description}`).includes(query)
       return matchesMetier && matchesQuery
     })

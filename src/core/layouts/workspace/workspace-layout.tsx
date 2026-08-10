@@ -1,4 +1,4 @@
-import { BarChart3, ChevronDown, CircleHelp, CreditCard, Grid2X2, Home, LogOut, Users } from 'lucide-react'
+import { BarChart3, ChevronDown, CircleHelp, CreditCard, FolderKanban, Grid2X2, Home, LogOut, Users } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
 import { NavLink, Outlet, useNavigate, useParams } from 'react-router'
 
@@ -23,6 +23,7 @@ export function WorkspaceLayout() {
   const navigation: NavigationItem[] = [
     { label: 'Accueil', to: paths.workspace(workspaceId), icon: Home, end: true },
     { label: 'Mes experts IA', to: paths.agents(workspaceId), icon: Grid2X2 },
+    { label: 'Projets', to: paths.projects(workspaceId), icon: FolderKanban },
     { label: 'Facturation', to: paths.billing(workspaceId), icon: CreditCard, permission: { capability: 'invoices', action: 'view' } },
     { label: 'Membres', to: paths.members(workspaceId), icon: Users, permission: { capability: 'members', action: 'view' } },
     // Analytics : pas de capacité dédiée en v1 — alignée sur invoices·view.

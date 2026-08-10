@@ -7,6 +7,8 @@ import type {
 } from '../../../../features/conversations/api/contracts'
 import { ROSTER } from '../../../../features/agents/roster'
 import { simulateReply } from '../conversation-sim'
+import { openingMessage, openingPreview } from '../prise-de-poste'
+import { drainOpenings } from '../stores/recruitment.store'
 import conversationsFixture from '../fixtures/conversations.json'
 import messagesFixture from '../fixtures/messages.json'
 import { API_BASE, getAuthenticatedUser, notFound, requireAuth, validationError } from './helpers'
@@ -70,6 +72,34 @@ function rebaseDemoDates(): void {
   datesRebased = true
 }
 
+/**
+ * Matérialise les prises de poste des experts recrutés depuis la dernière
+ * lecture : l'expert a engagé la conversation, elle existe donc avant que
+ * l'utilisateur ait écrit quoi que ce soit.
+ */
+function materialiseOpenings(user: { id: string; email: string }): void {
+  for (const agentId of drainOpenings()) {
+    const expert = ROSTER.find((item) => item.id === agentId)
+    if (!expert) continue
+    const now = new Date().toISOString()
+    const id = crypto.randomUUID()
+    conversations = [{
+      id,
+      userId: user.id,
+      agentId,
+      title: 'Prise de poste',
+      preview: openingPreview(expert),
+      owner: user.email,
+      // L'expert attend votre réponse : la tâche est ouverte, pas terminée.
+      status: 'running',
+      time: "à l'instant",
+      createdAt: now,
+      updatedAt: now,
+    }, ...conversations]
+    messages[id] = [{ id: crypto.randomUUID(), role: 'agent', text: openingMessage(expert) }]
+  }
+}
+
 export const conversationHandlers = [
   http.get(`${API_BASE}/conversations`, async ({ request }) => {
     const unauthorized = await requireAuth(request)
@@ -78,6 +108,7 @@ export const conversationHandlers = [
     const currentUser = await getAuthenticatedUser(request)
     if (!currentUser) return unauthorized
     rebaseDemoDates()
+    materialiseOpenings(currentUser)
     const searchParams = new URL(request.url).searchParams
     const agentId = searchParams.get('agent')
     const query = searchParams.get('q')?.trim().toLocaleLowerCase('fr')
@@ -113,6 +144,7 @@ export const conversationHandlers = [
       title: body.intake.skill ?? (body.intake.message ? body.intake.message.slice(0, 48) : 'Nouvelle conversation'),
       preview: body.intake.message ?? '',
       owner: currentUser.email,
+      status: 'running',
       time: "à l'instant",
       createdAt: now,
       updatedAt: now,

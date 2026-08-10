@@ -1,16 +1,11 @@
 export async function enableApiMocks(): Promise<void> {
-  // Actifs en dev (sauf désactivation), et en production uniquement en mode
-  // démo explicite (VITE_ENABLE_MSW=true — ex. déploiement GitHub Pages).
-  const demoMode = import.meta.env.VITE_ENABLE_MSW === 'true'
-  const devMode = import.meta.env.DEV && import.meta.env.VITE_ENABLE_MSW !== 'false'
-  if (!demoMode && !devMode) {
+  if (!import.meta.env.DEV || import.meta.env.VITE_ENABLE_MSW === 'false') {
     return
   }
 
   const { worker } = await import('./worker')
-  await worker.start({
-    onUnhandledRequest: 'warn',
-    // Respecte le sous-chemin de déploiement (ex. /mon-repo/ sur GitHub Pages).
-    serviceWorker: { url: `${import.meta.env.BASE_URL}mockServiceWorker.js` },
-  })
+  // Le control-plane n'est plus branché : TOUTE l'API v1 est servie ici. Une
+  // route oubliée doit donc s'entendre — `warn` la signale dans la console au
+  // lieu de la laisser partir dans le vide comme le faisait `bypass`.
+  await worker.start({ onUnhandledRequest: 'warn' })
 }

@@ -9,7 +9,7 @@
  */
 export interface ProfileSettings {
   active: boolean
-  channel: string
+  channels: string[]
   tone: string
   language: string
   detail: string
@@ -25,18 +25,23 @@ export interface ProfileSettings {
 
 /** Valeurs admises par axe — un axe hors liste retombe sur « auto ». */
 export const AVATAR_AXES: Record<string, string[]> = {
-  position: ['auto', 'face', 'trois-quarts', 'assis', 'marche'],
-  style: ['auto', 'casual', 'smart-casual', 'business'],
-  accessory: ['auto', 'aucun', 'casque', 'ordinateur', 'lunettes'],
-  background: ['auto', 'beige', 'gris', 'fonce'],
+  position: ['auto', 'face', 'trois-quarts', 'profil', 'bras-croises', 'assis', 'marche', 'reunion'],
+  style: ['auto', 'casual', 'smart-casual', 'blazer', 'business', 'traditionnel', 'terrain', 'ceremonie'],
+  accessory: ['auto', 'aucun', 'casque', 'ordinateur', 'tablette', 'telephone', 'documents', 'badge', 'lunettes'],
+  background: ['auto', 'blanc', 'beige', 'gris', 'violet', 'bleu', 'vert', 'fonce'],
 }
 
-/** Cadrages admis pour une proposition retenue. */
-export const PORTRAIT_CROPS = ['serre', 'buste', 'plein']
+/**
+ * Cadrages admis pour une proposition retenue. `entier` est celui des portraits
+ * produits par le modèle : leur cadrage vient de l'image, il ne faut pas les
+ * recadrer. Sans cette valeur, un portrait généré serait ramené au buste à
+ * l'enregistrement.
+ */
+export const PORTRAIT_CROPS = ['entier', 'serre', 'buste', 'plein']
 
 export const DEFAULT_PROFILE: ProfileSettings = {
   active: true,
-  channel: 'web',
+  channels: ['web'],
   tone: 'chaleureux',
   language: 'fr',
   detail: 'standard',

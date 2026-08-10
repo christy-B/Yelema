@@ -10,6 +10,8 @@ export interface RealAgent {
   displayName: string
   type: ToolType
   suite: { key: string; label: string; icon: string | null } | null
+  /** Grand groupe de métier, qui rassemble plusieurs experts. Sert aux filtres. */
+  group?: { key: string; label: string } | null
   channels: string[]
   sovereignCapable: boolean
   /** Descriptif court (fourni par le roster/back). */
@@ -83,6 +85,7 @@ export function toAgentSummary(agent: RealAgent): AgentSummary {
     icon: entry?.icon ?? agent.suite?.icon ?? 'sparkles',
     description: agent.description ?? entry?.description ?? '',
     tags: entry?.tags ?? (agent.suite ? [agent.suite.label] : []),
+    group: agent.group ? { key: agent.group.key, name: agent.group.label } : null,
     channels: agent.channels ?? [],
     avatarUrl: photoOf(agent),
   }
@@ -115,13 +118,16 @@ export function toAgentDetail(agent: RealAgentDetail): AgentDetail {
  * portées par les agents accessibles au membre.
  */
 export function deriveMetiers(agents: RealAgent[]): Metier[] {
-  const bySuite = new Map<string, Metier>()
+  // Regroupement par GRAND GROUPE de métier : un filtre doit rassembler
+  // plusieurs experts. Le métier, lui, reste propre à chacun et s'affiche sur
+  // sa carte. Sans groupe fourni, on retombe sur la suite.
+  const byGroup = new Map<string, Metier>()
   for (const agent of agents) {
-    const key = agent.suite?.key ?? 'autres'
-    const name = agent.suite?.label ?? 'Autres'
-    const metier = bySuite.get(key) ?? { id: key, name, agentIds: [] }
-    metier.agentIds.push(agent.id)
-    bySuite.set(key, metier)
+    const key = agent.group?.key ?? agent.suite?.key ?? 'autres'
+    const name = agent.group?.label ?? agent.suite?.label ?? 'Autres'
+    const group = byGroup.get(key) ?? { id: key, name, agentIds: [] }
+    group.agentIds.push(agent.id)
+    byGroup.set(key, group)
   }
-  return [...bySuite.values()]
+  return [...byGroup.values()]
 }

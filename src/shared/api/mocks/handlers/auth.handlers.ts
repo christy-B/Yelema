@@ -1,6 +1,6 @@
 import { delay, http, HttpResponse } from 'msw'
 
-import { ACTIVATION, roleByKey, USERS, WORKSPACE } from './demo-store'
+import { ACTIVATION, MEMBERS, pendingByActivationToken, persistProvisioned, roleByKey, USERS, WORKSPACE } from './demo-store'
 import { API_BASE, getAuthenticatedUserId, requireAuth, validationError } from './helpers'
 
 /**
@@ -81,10 +81,12 @@ export const authHandlers = [
   }),
 
   http.get(`${API_BASE}/auth/activation`, ({ request }) => {
-    const token = new URL(request.url).searchParams.get('token')
-    if (token !== ACTIVATION.token) {
-      return HttpResponse.json({ valid: false, email: '', name: '' })
-    }
+    const token = new URL(request.url).searchParams.get('token') ?? ''
+    // Comptes créés depuis la console : chacun a son jeton. Le jeton historique
+    // de la démonstration reste accepté.
+    const pending = pendingByActivationToken(token)
+    if (pending) return HttpResponse.json({ valid: true, email: pending.email, name: pending.name })
+    if (token !== ACTIVATION.token) return HttpResponse.json({ valid: false, email: '', name: '' })
     return HttpResponse.json({ valid: true, email: ACTIVATION.email, name: ACTIVATION.name })
   }),
 
@@ -93,6 +95,20 @@ export const authHandlers = [
     if (!body.token || !body.password) {
       return validationError('Le jeton et le mot de passe sont obligatoires.')
     }
+
+    const pending = pendingByActivationToken(body.token)
+    if (pending) {
+      // Le compte devient utilisable : mot de passe posé, jeton d'activation
+      // consommé — un lien d'activation ne sert qu'une fois.
+      pending.password = body.password
+      pending.status = 'active'
+      pending.activationToken = null
+      const member = MEMBERS.find((item) => item.id === pending.id)
+      if (member) member.status = 'active'
+      persistProvisioned()
+      return HttpResponse.json({ token: pending.token, expiresAt: EXPIRES_AT })
+    }
+
     if (body.token !== ACTIVATION.token) {
       return validationError('Ce lien d’activation n’est plus valable.')
     }

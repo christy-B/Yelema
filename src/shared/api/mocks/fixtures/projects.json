@@ -1,0 +1,80 @@
+[
+  {
+    "id": "proj_financement_pme",
+    "workspaceId": "ws_3",
+    "name": "Dossier de financement agence PME",
+    "objective": "Préparer un dossier bancaire complet pour financer l’ouverture de la nouvelle agence PME.",
+    "status": "active",
+    "dueDate": "2026-09-15",
+    "constraints": "Le dossier doit respecter le référentiel OHADA et être prêt avant le comité de crédit.",
+    "expectedDeliverables": ["Prévisionnel financier à 3 ans", "Note de synthèse pour le comité", "Liste des pièces justificatives"],
+    "createdAt": "2026-08-01T09:00:00.000Z",
+    "updatedAt": "2026-08-06T10:30:00.000Z",
+    "orchestrator": {
+      "name": "Chef de projet IA",
+      "responsibility": "Coordonner le plan, les dépendances et les validations humaines."
+    },
+    "tasks": [
+      { "id": "task_fin_1", "title": "Consolider les hypothèses financières", "status": "done", "agentId": "exp_mamadou" },
+      { "id": "task_fin_2", "title": "Produire le prévisionnel à 3 ans", "status": "in_progress", "agentId": "exp_mamadou" },
+      { "id": "task_fin_3", "title": "Vérifier les pièces et les risques", "status": "todo", "agentId": "exp_salif" },
+      { "id": "task_fin_4", "title": "Préparer la note pour le comité", "status": "todo", "agentId": null }
+    ],
+    "assignments": [
+      { "agentId": "exp_mamadou", "responsibility": "Prévisionnel, trésorerie et plan de remboursement", "assignedAt": "2026-08-01T09:30:00.000Z" },
+      { "agentId": "exp_salif", "responsibility": "Revue des risques et conformité du dossier", "assignedAt": "2026-08-01T09:35:00.000Z" }
+    ],
+    "decisions": [
+      { "id": "decision_fin_1", "title": "Valider l’hypothèse de croissance du chiffre d’affaires à 12 %", "requestedAt": "2026-08-06T10:30:00.000Z", "agentId": "exp_mamadou" }
+    ],
+    "activities": [
+      { "id": "act_fin_1", "kind": "project_created", "summary": "Aïcha Koné a créé le projet.", "createdAt": "2026-08-01T09:00:00.000Z" },
+      { "id": "act_fin_2", "kind": "assignment_added", "summary": "Mamadou et Salif ont rejoint l’équipe du projet.", "createdAt": "2026-08-01T09:35:00.000Z" },
+      { "id": "act_fin_3", "kind": "task_updated", "summary": "Mamadou a consolidé les hypothèses financières.", "createdAt": "2026-08-05T15:20:00.000Z", "agentId": "exp_mamadou", "taskId": "task_fin_1", "conversationId": "c_15" },
+      { "id": "act_fin_4", "kind": "artifact_added", "summary": "Mamadou a déposé le prévisionnel financier de travail.", "createdAt": "2026-08-06T09:45:00.000Z", "agentId": "exp_mamadou", "resourceId": "res_fin_3", "conversationId": "c_15" },
+      { "id": "act_fin_5", "kind": "decision_required", "summary": "Une validation est demandée sur l’hypothèse de croissance à 12 %.", "createdAt": "2026-08-06T10:30:00.000Z", "agentId": "exp_mamadou" }
+    ],
+    "resources": [
+      { "id": "res_fin_1", "kind": "input", "name": "Comptes annuels 2025.xlsx", "format": "XLSX", "createdAt": "2026-08-01T09:10:00.000Z" },
+      { "id": "res_fin_2", "kind": "input", "name": "Hypothèses nouvelle agence.docx", "format": "DOCX", "createdAt": "2026-08-01T09:12:00.000Z" },
+      { "id": "res_fin_3", "kind": "artifact", "name": "Prévisionnel financier — version de travail.xlsx", "format": "XLSX", "createdAt": "2026-08-06T09:45:00.000Z", "agentId": "exp_mamadou" }
+    ]
+  },
+  {
+    "id": "proj_parcours_whatsapp",
+    "workspaceId": "ws_3",
+    "name": "Optimisation du parcours client WhatsApp",
+    "objective": "Réduire le délai de réponse et mieux qualifier les demandes commerciales reçues sur WhatsApp.",
+    "status": "active",
+    "dueDate": "2026-08-28",
+    "constraints": "Conserver une validation humaine pour les gestes commerciaux et les devis.",
+    "expectedDeliverables": ["Parcours conversationnel cible", "Réponses types", "Tableau de suivi des demandes"],
+    "createdAt": "2026-07-28T08:30:00.000Z",
+    "updatedAt": "2026-08-05T16:10:00.000Z",
+    "orchestrator": {
+      "name": "Chef de projet IA",
+      "responsibility": "Coordonner le plan, les dépendances et les validations humaines."
+    },
+    "tasks": [
+      { "id": "task_wa_1", "title": "Cartographier les demandes fréquentes", "status": "done", "agentId": "exp_awa" },
+      { "id": "task_wa_2", "title": "Définir les critères de qualification", "status": "done", "agentId": "exp_kouassi" },
+      { "id": "task_wa_3", "title": "Rédiger le parcours conversationnel", "status": "in_progress", "agentId": "exp_awa" },
+      { "id": "task_wa_4", "title": "Valider les règles d’escalade", "status": "todo", "agentId": null }
+    ],
+    "assignments": [
+      { "agentId": "exp_awa", "responsibility": "Parcours client, réponses types et règles d’escalade", "assignedAt": "2026-07-28T09:00:00.000Z" },
+      { "agentId": "exp_kouassi", "responsibility": "Qualification commerciale et suivi des opportunités", "assignedAt": "2026-07-28T09:05:00.000Z" }
+    ],
+    "decisions": [],
+    "activities": [
+      { "id": "act_wa_1", "kind": "project_created", "summary": "Aïcha Koné a créé le projet.", "createdAt": "2026-07-28T08:30:00.000Z" },
+      { "id": "act_wa_2", "kind": "assignment_added", "summary": "Awa et Kouassi ont rejoint l’équipe du projet.", "createdAt": "2026-07-28T09:05:00.000Z" },
+      { "id": "act_wa_3", "kind": "task_updated", "summary": "Awa a cartographié les demandes fréquentes.", "createdAt": "2026-08-03T14:00:00.000Z", "agentId": "exp_awa", "taskId": "task_wa_1", "conversationId": "c_12" },
+      { "id": "act_wa_4", "kind": "task_updated", "summary": "Kouassi a défini les critères de qualification commerciale.", "createdAt": "2026-08-05T16:10:00.000Z", "agentId": "exp_kouassi", "taskId": "task_wa_2", "conversationId": "c_2" }
+    ],
+    "resources": [
+      { "id": "res_wa_1", "kind": "input", "name": "Export des demandes WhatsApp — juillet.csv", "format": "CSV", "createdAt": "2026-07-28T08:40:00.000Z" },
+      { "id": "res_wa_2", "kind": "artifact", "name": "Cartographie des demandes fréquentes.pdf", "format": "PDF", "createdAt": "2026-08-03T14:00:00.000Z", "agentId": "exp_awa" }
+    ]
+  }
+]

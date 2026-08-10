@@ -9,7 +9,8 @@
     "time": "",
     "createdAt": "2026-10-26T04:33:20Z",
     "updatedAt": "2026-10-26T04:33:20Z",
-    "workedMinutes": 6
+    "workedMinutes": 6,
+    "status": "running"
   },
   {
     "id": "c_2",
@@ -21,7 +22,8 @@
     "time": "",
     "createdAt": "2026-10-25T22:33:20Z",
     "updatedAt": "2026-10-25T22:33:20Z",
-    "workedMinutes": 14
+    "workedMinutes": 14,
+    "status": "running"
   },
   {
     "id": "c_3",
@@ -33,7 +35,8 @@
     "time": "",
     "createdAt": "2026-10-25T03:33:20Z",
     "updatedAt": "2026-10-25T03:33:20Z",
-    "workedMinutes": 3
+    "workedMinutes": 3,
+    "status": "paused"
   },
   {
     "id": "c_4",
@@ -45,7 +48,8 @@
     "time": "",
     "createdAt": "2026-10-24T02:33:20Z",
     "updatedAt": "2026-10-24T02:33:20Z",
-    "workedMinutes": 22
+    "workedMinutes": 22,
+    "status": "done"
   },
   {
     "id": "c_5",
@@ -57,7 +61,8 @@
     "time": "",
     "createdAt": "2026-10-21T05:33:20Z",
     "updatedAt": "2026-10-21T05:33:20Z",
-    "workedMinutes": 9
+    "workedMinutes": 9,
+    "status": "failed"
   },
   {
     "id": "c_6",
@@ -69,7 +74,8 @@
     "time": "",
     "createdAt": "2026-10-17T05:33:20Z",
     "updatedAt": "2026-10-17T05:33:20Z",
-    "workedMinutes": 35
+    "workedMinutes": 35,
+    "status": "done"
   },
   {
     "id": "c_7",
@@ -81,7 +87,8 @@
     "time": "",
     "createdAt": "2026-10-09T05:33:20Z",
     "updatedAt": "2026-10-09T05:33:20Z",
-    "workedMinutes": 5
+    "workedMinutes": 5,
+    "status": "done"
   },
   {
     "id": "c_8",
@@ -93,7 +100,8 @@
     "time": "",
     "createdAt": "2026-10-26T04:33:20Z",
     "updatedAt": "2026-10-26T04:33:20Z",
-    "workedMinutes": 11
+    "workedMinutes": 11,
+    "status": "running"
   },
   {
     "id": "c_9",
@@ -105,7 +113,8 @@
     "time": "",
     "createdAt": "2026-10-25T22:33:20Z",
     "updatedAt": "2026-10-25T22:33:20Z",
-    "workedMinutes": 18
+    "workedMinutes": 18,
+    "status": "running"
   },
   {
     "id": "c_10",
@@ -117,7 +126,8 @@
     "time": "",
     "createdAt": "2026-10-25T03:33:20Z",
     "updatedAt": "2026-10-25T03:33:20Z",
-    "workedMinutes": 4
+    "workedMinutes": 4,
+    "status": "paused"
   },
   {
     "id": "c_11",
@@ -129,7 +139,8 @@
     "time": "",
     "createdAt": "2026-10-24T02:33:20Z",
     "updatedAt": "2026-10-24T02:33:20Z",
-    "workedMinutes": 27
+    "workedMinutes": 27,
+    "status": "done"
   },
   {
     "id": "c_12",
@@ -141,7 +152,8 @@
     "time": "",
     "createdAt": "2026-10-21T05:33:20Z",
     "updatedAt": "2026-10-21T05:33:20Z",
-    "workedMinutes": 8
+    "workedMinutes": 8,
+    "status": "failed"
   },
   {
     "id": "c_13",
@@ -153,7 +165,8 @@
     "time": "",
     "createdAt": "2026-10-17T05:33:20Z",
     "updatedAt": "2026-10-17T05:33:20Z",
-    "workedMinutes": 6
+    "workedMinutes": 6,
+    "status": "done"
   },
   {
     "id": "c_14",
@@ -165,7 +178,8 @@
     "time": "",
     "createdAt": "2026-10-09T05:33:20Z",
     "updatedAt": "2026-10-09T05:33:20Z",
-    "workedMinutes": 14
+    "workedMinutes": 14,
+    "status": "done"
   },
   {
     "id": "c_15",
@@ -177,7 +191,8 @@
     "time": "",
     "createdAt": "2026-10-26T04:33:20Z",
     "updatedAt": "2026-10-26T04:33:20Z",
-    "workedMinutes": 3
+    "workedMinutes": 3,
+    "status": "running"
   },
   {
     "id": "c_16",
@@ -189,7 +204,8 @@
     "time": "",
     "createdAt": "2026-10-25T22:33:20Z",
     "updatedAt": "2026-10-25T22:33:20Z",
-    "workedMinutes": 22
+    "workedMinutes": 22,
+    "status": "running"
   },
   {
     "id": "c_17",
@@ -201,7 +217,8 @@
     "time": "",
     "createdAt": "2026-10-25T03:33:20Z",
     "updatedAt": "2026-10-25T03:33:20Z",
-    "workedMinutes": 9
+    "workedMinutes": 9,
+    "status": "paused"
   },
   {
     "id": "c_18",
@@ -213,7 +230,8 @@
     "time": "",
     "createdAt": "2026-10-24T02:33:20Z",
     "updatedAt": "2026-10-24T02:33:20Z",
-    "workedMinutes": 35
+    "workedMinutes": 35,
+    "status": "done"
   },
   {
     "id": "c_19",
@@ -225,7 +243,8 @@
     "time": "",
     "createdAt": "2026-10-21T05:33:20Z",
     "updatedAt": "2026-10-21T05:33:20Z",
-    "workedMinutes": 5
+    "workedMinutes": 5,
+    "status": "failed"
   },
   {
     "id": "c_20",
@@ -237,7 +256,8 @@
     "time": "",
     "createdAt": "2026-10-17T05:33:20Z",
     "updatedAt": "2026-10-17T05:33:20Z",
-    "workedMinutes": 11
+    "workedMinutes": 11,
+    "status": "done"
   },
   {
     "id": "c_21",
@@ -249,7 +269,8 @@
     "time": "",
     "createdAt": "2026-10-09T05:33:20Z",
     "updatedAt": "2026-10-09T05:33:20Z",
-    "workedMinutes": 18
+    "workedMinutes": 18,
+    "status": "done"
   },
   {
     "id": "c_22",
@@ -261,7 +282,8 @@
     "time": "",
     "createdAt": "2026-10-26T04:33:20Z",
     "updatedAt": "2026-10-26T04:33:20Z",
-    "workedMinutes": 4
+    "workedMinutes": 4,
+    "status": "running"
   },
   {
     "id": "c_23",
@@ -273,7 +295,8 @@
     "time": "",
     "createdAt": "2026-10-25T22:33:20Z",
     "updatedAt": "2026-10-25T22:33:20Z",
-    "workedMinutes": 27
+    "workedMinutes": 27,
+    "status": "running"
   },
   {
     "id": "c_24",
@@ -285,7 +308,8 @@
     "time": "",
     "createdAt": "2026-10-25T03:33:20Z",
     "updatedAt": "2026-10-25T03:33:20Z",
-    "workedMinutes": 8
+    "workedMinutes": 8,
+    "status": "paused"
   },
   {
     "id": "c_25",
@@ -297,7 +321,8 @@
     "time": "",
     "createdAt": "2026-10-24T02:33:20Z",
     "updatedAt": "2026-10-24T02:33:20Z",
-    "workedMinutes": 6
+    "workedMinutes": 6,
+    "status": "done"
   },
   {
     "id": "c_26",
@@ -309,7 +334,8 @@
     "time": "",
     "createdAt": "2026-10-21T05:33:20Z",
     "updatedAt": "2026-10-21T05:33:20Z",
-    "workedMinutes": 14
+    "workedMinutes": 14,
+    "status": "failed"
   },
   {
     "id": "c_27",
@@ -321,7 +347,8 @@
     "time": "",
     "createdAt": "2026-10-17T05:33:20Z",
     "updatedAt": "2026-10-17T05:33:20Z",
-    "workedMinutes": 3
+    "workedMinutes": 3,
+    "status": "done"
   },
   {
     "id": "c_28",
@@ -333,6 +360,7 @@
     "time": "",
     "createdAt": "2026-10-09T05:33:20Z",
     "updatedAt": "2026-10-09T05:33:20Z",
-    "workedMinutes": 22
+    "workedMinutes": 22,
+    "status": "done"
   }
 ]

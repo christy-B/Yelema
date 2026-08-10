@@ -19,6 +19,9 @@ async function loadSessionWithBranding(): Promise<Session> {
   try {
     const workspace = await getWorkspace()
     applyBranding(workspace.branding)
+    session.workspace.legalName = workspace.legalName
+    session.workspace.sector = workspace.sector
+    session.workspace.country = workspace.country
     // Le média est protégé (Authorization requis) : on le convertit en URL
     // blob affichable par une balise <img>.
     session.workspace.logoUrl = (await loadProtectedMedia(workspace.branding.logoUrl)) ?? undefined

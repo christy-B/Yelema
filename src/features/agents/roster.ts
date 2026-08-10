@@ -17,6 +17,13 @@ export interface RosterExpert {
   name: string
   metier: string
   metierKey: string
+  /**
+   * Grand groupe de métier. Le métier ci-dessus est propre à l'expert et
+   * s'affiche sur sa carte ; le groupe rassemble plusieurs experts et sert aux
+   * filtres du catalogue.
+   */
+  group: string
+  groupKey: string
   /** Genre de la persona (accord « il / elle ») — issu des accroches d'origine. */
   gender: 'f' | 'm'
   /** Runtime de l'expert. LOKOLI est livré sur un OpenClaw dédié. */
@@ -45,7 +52,7 @@ export interface RosterExpert {
 
 export const ROSTER: RosterExpert[] = [
   {
-    id: "exp_kouassi", name: "Kouassi", metier: "Commercial & Ventes", metierKey: "ventes", gender: 'm', type: 'native-agent',
+    id: "exp_kouassi", name: "Kouassi", metier: "Commercial & Ventes", metierKey: "ventes", group: "Commercial", groupKey: "commercial", gender: 'm', type: 'native-agent',
     channels: ["whatsapp","telegram","email","web"],
     description: "Il ne laisse jamais une opportunité refroidir.",
     intakeAsk: "Avec plaisir. Pour vous aider au mieux : de quel produit ou service parle-t-on, et quels clients visez-vous ?",
@@ -67,7 +74,7 @@ export const ROSTER: RosterExpert[] = [
     ],
   },
   {
-    id: "exp_awa", name: "Awa", metier: "Support & Relation client", metierKey: "support", gender: 'f', type: 'native-agent',
+    id: "exp_awa", name: "Awa", metier: "Support & Relation client", metierKey: "support", group: "Commercial", groupKey: "commercial", gender: 'f', type: 'native-agent',
     channels: ["whatsapp","telegram","email","web"],
     description: "Elle répond à vos clients, jour et nuit, sur WhatsApp.",
     intakeAsk: "Bien sûr. Dites-m'en un peu plus : s'agit-il d'une demande client précise, ou voulez-vous que je prépare une réponse type ?",
@@ -87,7 +94,7 @@ export const ROSTER: RosterExpert[] = [
     ],
   },
   {
-    id: "exp_fatima", name: "Fatima", metier: "Marketing & Contenu", metierKey: "marketing", gender: 'f', type: 'native-agent',
+    id: "exp_fatima", name: "Fatima", metier: "Marketing & Contenu", metierKey: "marketing", group: "Marketing", groupKey: "marketing", gender: 'f', type: 'native-agent',
     channels: ["whatsapp","telegram","email","web"],
     description: "Elle fait vivre votre marque, chaque semaine.",
     intakeAsk: "Avec plaisir. Sur quel canal et pour quel objectif — notoriété, ventes, lancement ? Et avez-vous une échéance ?",
@@ -110,7 +117,7 @@ export const ROSTER: RosterExpert[] = [
     ],
   },
   {
-    id: "exp_fatou", name: "Fatou", metier: "RH & Paie", metierKey: "rh", gender: 'f', type: 'native-agent',
+    id: "exp_fatou", name: "Fatou", metier: "RH & Paie", metierKey: "rh", group: "RH", groupKey: "rh", gender: 'f', type: 'native-agent',
     channels: ["whatsapp","telegram","email","web"],
     description: "Elle allège tout ce qui pèse sur les équipes RH.",
     intakeAsk: "Bien sûr. Pour être précise : quel est le sujet — paie, congés, contrat — et quel salarié ou poste est concerné ? Je m'aligne sur l'OHADA.",
@@ -132,7 +139,7 @@ export const ROSTER: RosterExpert[] = [
     ],
   },
   {
-    id: "exp_mamadou", name: "Mamadou", metier: "Finance & Comptabilité", metierKey: "finance", gender: 'm', type: 'native-agent',
+    id: "exp_mamadou", name: "Mamadou", metier: "Finance & Comptabilité", metierKey: "finance", group: "Finance", groupKey: "finance", gender: 'm', type: 'native-agent',
     channels: ["whatsapp","telegram","email","web"],
     description: "Il garde vos comptes clairs et vos dossiers bancables.",
     intakeAsk: "Avec plaisir. Il me faut trois repères : votre chiffre d'affaires récent, le besoin (montant) et l'échéance visée.",
@@ -151,7 +158,7 @@ export const ROSTER: RosterExpert[] = [
     ],
   },
   {
-    id: "exp_ibrahim", name: "Ibrahim", metier: "Juridique & Conformité", metierKey: "juridique", gender: 'm', type: 'native-agent',
+    id: "exp_ibrahim", name: "Ibrahim", metier: "Juridique & Conformité", metierKey: "juridique", group: "Juridique", groupKey: "juridique", gender: 'm', type: 'native-agent',
     channels: ["whatsapp","telegram","email","web"],
     description: "Il tient le juridique carré, pour le privé comme pour le public.",
     intakeAsk: "Bien sûr. De quel type de document s'agit-il, et entre quelles parties ? Je le prépare conforme OHADA.",
@@ -172,7 +179,7 @@ export const ROSTER: RosterExpert[] = [
     ],
   },
   {
-    id: "exp_salif", name: "Salif", metier: "Opérations & Admin", metierKey: "operations", gender: 'm', type: 'native-agent',
+    id: "exp_salif", name: "Salif", metier: "Opérations & Admin", metierKey: "operations", group: "Opérations", groupKey: "operations", gender: 'm', type: 'native-agent',
     channels: ["whatsapp","telegram","email","web"],
     description: "Il fait tourner l’administratif et la trésorerie du quotidien.",
     intakeAsk: "Avec plaisir. On parle de facturation, de relances ou de stock ? Donnez-moi la période et le périmètre concernés.",
@@ -192,7 +199,7 @@ export const ROSTER: RosterExpert[] = [
     ],
   },
   {
-    id: "exp_nadia", name: "Nadia", metier: "Data & Analytics", metierKey: "data", gender: 'f', type: 'native-agent',
+    id: "exp_nadia", name: "Nadia", metier: "Data & Analytics", metierKey: "data", group: "Data", groupKey: "data", gender: 'f', type: 'native-agent',
     channels: ["whatsapp","telegram","email","web"],
     description: "Elle transforme vos chiffres en décisions.",
     intakeAsk: "Avec plaisir. Quelle question voulez-vous trancher, et sur quelles données — période, source ?",
@@ -211,7 +218,7 @@ export const ROSTER: RosterExpert[] = [
     ],
   },
   {
-    id: "exp_adjoua", name: "Adjoua", metier: "Recrutement", metierKey: "recrutement", gender: 'f', type: 'native-agent',
+    id: "exp_adjoua", name: "Adjoua", metier: "Recrutement", metierKey: "recrutement", group: "RH", groupKey: "rh", gender: 'f', type: 'native-agent',
     channels: ["whatsapp","telegram","email","web"],
     description: "Elle trouve et évalue les bons profils.",
     intakeAsk: "Avec plaisir. Quel poste recrutez-vous, à quel niveau et dans quelle fourchette de rémunération ?",
@@ -234,7 +241,7 @@ export const ROSTER: RosterExpert[] = [
     ],
   },
   {
-    id: "exp_koffi", name: "Koffi", metier: "Design & Brand", metierKey: "design", gender: 'm', type: 'native-agent',
+    id: "exp_koffi", name: "Koffi", metier: "Design & Brand", metierKey: "design", group: "Marketing", groupKey: "marketing", gender: 'm', type: 'native-agent',
     channels: ["whatsapp","telegram","email","web"],
     description: "Il habille votre marque, du logo au site.",
     intakeAsk: "Avec plaisir. Quel support voulez-vous — affiche, post, logo… —, pour quelle occasion, et avez-vous une charte à respecter ?",
@@ -256,7 +263,7 @@ export const ROSTER: RosterExpert[] = [
   },
   {
     // Fiche de poste 11/11 du catalogue de juillet 2026.
-    id: "exp_djeneba", name: "Djénéba", metier: "Chief of Staff & Direction", metierKey: "direction", gender: 'f', type: 'native-agent',
+    id: "exp_djeneba", name: "Djénéba", metier: "Chief of Staff & Direction", metierKey: "direction", group: "Direction", groupKey: "direction", gender: 'f', type: 'native-agent',
     channels: ["whatsapp","telegram","email","web"],
     description: "Elle tient l'agenda, les décisions et les engagements du dirigeant.",
     intakeAsk: "Avec plaisir. De quel rendez-vous ou de quelle décision s'agit-il, et qui sont les interlocuteurs concernés ?",

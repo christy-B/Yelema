@@ -1,4 +1,4 @@
-import { ArrowLeft, Blocks, Check, ClipboardList, Database, Download, FileCheck2, LineChart, Pause, Play, Pencil, Plus, Repeat, Search, ShieldCheck, Sparkles, Trash2, Upload, UserCog, X } from 'lucide-react'
+import { ArrowLeft, Blocks, Check, ClipboardList, Database, Download, FileCheck2, LineChart, Maximize2, Minimize2, Pause, Play, Pencil, Plus, Repeat, Search, ShieldCheck, Sparkles, Trash2, Upload, UserCog, X } from 'lucide-react'
 import type { ReactNode } from 'react'
 import { useEffect, useMemo, useState } from 'react'
 import { useLocation, useNavigate, useParams } from 'react-router'
@@ -8,11 +8,14 @@ import type { AgentAvatarConfig, AgentConnector, AgentDetail, AgentPortrait, Age
 import { DETAIL_LABELS, LANGUAGE_LABELS, TONE_LABELS } from '../../../features/agents/api/contracts'
 import { channelLabel, orderChannels } from '../../../features/agents/channels'
 import { CONNECTOR_LOGOS } from '../../../features/agents/connector-logos'
+import { useSession } from '../../../features/auth/providers/session-context'
 import { deleteAutomation, listAutomations, setAutomationActive } from '../../../features/automations/api/api'
 import type { Automation } from '../../../features/automations/api/contracts'
 import { triggerLabel } from '../../../features/automations/api/contracts'
 import { listConversations } from '../../../features/conversations/api/api'
-import type { ConversationSummary } from '../../../features/conversations/api/contracts'
+import type { ConversationStatus, ConversationSummary } from '../../../features/conversations/api/contracts'
+import { CONVERSATION_STATUSES } from '../../../features/conversations/api/contracts'
+import { hermesClientContextFromSession, hermesInitialConversationId, initializeHermesExpert, isHermesExpert, listHermesConversations } from '../../../features/conversations/api/hermes'
 import { ExpertChat } from '../../../features/conversations/components/expert-chat'
 import { listConnectors, listFiles, uploadFiles } from '../../../features/files/api/api'
 import type { Connector, FileItem } from '../../../features/files/api/contracts'
@@ -30,6 +33,10 @@ import { DEFAULT_WORKSPACE_ID, paths } from '../../routes/paths'
 type View = 'activite' | 'competences' | 'suivi' | 'profil' | 'connecteurs' | 'sources' | 'artefacts'
 type Picker = null | 'source' | 'connector' | 'automation'
 const DAY_MS = 86_400_000
+/** Panneau d'échange : largeur d'ouverture, plancher, et bande de page toujours visible. */
+const CHAT_WIDTH_DEFAULT = 560
+const CHAT_WIDTH_MIN = 360
+const CHAT_MARGIN_MIN = 72
 const WEEK_DAYS = ['D', 'L', 'M', 'M', 'J', 'V', 'S']
 const WEEK_FULL = ['dimanche', 'lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi']
 
@@ -58,6 +65,15 @@ function dayLabel(time: number, today: number): string {
   return new Intl.DateTimeFormat('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' }).format(new Date(time))
 }
 
+function mergeConversations(...groups: ConversationSummary[][]): ConversationSummary[] {
+  const merged = new Map<string, ConversationSummary>()
+  for (const item of groups.flat()) {
+    const existing = merged.get(item.id)
+    if (!existing || Date.parse(item.updatedAt) >= Date.parse(existing.updatedAt)) merged.set(item.id, item)
+  }
+  return [...merged.values()].sort((a, b) => Date.parse(b.updatedAt) - Date.parse(a.updatedAt))
+}
+
 /**
  * Espace d'un expert IA de l'équipe : son activité (tâches traitées), ses
  * routines programmées, et l'accès à ses outils, ses données et ses productions.
@@ -65,6 +81,7 @@ function dayLabel(time: number, today: number): string {
  */
 export function AgentDetailPage() {
   const navigate = useNavigate()
+  const { session } = useSession()
   const { workspaceId = DEFAULT_WORKSPACE_ID, agentId = '' } = useParams()
   const [agent, setAgent] = useState<AgentDetail | null>(null)
   const [conversations, setConversations] = useState<ConversationSummary[]>([])
@@ -81,9 +98,19 @@ export function AgentDetailPage() {
   const location = useLocation()
   const [view, setView] = useState<View>('activite')
   // L'échange est une action : il s'ouvre par-dessus l'espace, sans le quitter.
-  const [chatOpen, setChatOpen] = useState((location.state as { openChat?: boolean } | null)?.openChat === true)
+  // Arrivée depuis un recrutement : la prise de poste de l'expert attend déjà,
+  // on l'ouvre au lieu de démarrer un fil vide. Figé au montage — rouvrir
+  // l'échange plus tard doit bien créer une nouvelle conversation.
+  const [fromRecruitment] = useState((location.state as { openChat?: boolean } | null)?.openChat === true)
   const [openedConversation, setOpenedConversation] = useState<string | undefined>(undefined)
   const [chatKey, setChatKey] = useState(0)
+  // L'échange est un panneau ancré à droite : sa largeur se règle à la souris ou
+  // au clavier, et il peut passer en plein écran pour les longues sessions.
+  const [chatFull, setChatFull] = useState(false)
+  const [chatWidth, setChatWidth] = useState(() => Math.min(CHAT_WIDTH_DEFAULT, window.innerWidth - CHAT_MARGIN_MIN))
+  const [newConversationRequested, setNewConversationRequested] = useState(false)
+  /** Filtre d'état de l'accueil. « all » en tête : c'est la vue par défaut. */
+  const [stateFilter, setStateFilter] = useState<ConversationStatus | 'all'>('all')
   const [profile, setProfile] = useState<AgentProfile | null>(null)
   const [profileSaved, setProfileSaved] = useState(false)
   const [savingProfile, setSavingProfile] = useState(false)
@@ -100,8 +127,14 @@ export function AgentDetailPage() {
       .then(async (detail) => {
         setAgent(detail)
         setConnectors(detail.connectors)
-        const [convs, arts, autos, files, catalog, team] = await Promise.all([
+        const hermesHistory = session && isHermesExpert(detail.id)
+          ? initializeHermesExpert(detail.id, hermesClientContextFromSession(session))
+              .then(() => listHermesConversations(detail.id, session))
+              .catch(() => [])
+          : Promise.resolve([])
+        const [convs, indexedConvs, arts, autos, files, catalog, team] = await Promise.all([
           listConversations({ agent: agentId }).catch(() => []),
+          hermesHistory,
           listLivrables({ agent: agentId }).catch(() => []),
           listAutomations().catch(() => []),
           listFiles().catch(() => []),
@@ -109,7 +142,10 @@ export function AgentDetailPage() {
           listAgentResources(agentId).catch(() => null),
         ])
         setShared(team)
-        setConversations(convs)
+        setConversations(mergeConversations(convs, indexedConvs))
+        if (fromRecruitment && convs.length > 0 && !isHermesExpert(detail.id)) {
+          setOpenedConversation([...convs].sort((a, b) => Date.parse(b.createdAt) - Date.parse(a.createdAt))[0].id)
+        }
         setArtefacts(arts)
         setAutomations(autos.filter((item) => item.agentId === agentId))
         // Seuls les documents de cet expert : le reste du fonds de l'organisation
@@ -119,13 +155,35 @@ export function AgentDetailPage() {
         setStatus('ready')
       })
       .catch(() => navigate(paths.agents(workspaceId), { replace: true }))
-  }, [agentId, navigate, workspaceId, retryKey])
+  }, [agentId, navigate, workspaceId, retryKey, fromRecruitment, session])
 
   // Réglages de personnalité : chargés à part (leur absence ne bloque pas la page).
   useEffect(() => {
     if (!agentId) return
     void getAgentProfile(agentId).then(setProfile).catch(() => setProfile(null))
   }, [agentId, retryKey])
+
+  /**
+   * Accueil : les tâches rangées par état, l'en cours d'abord. C'est la
+   * question à laquelle cette page doit répondre — que fait l'expert en ce
+   * moment, et qu'est-ce qui attend. Une tâche sans état est tenue pour livrée.
+   */
+  const statusGroups = useMemo(() => {
+    const sorted = [...conversations].sort((a, b) => Date.parse(b.updatedAt) - Date.parse(a.updatedAt))
+    return CONVERSATION_STATUSES.map((status) => ({
+      ...status,
+      items: sorted.filter((item) => (item.status ?? 'done') === status.key),
+    }))
+  }, [conversations])
+
+  /**
+   * Tâches affichées : une liste à plat, la plus récente en tête. Le filtre
+   * porte le regroupement — les empiler par état en plus ferait doublon.
+   */
+  const visibleTasks = useMemo(() => {
+    const sorted = [...conversations].sort((a, b) => Date.parse(b.updatedAt) - Date.parse(a.updatedAt))
+    return stateFilter === 'all' ? sorted : sorted.filter((item) => (item.status ?? 'done') === stateFilter)
+  }, [conversations, stateFilter])
 
   // Activité : tâches groupées par jour + volume des 7 derniers jours.
   const activity = useMemo(() => {
@@ -190,6 +248,11 @@ export function AgentDetailPage() {
   if (status === 'error') return <div className="route-loader"><LoadError onRetry={() => { setStatus('loading'); setRetryKey((key) => key + 1) }} /></div>
   if (!agent) return <div className="route-loader">Chargement de l'expert IA…</div>
 
+  const initialHermesConversation = fromRecruitment && !newConversationRequested && session && isHermesExpert(agent.id)
+    ? hermesInitialConversationId(hermesClientContextFromSession(session))
+    : undefined
+  const activeConversation = openedConversation ?? initialHermesConversation
+
   // Un profil non encore chargé ne bloque pas l'usage : l'expert est présumé en service.
   const inService = profile?.active !== false
   const serviceLabel = inService ? 'En service' : 'Désactivé'
@@ -197,8 +260,41 @@ export function AgentDetailPage() {
   // d'afficher une série de zéros et des graphiques plats.
   const hasHistory = conversations.length > 0 || artefacts.length > 0
   const activeRoutines = automations.filter((item) => item.active).length
-  const askExpert = () => { setOpenedConversation(undefined); setChatKey((key) => key + 1); setChatOpen(true) }
-  const openConversation = (id: string) => { setOpenedConversation(id); setChatOpen(true) }
+  // L'échange est en permanence à l'écran sur l'accueil : « démarrer » ou
+  // « reprendre » ne fait plus qu'y désigner la conversation affichée.
+  const askExpert = () => { setNewConversationRequested(true); setOpenedConversation(undefined); setChatKey((key) => key + 1); setView('activite') }
+  const openConversation = (id: string) => { setNewConversationRequested(false); setOpenedConversation(id); setView('activite') }
+  const refreshHermesActivity = () => {
+    if (!session || !isHermesExpert(agent.id)) return
+    void listHermesConversations(agent.id, session)
+      .then((indexed) => setConversations((current) => mergeConversations(current, indexed)))
+      .catch(() => undefined)
+  }
+
+  /** Élargit (delta > 0) ou rétrécit le panneau, en gardant la page visible. */
+  const resizeBy = (delta: number) => {
+    setChatWidth((current) => Math.min(Math.max(current + delta, CHAT_WIDTH_MIN), window.innerWidth - CHAT_MARGIN_MIN))
+  }
+
+  // Glisser le bord gauche. Les écouteurs vivent sur la fenêtre : le pointeur
+  // peut sortir du panneau sans que le geste se perde.
+  const startResize = (event: React.PointerEvent) => {
+    event.preventDefault()
+    const originX = event.clientX
+    const originWidth = chatWidth
+    const move = (moved: PointerEvent) => {
+      const next = originWidth + (originX - moved.clientX)
+      setChatWidth(Math.min(Math.max(next, CHAT_WIDTH_MIN), window.innerWidth - CHAT_MARGIN_MIN))
+    }
+    const stop = () => {
+      window.removeEventListener('pointermove', move)
+      window.removeEventListener('pointerup', stop)
+      document.body.classList.remove('is-resizing')
+    }
+    document.body.classList.add('is-resizing')
+    window.addEventListener('pointermove', move)
+    window.addEventListener('pointerup', stop)
+  }
   // Ressources d'un collègue déjà proposées : celles qu'il partage, moins celles
   // que cet expert exploite déjà.
   const availableShared = (shared?.shared ?? []).filter((item) => !borrowed.some((b) => b.id === item.id))
@@ -262,7 +358,7 @@ export function AgentDetailPage() {
   }
 
   const views: { key: View; icon: ReactNode; label: string }[] = [
-    { key: 'activite', icon: <ClipboardList size={16} />, label: 'Activité' },
+    { key: 'activite', icon: <ClipboardList size={16} />, label: 'Accueil' },
     { key: 'competences', icon: <Sparkles size={16} />, label: 'Compétences' },
     { key: 'suivi', icon: <LineChart size={16} />, label: 'Suivi' },
   ]
@@ -299,9 +395,6 @@ export function AgentDetailPage() {
           <span className={inService ? 'wk-card-dot' : 'wk-card-dot is-off'} title={serviceLabel} aria-label={serviceLabel} />
         </div>
 
-        <div className="wk-rail-actions">
-          <Button variant="tertiary" onClick={askExpert} disabled={!inService}>Demander à {agent.name}</Button>
-        </div>
 
         <nav className="wk-nav" aria-label="Espace de l'expert">
           {views.map((item) => (
@@ -360,7 +453,7 @@ export function AgentDetailPage() {
               <div className="wk-stat"><small>Tâches traitées</small><strong>{conversations.length}</strong><span>{activity.lastLabel}</span></div>
               <div className="wk-stat"><small>Temps de travail</small><strong>{formatDuration(activity.workedTotal)}</strong><span>cumulé sur les tâches</span></div>
               <div className="wk-stat"><small>Durée moyenne</small><strong>{formatDuration(activity.workedAverage)}</strong><span>par tâche</span></div>
-              <div className="wk-stat"><small>Productions</small><strong>{artefacts.length}</strong><span>{activity.perWeek} tâche{activity.perWeek > 1 ? 's' : ''} / semaine</span></div>
+              <div className="wk-stat"><small>Livrables</small><strong>{artefacts.length}</strong><span>{activity.perWeek} tâche{activity.perWeek > 1 ? 's' : ''} / semaine</span></div>
             </div>
 
             <div className="wk-view-sub">Charge par semaine</div>
@@ -388,9 +481,9 @@ export function AgentDetailPage() {
               </section>
 
               <section>
-                <div className="wk-view-sub">Nature des productions</div>
+                <div className="wk-view-sub">Nature des livrables</div>
                 {production.formats.length === 0
-                  ? <p className="act-empty">Aucune production enregistrée.</p>
+                  ? <p className="act-empty">Aucun livrable enregistré.</p>
                   : production.formats.map((entry) => (
                     <div key={entry.label} className="wk-meter">
                       <span className="wk-meter-txt">{entry.label}</span>
@@ -521,11 +614,32 @@ export function AgentDetailPage() {
               <div className="wk-form">
                 <section className="wk-settings">
                   <div className="wk-set-row">
-                    <span className="wk-set-txt"><strong>Canal préféré</strong></span>
-                    <div className="wk-seg">
-                      {orderChannels(agent.channels).map((option) => (
-                        <button type="button" key={option} className={profile.channel === option ? 'is-on' : undefined} onClick={() => patchProfile({ channel: option })}>{channelLabel(option)}</button>
-                      ))}
+                    <span className="wk-set-txt"><strong>Canaux</strong></span>
+                    {/* Plusieurs canaux à la fois. Le dernier coché reste coché :
+                        un expert joignable nulle part n'aurait aucun sens. */}
+                    <div className="wk-seg wk-seg--multi" role="group" aria-label="Canaux">
+                      {orderChannels(agent.channels).map((option) => {
+                        const on = profile.channels.includes(option)
+                        const last = on && profile.channels.length === 1
+                        return (
+                          <button
+                            type="button"
+                            key={option}
+                            role="checkbox"
+                            aria-checked={on}
+                            aria-disabled={last}
+                            title={last ? 'Au moins un canal est requis.' : undefined}
+                            className={on ? 'is-on' : undefined}
+                            onClick={() => patchProfile({
+                              channels: on
+                                ? (last ? profile.channels : profile.channels.filter((value) => value !== option))
+                                : [...profile.channels, option],
+                            })}
+                          >
+                            {channelLabel(option)}
+                          </button>
+                        )
+                      })}
                     </div>
                   </div>
 
@@ -604,81 +718,171 @@ export function AgentDetailPage() {
         )}
 
         {view === 'activite' && <>
-        <div className="wk-stats">
-          <div className="wk-stat"><small>Tâches traitées</small><strong>{conversations.length}</strong><span>{activity.week} cette semaine</span></div>
-          <div className="wk-stat"><small>Routines actives</small><strong>{activeRoutines}</strong><span>sur {automations.length} programmée{automations.length > 1 ? 's' : ''}</span></div>
-          <div className="wk-stat"><small>Productions</small><strong>{artefacts.length}</strong><span>livrable{artefacts.length > 1 ? 's' : ''} disponible{artefacts.length > 1 ? 's' : ''}</span></div>
-          <div className="wk-stat wk-stat--chart">
-            <small>Cette semaine</small>
-            <div className="wk-bars">
-              {activity.days.map((day) => (
-                <div key={day.key} className="wk-bar" title={`${day.count} tâche${day.count > 1 ? 's' : ''}`}>
-                  <span style={{ height: `${Math.round((day.count / activity.peak) * 100)}%` }} className={day.count > 0 ? 'is-on' : undefined} />
-                  <em>{day.letter}</em>
-                </div>
-              ))}
-            </div>
-          </div>
+        {/* Filtres d'état, « Tout » en tête. Un seul à la fois : c'est ce
+            sélecteur qui range les tâches, il n'y a donc plus de regroupement
+            en dessous — ce serait dire deux fois la même chose. */}
+        <div className="wk-filters" role="tablist" aria-label="Filtrer les tâches par état">
+          <button
+            type="button"
+            role="tab"
+            aria-selected={stateFilter === 'all'}
+            className={stateFilter === 'all' ? 'wk-filter is-on' : 'wk-filter'}
+            onClick={() => setStateFilter('all')}
+          >
+            Tout <b>{conversations.length}</b>
+          </button>
+          {statusGroups.map((group) => (
+            <button
+              type="button"
+              key={group.key}
+              role="tab"
+              aria-selected={stateFilter === group.key}
+              disabled={group.items.length === 0}
+              className={`wk-filter is-${group.key}${stateFilter === group.key ? ' is-on' : ''}`}
+              onClick={() => setStateFilter(group.key)}
+            >
+              <i aria-hidden="true" />{group.plural} <b>{group.items.length}</b>
+            </button>
+          ))}
         </div>
 
         <div className="wk-timeline">
-          {activity.groups.length === 0 ? (
+          {conversations.length === 0 ? (
             <p className="act-empty">Aucune tâche confiée à {agent.name} pour l'instant. Demandez-lui quelque chose pour démarrer.</p>
-          ) : activity.groups.map((group) => (
-            <section key={group.label} className="wk-day-group">
-              <div className="wk-day">{group.label}</div>
-              {group.items.map((item) => (
-                <button type="button" key={item.id} className="wk-row" onClick={() => openConversation(item.id)}>
-                  <span className="wk-row-time">{new Intl.DateTimeFormat('fr-FR', { hour: '2-digit', minute: '2-digit' }).format(Date.parse(item.createdAt))}</span>
-                  <span className="wk-row-dot" />
-                  <span className="wk-row-title">{item.title}</span>
-                  <span className="wk-row-preview">{item.preview}</span>
-                </button>
-              ))}
-            </section>
-          ))}
+          ) : (
+            <table className="wk-log" aria-label={`Activité de ${agent.name}`}>
+              <thead>
+                <tr><th>État</th><th>Tâche</th><th>Résultat</th><th>Quand</th></tr>
+              </thead>
+              <tbody>
+                {visibleTasks.map((item) => {
+                  const key = item.status ?? 'done'
+                  const state = CONVERSATION_STATUSES.find((entry) => entry.key === key)
+                  const open = () => openConversation(item.id)
+                  return (
+                    <tr
+                      key={item.id}
+                      role="button"
+                      tabIndex={0}
+                      aria-label={`${item.title} — ${state?.label}`}
+                      onClick={open}
+                      onKeyDown={(event) => {
+                        if (event.key !== 'Enter' && event.key !== ' ') return
+                        event.preventDefault()
+                        open()
+                      }}
+                    >
+                      {/* La couleur ne porte jamais l'information seule : la
+                          pastille contient toujours le mot. */}
+                      <td><span className={`wk-pill is-${key}`}>{state?.label}</span></td>
+                      <td className="wk-log-task">{item.title}</td>
+                      <td className="wk-log-result">{item.preview}</td>
+                      <td className="wk-log-when">{item.time}</td>
+                    </tr>
+                  )
+                })}
+              </tbody>
+            </table>
+          )}
         </div>
+
         </>}
       </main>
 
-      {view === 'activite' && <aside className="wk-side">
-        <div className="wk-side-head">
-          <h2>Ses routines <em>({automations.length})</em></h2>
-          <button type="button" className="act-more" onClick={() => setPicker('automation')}><Plus size={14} /> Ajouter</button>
-        </div>
-        {automations.length === 0 ? (
-          <p className="act-empty">Aucune routine programmée. {agent.name} n'agit que sur demande.</p>
-        ) : automations.map((routine) => (
-          <div key={routine.id} className={routine.active ? 'wk-routine' : 'wk-routine is-paused'}>
-            <AgentAvatar id={agent.id} name={agent.name} avatarUrl={agent.avatarUrl} className="wk-routine-av" />
-            <div className="wk-routine-txt">
-              <strong>{routine.name}</strong>
-              <small><Repeat size={12} /> {triggerLabel(routine.trigger)}</small>
+      {/* Colonne de droite : l'échange, toujours là. Ce n'est plus une fenêtre
+          qu'on ouvre et qu'on ferme — c'est un bloc de la page, qu'on élargit
+          en tirant son bord ou qu'on passe en plein écran. */}
+      {view === 'activite' && !chatFull && (
+        <aside className="wk-side wk-side--chat" style={{ ['--side-w' as string]: `${chatWidth}px` }}>
+          <div
+            className="wk-side-grip"
+            role="separator"
+            aria-label="Largeur de l’échange"
+            aria-orientation="vertical"
+            tabIndex={0}
+            onPointerDown={startResize}
+            onKeyDown={(event) => {
+              if (event.key !== 'ArrowLeft' && event.key !== 'ArrowRight') return
+              event.preventDefault()
+              resizeBy(event.key === 'ArrowLeft' ? 40 : -40)
+            }}
+          />
+          {/* Les routines coiffent la colonne : toujours visibles, quelle que
+              soit la longueur de la frise d'activité à gauche. */}
+          <section className="wk-routines">
+            <div className="wk-side-head">
+              {/* Le compteur « routines actives » vivait dans la rangée de
+                  compteurs de l'accueil : il se lit désormais ici, à sa place. */}
+              <h2>Ses routines <em>({activeRoutines} active{activeRoutines > 1 ? 's' : ''} sur {automations.length})</em></h2>
+              <button type="button" className="act-more" onClick={() => setPicker('automation')}><Plus size={14} /> Ajouter</button>
             </div>
-            <button type="button" className="wk-routine-btn" aria-label={routine.active ? `Mettre « ${routine.name} » en pause` : `Activer « ${routine.name} »`} onClick={() => toggleRoutine(routine)}>
-              {routine.active ? <Pause size={14} /> : <Play size={14} />}
-            </button>
-            <button type="button" className="wk-routine-btn wk-routine-btn--danger" aria-label={`Supprimer « ${routine.name} »`} onClick={() => setToDelete(routine)}>
-              <Trash2 size={14} />
-            </button>
+            {automations.length === 0 ? (
+              <p className="act-empty">Aucune routine programmée. {agent.name} n'agit que sur demande.</p>
+            ) : automations.map((routine) => (
+              <div key={routine.id} className={routine.active ? 'wk-routine' : 'wk-routine is-paused'}>
+                <AgentAvatar id={agent.id} name={agent.name} avatarUrl={agent.avatarUrl} className="wk-routine-av" />
+                <div className="wk-routine-txt">
+                  <strong>{routine.name}</strong>
+                  <small><Repeat size={12} /> {triggerLabel(routine.trigger)}</small>
+                </div>
+                <button type="button" className="wk-routine-btn" aria-label={routine.active ? `Mettre « ${routine.name} » en pause` : `Activer « ${routine.name} »`} onClick={() => toggleRoutine(routine)}>
+                  {routine.active ? <Pause size={14} /> : <Play size={14} />}
+                </button>
+                <button type="button" className="wk-routine-btn wk-routine-btn--danger" aria-label={`Supprimer « ${routine.name} »`} onClick={() => setToDelete(routine)}>
+                  <Trash2 size={14} />
+                </button>
+              </div>
+            ))}
+          </section>
+
+          <div className="wk-chat-block">
+            <div className="wk-chat-head">
+              <AgentAvatar id={agent.id} name={agent.name} avatarUrl={agent.avatarUrl} className="chat-modal-av" />
+              <span className="chat-modal-id">{agent.name}</span>
+              <button type="button" className="chat-modal-x" aria-label="Passer en plein écran" onClick={() => setChatFull(true)}>
+                <Maximize2 size={16} />
+              </button>
+            </div>
+            <ExpertChat
+              key={activeConversation ?? `nouveau-${chatKey}`}
+              agent={agent}
+              conversationId={activeConversation}
+              onCreated={(created) => {
+                setConversations((prev) => [created, ...prev])
+                setOpenedConversation(created.id)
+                // L'échange ne se ferme plus : la relecture de l'activité
+                // Hermes se déclenche donc ici, au moment où un fil naît.
+                refreshHermesActivity()
+              }}
+            />
           </div>
-        ))}
-      </aside>}
+        </aside>
+      )}
 
-
-      {chatOpen && (
-        <div className="chat-modal-overlay" role="dialog" aria-modal="true" aria-label={`Échange avec ${agent.name}`} onClick={() => setChatOpen(false)}>
-          <div className="chat-modal" onClick={(event) => event.stopPropagation()}>
+      {/* Plein écran : le même échange, l'espace entier. On en sort par le
+          bouton ou par Échap — il n'y a rien à « fermer », le bloc reste dans
+          la page en dessous. */}
+      {chatFull && (
+        <div className="chat-modal-overlay chat-modal-overlay--dock" role="dialog" aria-modal="true" aria-label={`Échange avec ${agent.name}`}>
+          <div className="chat-modal chat-modal--dock chat-modal--full">
             <div className="chat-modal-head">
               <AgentAvatar id={agent.id} name={agent.name} avatarUrl={agent.avatarUrl} className="chat-modal-av" />
               <span className="chat-modal-id">{agent.name}</span>
-              <button type="button" className="chat-modal-x" aria-label="Fermer" onClick={() => setChatOpen(false)}><X size={17} /></button>
+              <button type="button" className="chat-modal-x" aria-label="Réduire en panneau" onClick={() => setChatFull(false)}>
+                <Minimize2 size={16} />
+              </button>
             </div>
             <ExpertChat
-              key={openedConversation ?? `nouveau-${chatKey}`}
+              key={activeConversation ?? `nouveau-${chatKey}`}
               agent={agent}
-              conversationId={openedConversation}
-              onCreated={(created) => { setConversations((prev) => [created, ...prev]); setOpenedConversation(created.id) }}
+              conversationId={activeConversation}
+              onCreated={(created) => {
+              setConversations((prev) => [created, ...prev])
+              setOpenedConversation(created.id)
+              // L'échange ne se ferme plus : la relecture de l'activité Hermes
+              // se déclenche donc ici, au moment où un fil naît.
+              refreshHermesActivity()
+            }}
             />
           </div>
         </div>
