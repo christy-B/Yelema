@@ -574,6 +574,14 @@ button.project-activity-row:hover { background: #faf9fd; }
 .project-resource-grid { display: grid; max-width: 1120px; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; align-items: start; }
 .project-resource-section { overflow: hidden; }
 .project-resource-tab { width: 100%; max-width: 900px; }
+/* Les sections de connecteurs viennent de l'espace de l'expert, où le gabarit
+   porte lui-meme la marge interieure. Dans un projet, le bloc est une carte :
+   sans cette regle la grille se colle au bord alors que l'en-tete est retrait
+   de 20 px, et les cartes paraissent deborder. */
+.project-resource-tab .connectors-section { padding: 0 20px; }
+.project-resource-tab .connectors-section:first-of-type { padding-top: 18px; }
+.project-resource-tab .connectors-section:last-of-type { padding-bottom: 20px; }
+.project-resource-tab .act-empty { padding: 18px 20px; }
 .project-resource-actions { display: flex; flex-wrap: wrap; gap: 8px; padding: 0 18px 18px; }
 .project-resource-section--artifacts { border-color: #d9d0ef; }
 .project-resource-row { display: flex; min-height: 70px; align-items: center; gap: 12px; padding: 13px 18px; border-top: 1px solid #f0f2f5; }
