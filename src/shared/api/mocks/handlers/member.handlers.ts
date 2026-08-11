@@ -1,6 +1,7 @@
 import { http, HttpResponse } from 'msw'
 
 import { MEMBERS, roleByKey, ROLES, type DemoMember } from './demo-store'
+import { provisionAccount } from '../provisioning'
 import { API_BASE, notFound, requireAuth, validationError } from './helpers'
 
 /**
@@ -54,17 +55,17 @@ export const memberHandlers = [
       return validationError('Ce rôle n’existe pas.')
     }
 
-    const created: DemoMember = {
-      id: `u_${Math.random().toString(36).slice(2, 8)}`,
+    // Inviter, c'est ouvrir un accès : le compte en attente, son jeton
+    // d'activation et le message partent ensemble. Auparavant seul le membre
+    // était créé — le lien reçu ne contenait donc aucun jeton, et l'activation
+    // était impossible.
+    const { member: created } = provisionAccount({
+      name: body.name ?? null,
       email,
-      name: body.name?.trim() || null,
-      // Un membre invité reste « invited » jusqu'à l'activation de son accès.
-      status: 'invited',
-      isFirstAdmin: false,
       roleKey: body.roleKey ?? null,
       toolRestrictions: body.toolRestrictions ?? [],
-    }
-    MEMBERS.push(created)
+      kind: 'invitation',
+    })
     return HttpResponse.json(toDto(created), { status: 201 })
   }),
 

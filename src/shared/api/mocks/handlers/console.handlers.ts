@@ -1,8 +1,9 @@
 import { http, HttpResponse } from 'msw'
 
-import { MEMBERS, persistProvisioned, PLANS, PROVISIONED_PREFIX, ROLES, USERS, WORKSPACE } from './demo-store'
+import { PLANS, ROLES, USERS, WORKSPACE } from './demo-store'
 import { validationError } from './helpers'
-import { clearMessages, deliver, listMessages } from '../stores/outbox.store'
+import { clearMessages, listMessages } from '../stores/outbox.store'
+import { activationLink, provisionAccount } from '../provisioning'
 
 /**
  * Console de démonstration — provisionnement des comptes.
@@ -18,22 +19,6 @@ import { clearMessages, deliver, listMessages } from '../stores/outbox.store'
  * sans dépendre d'un back ni d'un serveur de courriel.
  */
 const DEMO_BASE = '/api/demo'
-
-/** Chemin d'activation ouvert par le destinataire du message. */
-const activationLink = (token: string) => `/espace-client/activation?token=${encodeURIComponent(token)}`
-
-/**
- * Prochain numéro de compte. Repart des comptes déjà présents — réhydratés
- * depuis le stockage local — pour ne pas réattribuer un identifiant existant
- * après un rechargement.
- */
-function nextId(): string {
-  const used = USERS
-    .filter((user) => user.id.startsWith(PROVISIONED_PREFIX))
-    .map((user) => Number.parseInt(user.id.slice(PROVISIONED_PREFIX.length), 10))
-    .filter((value) => Number.isFinite(value))
-  return `${PROVISIONED_PREFIX}${(used.length > 0 ? Math.max(...used) : 0) + 1}`
-}
 
 export const consoleHandlers = [
   // État courant : l'organisation, les comptes, les rôles et les forfaits.
@@ -81,39 +66,11 @@ export const consoleHandlers = [
     const roleKey = body.roleKey ?? 'member'
     if (!ROLES.some((role) => role.key === roleKey)) return validationError('Rôle inconnu.')
 
-    const id = nextId()
-    const token = `activation-${crypto.randomUUID().slice(0, 8)}`
-    USERS.push({
-      id,
-      name,
-      email,
-      // Pas de mot de passe tant que le compte n'est pas activé.
-      password: null,
-      token: `demo-token-${id}`,
-      status: 'pending',
-      jobTitle: body.jobTitle?.trim() || '',
-      avatarUrl: null,
-      isFirstAdmin: false,
-      roleKey,
-      preferences: { twofa: false, mailDigest: false, usageAlerts: false },
-      activationToken: token,
-    })
-    MEMBERS.push({ id, email, name, status: 'invited', isFirstAdmin: false, roleKey, toolRestrictions: [] })
-    // Le lien d'activation s'ouvre après un chargement complet : le compte doit
-    // survivre au rechargement, sinon son jeton devient inconnu.
-    persistProvisioned()
+    // Même mécanisme que l'invitation depuis l'écran Membres : compte en
+    // attente, jeton d'activation et message partent ensemble.
+    const { user, link } = provisionAccount({ name, email, roleKey, jobTitle: body.jobTitle })
 
-    const link = activationLink(token)
-    deliver({
-      kind: 'activation',
-      to: email,
-      toName: name,
-      subject: `Votre accès à ${WORKSPACE.name}`,
-      body: `Bonjour ${name}, un accès à l’espace client de ${WORKSPACE.name} vous a été ouvert. Choisissez votre mot de passe pour l’activer. Ce lien ne fonctionne qu’une fois.`,
-      link,
-    })
-
-    return HttpResponse.json({ id, name, email, status: 'pending', roleKey, activationLink: link }, { status: 201 })
+    return HttpResponse.json({ id: user.id, name: user.name, email, status: user.status, roleKey, activationLink: link }, { status: 201 })
   }),
 
   // La boîte de réception de démonstration.
