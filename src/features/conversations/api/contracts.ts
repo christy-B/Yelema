@@ -42,6 +42,8 @@ export interface ConversationSummary {
    * cet état dans le stockage du navigateur ; pour les autres, il est simulé.
    */
   status?: ConversationStatus
+  /** Vrai tant que la prise de poste ne contient encore aucune réponse utilisateur. */
+  onboardingOnly?: boolean
   createdAt: string
   updatedAt: string
 }

@@ -92,6 +92,7 @@ function materialiseOpenings(user: { id: string; email: string }): void {
       owner: user.email,
       // L'expert attend votre réponse : la tâche est ouverte, pas terminée.
       status: 'running',
+      onboardingOnly: true,
       time: "à l'instant",
       createdAt: now,
       updatedAt: now,

@@ -1,4 +1,4 @@
-import { ArrowLeft, Blocks, Check, ClipboardList, Database, Download, FileCheck2, LineChart, Maximize2, Minimize2, Pause, Play, Pencil, Plus, Repeat, Search, ShieldCheck, Sparkles, Trash2, Upload, UserCog, X } from 'lucide-react'
+import { Activity, ArrowLeft, Blocks, Check, CircleCheckBig, ClipboardList, Database, Download, FileCheck2, Gauge, LineChart, Maximize2, Minimize2, Pause, Play, Pencil, Plus, Repeat, Search, ShieldCheck, Sparkles, Trash2, Upload, UserCog, X } from 'lucide-react'
 import type { ReactNode } from 'react'
 import { useEffect, useMemo, useState } from 'react'
 import { useLocation, useNavigate, useParams } from 'react-router'
@@ -13,6 +13,8 @@ import { deleteAutomation, listAutomations, setAutomationActive } from '../../..
 import type { Automation } from '../../../features/automations/api/contracts'
 import { triggerLabel } from '../../../features/automations/api/contracts'
 import { listConversations } from '../../../features/conversations/api/api'
+import { conversationHistoryForAgent, defaultHermesConversationId, userActivityConversations } from '../../../features/conversations/api/conversation-activity'
+import { conversationTrackingSummary } from '../../../features/conversations/api/conversation-tracking'
 import type { ConversationStatus, ConversationSummary } from '../../../features/conversations/api/contracts'
 import { CONVERSATION_STATUSES } from '../../../features/conversations/api/contracts'
 import { hermesClientContextFromSession, hermesInitialConversationId, initializeHermesExpert, isHermesExpert, listHermesConversations } from '../../../features/conversations/api/hermes'
@@ -39,15 +41,6 @@ const CHAT_WIDTH_MIN = 360
 const CHAT_MARGIN_MIN = 72
 const WEEK_DAYS = ['D', 'L', 'M', 'M', 'J', 'V', 'S']
 const WEEK_FULL = ['dimanche', 'lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi']
-
-/** Durée lisible : 45 min, 2 h 10, 6 h. */
-function formatDuration(minutes: number): string {
-  if (minutes <= 0) return '—'
-  if (minutes < 60) return `${minutes} min`
-  const hours = Math.floor(minutes / 60)
-  const rest = minutes % 60
-  return rest === 0 ? `${hours} h` : `${hours} h ${String(rest).padStart(2, '0')}`
-}
 
 /** Cadrage d'un portrait retenu, appliqué à l'image du rail. */
 const CROP_POSITION: Record<string, string> = { entier: 'center', serre: 'center 6%', buste: 'center 12%', plein: 'center 30%' }
@@ -127,13 +120,19 @@ export function AgentDetailPage() {
       .then(async (detail) => {
         setAgent(detail)
         setConnectors(detail.connectors)
-        const hermesHistory = session && isHermesExpert(detail.id)
+        const usesHermesRuntime = isHermesExpert(detail.id)
+        const hermesHistory = session && usesHermesRuntime
           ? initializeHermesExpert(detail.id, hermesClientContextFromSession(session))
               .then(() => listHermesConversations(detail.id, session))
               .catch(() => [])
           : Promise.resolve([])
+        // Un profil Hermes ne doit jamais recevoir les conversations de démo
+        // servies par MSW : son écran ne reflète que son historique réel.
+        const simulatedHistory = usesHermesRuntime
+          ? Promise.resolve([])
+          : listConversations({ agent: agentId }).catch(() => [])
         const [convs, indexedConvs, arts, autos, files, catalog, team] = await Promise.all([
-          listConversations({ agent: agentId }).catch(() => []),
+          simulatedHistory,
           hermesHistory,
           listLivrables({ agent: agentId }).catch(() => []),
           listAutomations().catch(() => []),
@@ -142,8 +141,8 @@ export function AgentDetailPage() {
           listAgentResources(agentId).catch(() => null),
         ])
         setShared(team)
-        setConversations(mergeConversations(convs, indexedConvs))
-        if (fromRecruitment && convs.length > 0 && !isHermesExpert(detail.id)) {
+        setConversations(conversationHistoryForAgent(usesHermesRuntime, convs, indexedConvs))
+        if (fromRecruitment && convs.length > 0 && !usesHermesRuntime) {
           setOpenedConversation([...convs].sort((a, b) => Date.parse(b.createdAt) - Date.parse(a.createdAt))[0].id)
         }
         setArtefacts(arts)
@@ -168,27 +167,30 @@ export function AgentDetailPage() {
    * question à laquelle cette page doit répondre — que fait l'expert en ce
    * moment, et qu'est-ce qui attend. Une tâche sans état est tenue pour livrée.
    */
+  const activityConversations = useMemo(() => userActivityConversations(conversations), [conversations])
+  const tracking = useMemo(() => conversationTrackingSummary(activityConversations), [activityConversations])
+
   const statusGroups = useMemo(() => {
-    const sorted = [...conversations].sort((a, b) => Date.parse(b.updatedAt) - Date.parse(a.updatedAt))
+    const sorted = [...activityConversations].sort((a, b) => Date.parse(b.updatedAt) - Date.parse(a.updatedAt))
     return CONVERSATION_STATUSES.map((status) => ({
       ...status,
       items: sorted.filter((item) => (item.status ?? 'done') === status.key),
     }))
-  }, [conversations])
+  }, [activityConversations])
 
   /**
    * Tâches affichées : une liste à plat, la plus récente en tête. Le filtre
    * porte le regroupement — les empiler par état en plus ferait doublon.
    */
   const visibleTasks = useMemo(() => {
-    const sorted = [...conversations].sort((a, b) => Date.parse(b.updatedAt) - Date.parse(a.updatedAt))
+    const sorted = [...activityConversations].sort((a, b) => Date.parse(b.updatedAt) - Date.parse(a.updatedAt))
     return stateFilter === 'all' ? sorted : sorted.filter((item) => (item.status ?? 'done') === stateFilter)
-  }, [conversations, stateFilter])
+  }, [activityConversations, stateFilter])
 
   // Activité : tâches groupées par jour + volume des 7 derniers jours.
   const activity = useMemo(() => {
     const today = startOfDay(new Date())
-    const sorted = [...conversations].sort((a, b) => Date.parse(b.createdAt) - Date.parse(a.createdAt))
+    const sorted = [...activityConversations].sort((a, b) => Date.parse(b.createdAt) - Date.parse(a.createdAt))
     const groups: { label: string; items: ConversationSummary[] }[] = []
     for (const item of sorted) {
       const label = dayLabel(Date.parse(item.createdAt), today)
@@ -213,9 +215,6 @@ export function AgentDetailPage() {
       }).length
       return { key: start, letter: `S${index + 1}`, count }
     })
-    // Temps de travail (fourni par tâche) et rythme.
-    const workedTotal = sorted.reduce((total, item) => total + (item.workedMinutes ?? 0), 0)
-    const measured = sorted.filter((item) => item.workedMinutes !== undefined).length
     const busiest = Array.from({ length: 7 }, (_, day) => ({
       day,
       count: sorted.filter((item) => new Date(item.createdAt).getDay() === day).length,
@@ -224,13 +223,11 @@ export function AgentDetailPage() {
       groups, days, week,
       peak: Math.max(1, ...days.map((day) => day.count)),
       weeks, weekPeak: Math.max(1, ...weeks.map((item) => item.count)),
-      workedTotal,
-      workedAverage: measured > 0 ? Math.round(workedTotal / measured) : 0,
       perWeek: Math.round((sorted.length / 8) * 10) / 10,
       lastLabel: sorted[0] ? `dernière ${sorted[0].time}` : 'aucune pour l’instant',
       busiestDay: busiest && busiest.count > 0 ? WEEK_FULL[busiest.day] : '—',
     }
-  }, [conversations])
+  }, [activityConversations])
 
   // Répartition des productions : compétences sollicitées et natures de livrables.
   const production = useMemo(() => {
@@ -248,17 +245,24 @@ export function AgentDetailPage() {
   if (status === 'error') return <div className="route-loader"><LoadError onRetry={() => { setStatus('loading'); setRetryKey((key) => key + 1) }} /></div>
   if (!agent) return <div className="route-loader">Chargement de l'expert IA…</div>
 
-  const initialHermesConversation = fromRecruitment && !newConversationRequested && session && isHermesExpert(agent.id)
+  // À l'ouverture d'un profil Hermes, le chat se positionne tout seul : la
+  // dernière interaction réelle si elle existe, sinon la prise de poste afin
+  // que l'expert décline immédiatement son identité. « Nouvelle conversation »
+  // reste la seule action qui ouvre volontairement un fil vide.
+  const onboardingHermesConversation = session && isHermesExpert(agent.id)
     ? hermesInitialConversationId(hermesClientContextFromSession(session))
     : undefined
-  const activeConversation = openedConversation ?? initialHermesConversation
+  const automaticHermesConversation = status === 'ready' && !newConversationRequested && onboardingHermesConversation
+    ? defaultHermesConversationId(conversations, onboardingHermesConversation)
+    : undefined
+  const activeConversation = openedConversation ?? automaticHermesConversation
 
   // Un profil non encore chargé ne bloque pas l'usage : l'expert est présumé en service.
   const inService = profile?.active !== false
   const serviceLabel = inService ? 'En service' : 'Désactivé'
   // Un expert fraîchement recruté n'a rien à mesurer : on le dit plutôt que
   // d'afficher une série de zéros et des graphiques plats.
-  const hasHistory = conversations.length > 0 || artefacts.length > 0
+  const hasHistory = activityConversations.length > 0 || artefacts.length > 0
   const activeRoutines = automations.filter((item) => item.active).length
   // L'échange est en permanence à l'écran sur l'accueil : « démarrer » ou
   // « reprendre » ne fait plus qu'y désigner la conversation affichée.
@@ -449,56 +453,115 @@ export function AgentDetailPage() {
               </div>
             ) : (
             <>
-            <div className="wk-stats">
-              <div className="wk-stat"><small>Tâches traitées</small><strong>{conversations.length}</strong><span>{activity.lastLabel}</span></div>
-              <div className="wk-stat"><small>Temps de travail</small><strong>{formatDuration(activity.workedTotal)}</strong><span>cumulé sur les tâches</span></div>
-              <div className="wk-stat"><small>Durée moyenne</small><strong>{formatDuration(activity.workedAverage)}</strong><span>par tâche</span></div>
-              <div className="wk-stat"><small>Livrables</small><strong>{artefacts.length}</strong><span>{activity.perWeek} tâche{activity.perWeek > 1 ? 's' : ''} / semaine</span></div>
-            </div>
+            <div className="tracking-dashboard">
+              <div className="tracking-kpis">
+                <article className="tracking-kpi">
+                  <span className="tracking-kpi-icon tracking-kpi-icon--purple"><ClipboardList size={18} /></span>
+                  <div><small>Tâches suivies</small><strong>{tracking.total}</strong><span>{activity.lastLabel}</span></div>
+                </article>
+                <article className="tracking-kpi">
+                  <span className="tracking-kpi-icon tracking-kpi-icon--amber"><Activity size={18} /></span>
+                  <div><small>À suivre maintenant</small><strong>{tracking.active}</strong><span>{tracking.running} en cours · {tracking.paused} en pause</span></div>
+                </article>
+                <article className="tracking-kpi">
+                  <span className="tracking-kpi-icon tracking-kpi-icon--green"><CircleCheckBig size={18} /></span>
+                  <div><small>Taux de livraison</small><strong>{tracking.completionRate}%</strong><span>{tracking.done} tâche{tracking.done > 1 ? 's' : ''} terminée{tracking.done > 1 ? 's' : ''}</span></div>
+                </article>
+                <article className="tracking-kpi">
+                  <span className="tracking-kpi-icon tracking-kpi-icon--blue"><FileCheck2 size={18} /></span>
+                  <div><small>Livrables produits</small><strong>{artefacts.length}</strong><span>{activity.perWeek} tâche{activity.perWeek > 1 ? 's' : ''} / semaine</span></div>
+                </article>
+              </div>
 
-            <div className="wk-view-sub">Charge par semaine</div>
-            <div className="wk-chart-wide">
-              {activity.weeks.map((week) => (
-                <div key={week.key} className="wk-bar" title={`${week.count} tâche${week.count > 1 ? 's' : ''}`}>
-                  <span style={{ height: `${Math.round((week.count / activity.weekPeak) * 100)}%` }} className={week.count > 0 ? 'is-on' : undefined} />
-                  <em>{week.letter}</em>
+              <section className="tracking-card tracking-workload">
+                <header className="tracking-card-head">
+                  <div><span>Activité</span><h3>Charge sur les 8 dernières semaines</h3></div>
+                  <strong>{activity.weeks.reduce((sum, week) => sum + week.count, 0)} tâche{activity.weeks.reduce((sum, week) => sum + week.count, 0) > 1 ? 's' : ''}</strong>
+                </header>
+                <div className="tracking-chart" aria-label="Charge de travail hebdomadaire">
+                  {activity.weeks.map((week) => (
+                    <div key={week.key} className="tracking-bar" title={`${week.count} tâche${week.count > 1 ? 's' : ''}`}>
+                      <span className="tracking-bar-value">{week.count || ''}</span>
+                      <i style={{ height: `${Math.max(week.count > 0 ? 12 : 2, Math.round((week.count / activity.weekPeak) * 100))}%` }} className={week.count > 0 ? 'is-on' : undefined} />
+                      <em>{week.letter}</em>
+                    </div>
+                  ))}
                 </div>
-              ))}
-            </div>
-
-            <div className="wk-splits">
-              <section>
-                <div className="wk-view-sub">Compétences les plus sollicitées</div>
-                {production.topSkills.length === 0
-                  ? <p className="act-empty">Rien à mesurer pour l'instant.</p>
-                  : production.topSkills.map((entry) => (
-                    <div key={entry.label} className="wk-meter">
-                      <span className="wk-meter-txt">{entry.label}</span>
-                      <span className="wk-meter-bar"><i style={{ width: `${Math.round((entry.count / production.topSkills[0].count) * 100)}%` }} /></span>
-                      <span className="wk-meter-n">{entry.count}</span>
-                    </div>
-                  ))}
               </section>
 
-              <section>
-                <div className="wk-view-sub">Nature des livrables</div>
-                {production.formats.length === 0
-                  ? <p className="act-empty">Aucun livrable enregistré.</p>
-                  : production.formats.map((entry) => (
-                    <div key={entry.label} className="wk-meter">
-                      <span className="wk-meter-txt">{entry.label}</span>
-                      <span className="wk-meter-bar"><i style={{ width: `${Math.round((entry.count / production.formats[0].count) * 100)}%` }} /></span>
-                      <span className="wk-meter-n">{entry.count}</span>
-                    </div>
-                  ))}
-              </section>
-            </div>
+              <div className="tracking-grid">
+                <section className="tracking-card">
+                  <header className="tracking-card-head"><div><span>État des tâches</span><h3>Répartition actuelle</h3></div><Gauge size={18} /></header>
+                  <div className="tracking-status-list">
+                    {CONVERSATION_STATUSES.map((entry) => {
+                      const count = tracking[entry.key]
+                      return (
+                        <div className="tracking-status" key={entry.key}>
+                          <span className={`tracking-status-dot tracking-status-dot--${entry.key}`} />
+                          <span>{entry.plural}</span>
+                          <i><b style={{ width: `${tracking.total ? Math.round((count / tracking.total) * 100) : 0}%` }} /></i>
+                          <strong>{count}</strong>
+                        </div>
+                      )
+                    })}
+                  </div>
+                </section>
 
-            <div className="wk-facts">
-              <div><small>Jour le plus actif</small><strong>{activity.busiestDay}</strong></div>
-              <div><small>Routines exécutées</small><strong>{automations.filter((a) => a.lastRunAt).length} sur {automations.length}</strong></div>
-              <div><small>Sources reliées</small><strong>{sources.length}</strong></div>
-              <div><small>Outils connectés</small><strong>{connectors.length}</strong></div>
+                <section className="tracking-card">
+                  <header className="tracking-card-head"><div><span>Historique</span><h3>Activités récentes</h3></div><strong>{tracking.total}</strong></header>
+                  <div className="tracking-recent-list">
+                    {[...activityConversations]
+                      .sort((left, right) => Date.parse(right.updatedAt) - Date.parse(left.updatedAt))
+                      .slice(0, 4)
+                      .map((item) => {
+                        const key = item.status ?? 'done'
+                        const state = CONVERSATION_STATUSES.find((entry) => entry.key === key)
+                        return (
+                          <button type="button" key={item.id} onClick={() => openConversation(item.id)} className="tracking-recent-row">
+                            <span className={`tracking-recent-state tracking-recent-state--${key}`} />
+                            <span className="tracking-recent-copy"><strong>{item.title}</strong><small>{item.time}</small></span>
+                            <em>{state?.label}</em>
+                          </button>
+                        )
+                      })}
+                  </div>
+                </section>
+              </div>
+
+              <div className="tracking-grid tracking-grid--production">
+                <section className="tracking-card">
+                  <header className="tracking-card-head"><div><span>Expertise</span><h3>Compétences les plus sollicitées</h3></div></header>
+                  {production.topSkills.length === 0
+                    ? <p className="act-empty">Rien à mesurer pour l'instant.</p>
+                    : production.topSkills.map((entry) => (
+                      <div key={entry.label} className="wk-meter">
+                        <span className="wk-meter-txt">{entry.label}</span>
+                        <span className="wk-meter-bar"><i style={{ width: `${Math.round((entry.count / production.topSkills[0].count) * 100)}%` }} /></span>
+                        <span className="wk-meter-n">{entry.count}</span>
+                      </div>
+                    ))}
+                </section>
+
+                <section className="tracking-card">
+                  <header className="tracking-card-head"><div><span>Production</span><h3>Nature des livrables</h3></div></header>
+                  {production.formats.length === 0
+                    ? <p className="act-empty">Aucun livrable enregistré.</p>
+                    : production.formats.map((entry) => (
+                      <div key={entry.label} className="wk-meter">
+                        <span className="wk-meter-txt">{entry.label}</span>
+                        <span className="wk-meter-bar"><i style={{ width: `${Math.round((entry.count / production.formats[0].count) * 100)}%` }} /></span>
+                        <span className="wk-meter-n">{entry.count}</span>
+                      </div>
+                    ))}
+                </section>
+              </div>
+
+              <div className="tracking-facts">
+                <div><small>Jour le plus actif</small><strong>{activity.busiestDay}</strong></div>
+                <div><small>Routines exécutées</small><strong>{automations.filter((a) => a.lastRunAt).length} sur {automations.length}</strong></div>
+                <div><small>Sources reliées</small><strong>{sources.length}</strong></div>
+                <div><small>Outils connectés</small><strong>{connectors.length}</strong></div>
+              </div>
             </div>
             </>
             )}
@@ -729,7 +792,7 @@ export function AgentDetailPage() {
             className={stateFilter === 'all' ? 'wk-filter is-on' : 'wk-filter'}
             onClick={() => setStateFilter('all')}
           >
-            Tout <b>{conversations.length}</b>
+            Tout <b>{activityConversations.length}</b>
           </button>
           {statusGroups.map((group) => (
             <button
@@ -747,7 +810,7 @@ export function AgentDetailPage() {
         </div>
 
         <div className="wk-timeline">
-          {conversations.length === 0 ? (
+          {activityConversations.length === 0 ? (
             <p className="act-empty">Aucune tâche confiée à {agent.name} pour l'instant. Demandez-lui quelque chose pour démarrer.</p>
           ) : (
             <table className="wk-log" aria-label={`Activité de ${agent.name}`}>
@@ -847,6 +910,7 @@ export function AgentDetailPage() {
               key={activeConversation ?? `nouveau-${chatKey}`}
               agent={agent}
               conversationId={activeConversation}
+              onUpdated={refreshHermesActivity}
               onCreated={(created) => {
                 setConversations((prev) => [created, ...prev])
                 setOpenedConversation(created.id)
@@ -876,6 +940,7 @@ export function AgentDetailPage() {
               key={activeConversation ?? `nouveau-${chatKey}`}
               agent={agent}
               conversationId={activeConversation}
+              onUpdated={refreshHermesActivity}
               onCreated={(created) => {
               setConversations((prev) => [created, ...prev])
               setOpenedConversation(created.id)

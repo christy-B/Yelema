@@ -1,4 +1,4 @@
-import type { Message } from './contracts.ts'
+import type { ConversationStatus, Message } from './contracts.ts'
 import { hermesConversationStorageKey } from './hermes-routing.ts'
 
 export interface HermesStorage {
@@ -17,6 +17,7 @@ export interface HermesStoredConversation {
   userId: string
   owner: string
   title: string
+  status?: ConversationStatus
   messages: Message[]
   createdAt: string
   updatedAt: string
@@ -44,7 +45,12 @@ function parseConversation(value: string | null): HermesStoredConversation | nul
 }
 
 export function saveStoredHermesConversation(storage: HermesStorage, conversation: HermesStoredConversation): void {
-  const key = hermesConversationStorageKey(conversation.agentId, conversation.organizationId, conversation.id)
+  const key = hermesConversationStorageKey(
+    conversation.agentId,
+    conversation.organizationId,
+    conversation.id,
+    conversation.userId,
+  )
   storage.setItem(key, JSON.stringify(conversation))
 }
 
@@ -53,27 +59,49 @@ export function loadStoredHermesConversation(
   frontAgentId: string,
   organizationId: string,
   conversationId: string,
+  userId?: string,
 ): HermesStoredConversation | null {
-  return parseConversation(storage.getItem(hermesConversationStorageKey(frontAgentId, organizationId, conversationId)))
+  if (userId) {
+    const scoped = parseConversation(storage.getItem(
+      hermesConversationStorageKey(frontAgentId, organizationId, conversationId, userId),
+    ))
+    if (scoped?.userId === userId) return scoped
+  }
+  const legacy = parseConversation(storage.getItem(
+    hermesConversationStorageKey(frontAgentId, organizationId, conversationId),
+  ))
+  return !userId || legacy?.userId === userId ? legacy : null
 }
 
 export function listStoredHermesConversations(
   storage: HermesStorage,
   frontAgentId: string,
   organizationId: string,
+  userId?: string,
 ): HermesStoredConversation[] {
   const marker = '__prefix__'
-  const prefix = hermesConversationStorageKey(frontAgentId, organizationId, marker).replace(marker, '')
-  const conversations: HermesStoredConversation[] = []
+  const prefixes = [
+    ...(userId
+      ? [hermesConversationStorageKey(frontAgentId, organizationId, marker, userId).replace(marker, '')]
+      : []),
+    hermesConversationStorageKey(frontAgentId, organizationId, marker).replace(marker, ''),
+  ]
+  const conversations = new Map<string, HermesStoredConversation>()
   for (let index = 0; index < storage.length; index += 1) {
     const key = storage.key(index)
-    if (!key?.startsWith(prefix)) continue
+    if (!key || !prefixes.some((prefix) => key.startsWith(prefix))) continue
     const conversation = parseConversation(storage.getItem(key))
     if (
       conversation
       && conversation.agentId === frontAgentId
       && conversation.organizationId.toLocaleLowerCase('en-US') === organizationId.toLocaleLowerCase('en-US')
-    ) conversations.push(conversation)
+      && (!userId || conversation.userId === userId)
+    ) {
+      const previous = conversations.get(conversation.id)
+      if (!previous || Date.parse(conversation.updatedAt) >= Date.parse(previous.updatedAt)) {
+        conversations.set(conversation.id, conversation)
+      }
+    }
   }
-  return conversations.sort((left, right) => Date.parse(right.updatedAt) - Date.parse(left.updatedAt))
+  return [...conversations.values()].sort((left, right) => Date.parse(right.updatedAt) - Date.parse(left.updatedAt))
 }

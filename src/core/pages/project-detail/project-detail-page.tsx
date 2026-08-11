@@ -6,6 +6,7 @@ import { listAgents } from '../../../features/agents/api/api'
 import type { AgentSummary } from '../../../features/agents/api/contracts'
 import { getProject } from '../../../features/projects/api/api'
 import { PROJECT_STATUS_LABELS, PROJECT_TASK_STATUS_LABELS, type Project, type ProjectActivity } from '../../../features/projects/api/contracts'
+import { projectDetailTabs, type ProjectDetailTab } from '../../../features/projects/project-navigation'
 import { projectProgress, sortProjectActivities } from '../../../features/projects/project-model'
 import { AgentAvatar } from '../../../shared/components/agent-avatar/agent-avatar'
 import { Button } from '../../../shared/components/button/button'
@@ -14,8 +15,6 @@ import { ProjectTeamModal } from '../../../shared/components/project-team-modal/
 import { listConnectors, uploadFiles } from '../../../features/files/api/api'
 import type { Connector } from '../../../features/files/api/contracts'
 import { DEFAULT_WORKSPACE_ID, paths } from '../../routes/paths'
-
-type ProjectTab = 'overview' | 'activity' | 'resources'
 
 const dateFormatter = new Intl.DateTimeFormat('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })
 const dateTimeFormatter = new Intl.DateTimeFormat('fr-FR', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })
@@ -26,7 +25,7 @@ export function ProjectDetailPage() {
   const [project, setProject] = useState<Project | null>(null)
   const [agents, setAgents] = useState<AgentSummary[]>([])
   const [connectors, setConnectors] = useState<Connector[]>([])
-  const [tab, setTab] = useState<ProjectTab>('overview')
+  const [tab, setTab] = useState<ProjectDetailTab>('overview')
   const [status, setStatus] = useState<'loading' | 'error' | 'ready'>('loading')
   const [retryKey, setRetryKey] = useState(0)
   const [editingTeam, setEditingTeam] = useState(false)
@@ -55,6 +54,12 @@ export function ProjectDetailPage() {
   const inputs = project.resources.filter((resource) => resource.kind === 'input')
   const artifacts = project.resources.filter((resource) => resource.kind === 'artifact')
   const linkedConnectors = connectors.filter((connector) => connector.status === 'connected')
+  const tabs = projectDetailTabs({
+    activities: project.activities.length,
+    resources: inputs.length,
+    artifacts: artifacts.length,
+    connectors: linkedConnectors.length,
+  })
 
   const openActivity = (activity: ProjectActivity) => {
     if (!activity.agentId) return
@@ -107,9 +112,11 @@ export function ProjectDetailPage() {
       </header>
 
       <nav className="project-tabs" aria-label="Sections du projet">
-        <button type="button" className={tab === 'overview' ? 'is-active' : ''} onClick={() => setTab('overview')}>Vue d’ensemble</button>
-        <button type="button" className={tab === 'activity' ? 'is-active' : ''} onClick={() => setTab('activity')}>Activité <span>{project.activities.length}</span></button>
-        <button type="button" className={tab === 'resources' ? 'is-active' : ''} onClick={() => setTab('resources')}>Ressources et artefacts <span>{project.resources.length}</span></button>
+        {tabs.map((item) => (
+          <button key={item.key} type="button" className={tab === item.key ? 'is-active' : ''} onClick={() => setTab(item.key)}>
+            {item.label}{item.count !== undefined && <span>{item.count}</span>}
+          </button>
+        ))}
       </nav>
 
       <main className="project-detail-body">
@@ -185,43 +192,59 @@ export function ProjectDetailPage() {
         )}
 
         {tab === 'resources' && (
-          <div className="project-resource-grid">
-            <section className="project-resource-section">
-              <div className="project-section-head"><div><span className="project-section-kicker">Connecteurs</span><h2>Connecteurs liés au projet</h2><p>Sources de données et outils que le projet peut consulter.</p></div><span>{linkedConnectors.length}</span></div>
-              <div className="project-resource-list">
-                {linkedConnectors.map((connector) => (
-                  <div key={connector.id} className="project-resource-row">
-                    <span className="project-resource-icon"><Blocks size={18} /></span>
-                    <div><strong>{connector.name}</strong><span>{connector.category} · {connector.metier}</span></div>
-                  </div>
-                ))}
-                {linkedConnectors.length === 0 && <p className="project-clear-state"><CheckCircle2 size={17} />Aucun connecteur lié pour le moment.</p>}
-              </div>
-              <div className="project-resource-actions">
-                {connectors.filter((connector) => connector.status === 'available').map((connector) => (
-                  <Button
-                    key={connector.id}
-                    type="button"
-                    variant="tertiary"
-                    size="small"
-                    disabled={loadingConnector === connector.id}
-                    onClick={() => linkConnector(connector)}
-                  >
-                    {loadingConnector === connector.id ? 'Connexion…' : `Lier ${connector.name}`}
-                  </Button>
-                ))}
-              </div>
-            </section>
-            <section className="project-resource-section">
-              <div className="project-section-head"><div><span className="project-section-kicker">Entrées</span><h2>Ressources du projet</h2><p>Documents fournis pour cadrer et réaliser le travail.</p></div><Button type="button" variant="tertiary" size="small" leadingIcon={<Plus size={14} />} disabled={savingFiles} onClick={() => document.getElementById('project-upload-input')?.click()}>{savingFiles ? 'Import…' : 'Ajouter un document'}</Button></div>
-              <input id="project-upload-input" type="file" multiple hidden onChange={(event) => { if (event.target.files) void uploadProjectFiles(Array.from(event.target.files)) }} />
-              <div className="project-resource-list">{inputs.map((resource) => <div key={resource.id} className="project-resource-row"><span className="project-resource-icon"><FolderOpen size={18} /></span><div><strong>{resource.name}</strong><span>{resource.format} · ajouté le {dateFormatter.format(new Date(resource.createdAt))}</span></div></div>)}</div>
-            </section>
-            <section className="project-resource-section project-resource-section--artifacts">
-              <div className="project-section-head"><div><span className="project-section-kicker">Productions</span><h2>Artefacts</h2><p>Livrables produits par les experts du projet.</p></div><span>{artifacts.length}</span></div>
-              <div className="project-resource-list">{artifacts.map((resource) => { const agent = resource.agentId ? agentById.get(resource.agentId) : undefined; return <div key={resource.id} className="project-resource-row"><span className="project-resource-icon"><FileText size={18} /></span><div><strong>{resource.name}</strong><span>{resource.format}{agent ? ` · produit par ${agent.name}` : ''}</span></div></div> })}</div>
-            </section>
-          </div>
+          <section className="project-resource-section project-resource-tab">
+            <div className="project-section-head">
+              <div><span className="project-section-kicker">Entrées</span><h2>Ressources du projet</h2><p>Documents fournis pour cadrer et réaliser le travail.</p></div>
+              <Button type="button" variant="tertiary" size="small" leadingIcon={<Plus size={14} />} disabled={savingFiles} onClick={() => document.getElementById('project-upload-input')?.click()}>{savingFiles ? 'Import…' : 'Ajouter un document'}</Button>
+            </div>
+            <input id="project-upload-input" type="file" multiple hidden onChange={(event) => { if (event.target.files) void uploadProjectFiles(Array.from(event.target.files)) }} />
+            <div className="project-resource-list">
+              {inputs.map((resource) => <div key={resource.id} className="project-resource-row"><span className="project-resource-icon"><FolderOpen size={18} /></span><div><strong>{resource.name}</strong><span>{resource.format} · ajouté le {dateFormatter.format(new Date(resource.createdAt))}</span></div></div>)}
+              {inputs.length === 0 && <p className="project-clear-state"><FolderOpen size={17} />Aucune ressource ajoutée au projet.</p>}
+            </div>
+          </section>
+        )}
+
+        {tab === 'artifacts' && (
+          <section className="project-resource-section project-resource-tab">
+            <div className="project-section-head"><div><span className="project-section-kicker">Productions</span><h2>Artefacts du projet</h2><p>Livrables produits par les experts mobilisés sur ce projet.</p></div><span>{artifacts.length}</span></div>
+            <div className="project-resource-list">
+              {artifacts.map((resource) => {
+                const agent = resource.agentId ? agentById.get(resource.agentId) : undefined
+                return <div key={resource.id} className="project-resource-row"><span className="project-resource-icon project-resource-icon--artifact"><FileText size={18} /></span><div><strong>{resource.name}</strong><span>{resource.format}{agent ? ` · produit par ${agent.name}` : ''}</span></div></div>
+              })}
+              {artifacts.length === 0 && <p className="project-clear-state"><FileText size={17} />Aucun artefact produit pour le moment.</p>}
+            </div>
+          </section>
+        )}
+
+        {tab === 'connectors' && (
+          <section className="project-resource-section project-resource-tab">
+            <div className="project-section-head"><div><span className="project-section-kicker">Outils et données</span><h2>Connecteurs liés au projet</h2><p>Sources de données et outils que les experts du projet peuvent consulter.</p></div><span>{linkedConnectors.length}</span></div>
+            <div className="project-resource-list">
+              {linkedConnectors.map((connector) => (
+                <div key={connector.id} className="project-resource-row">
+                  <span className="project-resource-icon"><Blocks size={18} /></span>
+                  <div><strong>{connector.name}</strong><span>{connector.category} · {connector.metier}</span></div>
+                </div>
+              ))}
+              {linkedConnectors.length === 0 && <p className="project-clear-state"><CheckCircle2 size={17} />Aucun connecteur lié pour le moment.</p>}
+            </div>
+            <div className="project-resource-actions">
+              {connectors.filter((connector) => connector.status === 'available').map((connector) => (
+                <Button
+                  key={connector.id}
+                  type="button"
+                  variant="tertiary"
+                  size="small"
+                  disabled={loadingConnector === connector.id}
+                  onClick={() => linkConnector(connector)}
+                >
+                  {loadingConnector === connector.id ? 'Connexion…' : `Lier ${connector.name}`}
+                </Button>
+              ))}
+            </div>
+          </section>
         )}
       </main>
 

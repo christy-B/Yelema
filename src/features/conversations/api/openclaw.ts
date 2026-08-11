@@ -384,14 +384,14 @@ function sessionKey(frontAgentId: string, conversationId: string): string {
 /**
  * COPIE AUTONOME — intégration désactivée.
  *
- * Cette copie du front est faite pour tourner seule, sur les seuls mocks MSW :
- * ni passerelle OpenClaw, ni compte, ni jeton. Le garde-fou ci-dessous répond
- * donc toujours « non », et tous les appelants empruntent d'eux-mêmes le
- * chemin simulé — aucun d'eux n'a été modifié.
+ * Cette copie du front tourne seule, sur les seuls mocks MSW : ni passerelle
+ * OpenClaw, ni compte, ni jeton. Le garde-fou ci-dessous répond donc toujours
+ * « non », et tous les appelants empruntent d'eux-mêmes le chemin simulé —
+ * aucun d'eux n'a été modifié.
  *
- * Le reste du module est conservé tel quel pour que les types et les
- * signatures restent alignés sur le monorepo : réactiver l'intégration se
- * limite à rétablir la ligne d'origine, indiquée juste en dessous.
+ * Le reste du module est conservé tel quel pour que les types et les signatures
+ * restent alignés sur le monorepo : réactiver l'intégration se limite à
+ * rétablir la ligne d'origine, indiquée juste en dessous.
  */
 export function isOpenClawExpert(frontAgentId: string): boolean {
   void frontAgentId

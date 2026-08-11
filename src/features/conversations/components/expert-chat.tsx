@@ -20,6 +20,8 @@ interface ExpertChatProps {
   conversationId?: string
   /** Notifié à la création d'une conversation (pour rafraîchir l'activité, l'URL…). */
   onCreated?: (conversation: ConversationSummary) => void
+  /** Notifié après une nouvelle interaction dans une conversation existante. */
+  onUpdated?: () => void
 }
 
 /**
@@ -27,7 +29,7 @@ interface ExpertChatProps {
  * de l'expert (où le chat est immédiatement disponible) et par l'écran d'une
  * conversation reprise depuis la liste.
  */
-export function ExpertChat({ agent, conversationId, onCreated }: ExpertChatProps) {
+export function ExpertChat({ agent, conversationId, onCreated, onUpdated }: ExpertChatProps) {
   const { session } = useSession()
   const usesHermes = isHermesExpert(agent.id)
   const [messages, setMessages] = useState<Message[]>([])
@@ -147,6 +149,8 @@ export function ExpertChat({ agent, conversationId, onCreated }: ExpertChatProps
             ).catch(() => undefined)
           }
           onCreated?.(createdConversation)
+        } else {
+          onUpdated?.()
         }
       } else {
         const reply = await sendMessage(currentId, text)

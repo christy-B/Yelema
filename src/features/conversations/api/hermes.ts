@@ -12,6 +12,7 @@ import {
   hermesOnboardingConversationId,
   hermesRuntimeAgentId,
 } from './hermes-routing.ts'
+import { parseHermesTaskStatus, withHermesTaskStatusProtocol } from './hermes-task-status.ts'
 
 export interface HermesImageAttachment {
   mimeType: string
@@ -50,6 +51,10 @@ function runtimeConfig(frontAgentId: string): HermesRuntimeConfig {
     adjoua: import.meta.env.VITE_HERMES_ADJOUA_URL as string | undefined,
     djeneba: import.meta.env.VITE_HERMES_DJENEBA_URL as string | undefined,
     lokoli: import.meta.env.VITE_HERMES_LOKOLI_URL as string | undefined,
+    alioune: import.meta.env.VITE_HERMES_ALIOUNE_URL as string | undefined,
+    fatima: import.meta.env.VITE_HERMES_FATIMA_URL as string | undefined,
+    koffi: import.meta.env.VITE_HERMES_KOFFI_URL as string | undefined,
+    mamadou: import.meta.env.VITE_HERMES_MAMADOU_URL as string | undefined,
   }
   const apiBaseUrl = urls[id]?.trim()
   const apiKey = (import.meta.env.VITE_HERMES_API_KEY as string | undefined)?.trim()
@@ -94,7 +99,7 @@ function limitedHistory(messages: HermesChatMessage[]): HermesChatMessage[] {
   return kept.reverse()
 }
 
-function toSummary(conversation: HermesStoredConversation): ConversationSummary {
+export function hermesConversationSummary(conversation: HermesStoredConversation): ConversationSummary {
   const last = conversation.messages.at(-1)
   return {
     id: conversation.id,
@@ -104,10 +109,17 @@ function toSummary(conversation: HermesStoredConversation): ConversationSummary 
     preview: last?.text ?? conversation.title,
     owner: conversation.owner,
     time: relativeTime(conversation.updatedAt),
-    status: 'done',
+    status: conversation.status ?? 'done',
+    // Une présentation générée par le vrai profil Hermes est déjà une activité.
+    // Seules les prises de poste simulées par MSW restent masquées.
+    onboardingOnly: false,
     createdAt: conversation.createdAt,
     updatedAt: conversation.updatedAt,
   }
+}
+
+export function needsHermesInitialization(history: HermesStoredConversation[]): boolean {
+  return history.length === 0
 }
 
 function relativeTime(value: string): string {
@@ -122,14 +134,14 @@ function relativeTime(value: string): string {
 /**
  * COPIE AUTONOME — intégration désactivée.
  *
- * Cette copie du front est faite pour tourner seule, sur les seuls mocks MSW :
- * ni passerelle Hermes, ni compte, ni jeton. Le garde-fou ci-dessous répond
- * donc toujours « non », et tous les appelants empruntent d'eux-mêmes le
- * chemin simulé — aucun d'eux n'a été modifié.
+ * Cette copie du front tourne seule, sur les seuls mocks MSW : ni passerelle
+ * Hermes, ni compte, ni jeton. Le garde-fou ci-dessous répond donc toujours
+ * « non », et tous les appelants empruntent d'eux-mêmes le chemin simulé —
+ * aucun d'eux n'a été modifié.
  *
- * Le reste du module est conservé tel quel pour que les types et les
- * signatures restent alignés sur le monorepo : réactiver l'intégration se
- * limite à rétablir la ligne d'origine, indiquée juste en dessous.
+ * Le reste du module est conservé tel quel pour que les types et les signatures
+ * restent alignés sur le monorepo : réactiver l'intégration se limite à
+ * rétablir la ligne d'origine, indiquée juste en dessous.
  */
 export function isHermesExpert(frontAgentId: string): boolean {
   void frontAgentId
@@ -159,7 +171,12 @@ export function createHermesConversationId(organizationId: string): string {
 }
 
 export async function listHermesConversations(frontAgentId: string, session: Session): Promise<ConversationSummary[]> {
-  return listStoredHermesConversations(storage(), frontAgentId, session.workspace.id).map(toSummary)
+  return listStoredHermesConversations(
+    storage(),
+    frontAgentId,
+    session.workspace.id,
+    session.user.id,
+  ).map(hermesConversationSummary)
 }
 
 export async function listHermesMessages(
@@ -167,7 +184,13 @@ export async function listHermesMessages(
   conversationId: string,
   context: HermesClientContext,
 ): Promise<Message[]> {
-  return loadStoredHermesConversation(storage(), frontAgentId, context.organization.id, conversationId)?.messages ?? []
+  return loadStoredHermesConversation(
+    storage(),
+    frontAgentId,
+    context.organization.id,
+    conversationId,
+    context.user.id,
+  )?.messages ?? []
 }
 
 export async function labelHermesConversation(
@@ -176,7 +199,13 @@ export async function labelHermesConversation(
   title: string,
   context: HermesClientContext,
 ): Promise<void> {
-  const conversation = loadStoredHermesConversation(storage(), frontAgentId, context.organization.id, conversationId)
+  const conversation = loadStoredHermesConversation(
+    storage(),
+    frontAgentId,
+    context.organization.id,
+    conversationId,
+    context.user.id,
+  )
   if (!conversation) return
   saveStoredHermesConversation(storage(), { ...conversation, title: title.slice(0, 120), updatedAt: new Date().toISOString() })
 }
@@ -184,11 +213,16 @@ export async function labelHermesConversation(
 export function initializeHermesExpert(frontAgentId: string, context: HermesClientContext): Promise<void> {
   if (!isHermesExpert(frontAgentId)) return Promise.resolve()
   const conversationId = hermesInitialConversationId(context)
-  const activeKey = `${frontAgentId}:${context.organization.id}`
+  const activeKey = `${frontAgentId}:${context.organization.id}:${context.user.id}`
   const active = initializationRuns.get(activeKey)
   if (active) return active
-  const existing = loadStoredHermesConversation(storage(), frontAgentId, context.organization.id, conversationId)
-  if (existing?.messages.some((message) => message.role === 'agent')) return Promise.resolve()
+  const history = listStoredHermesConversations(
+    storage(),
+    frontAgentId,
+    context.organization.id,
+    context.user.id,
+  )
+  if (!needsHermesInitialization(history)) return Promise.resolve()
 
   const run = sendHermesMessage(
     frontAgentId,
@@ -221,9 +255,15 @@ export async function sendHermesMessage(
   const organizationId = context?.organization.id
   if (!organizationId) throw new Error("Le contexte de l'organisation est requis pour utiliser Hermes.")
   const now = new Date().toISOString()
-  const previous = loadStoredHermesConversation(storage(), frontAgentId, organizationId, conversationId)
+  const previous = loadStoredHermesConversation(
+    storage(),
+    frontAgentId,
+    organizationId,
+    conversationId,
+    context.user.id,
+  )
   const visibleText = visibleUserMessage(message)
-  const outboundText = messageWithClientContext(message, context)
+  const outboundText = messageWithClientContext(withHermesTaskStatusProtocol(message), context)
   const content: HermesChatMessage['content'] = attachments?.length
     ? [
         { type: 'text', text: outboundText },
@@ -237,13 +277,14 @@ export async function sendHermesMessage(
     role: item.role === 'agent' ? 'assistant' : 'user',
     content: item.text,
   }))
-  const text = await sendHermesChat({
+  const rawText = await sendHermesChat({
     apiBaseUrl: runtime.apiBaseUrl,
     apiKey: runtime.apiKey,
     model: runtime.id,
     messages: limitedHistory([...history, { role: 'user', content }]),
-    onDelta,
+    onDelta: (partial) => onDelta(parseHermesTaskStatus(partial).text),
   })
+  const { text, status } = parseHermesTaskStatus(rawText)
   const userMessages: Message[] = visibleText
     ? [{ id: crypto.randomUUID(), role: 'user', text: visibleText }]
     : []
@@ -259,6 +300,7 @@ export async function sendHermesMessage(
     userId: previous?.userId ?? context.user.id,
     owner: previous?.owner ?? context.user.name,
     title,
+    status,
     messages: [...(previous?.messages ?? []), ...userMessages, assistant],
     createdAt: previous?.createdAt ?? now,
     updatedAt: now,
