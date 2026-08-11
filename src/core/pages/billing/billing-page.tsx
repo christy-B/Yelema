@@ -11,6 +11,12 @@ const STATUS_LABELS: Record<string, { label: string; cls: string }> = {
   paid: { label: 'Payée', cls: 'is-paid' },
   issued: { label: 'Émise', cls: 'is-pending' },
   draft: { label: 'Brouillon', cls: 'is-pending' },
+  // Une facture en retard s'affichait « late » : le repli montre la valeur
+  // brute du back, ce qui est utile en développement mais illisible pour un
+  // client.
+  late: { label: 'En retard', cls: 'is-late' },
+  overdue: { label: 'En retard', cls: 'is-late' },
+  void: { label: 'Annulée', cls: 'is-pending' },
 }
 
 export function BillingPage() {
@@ -28,6 +34,8 @@ export function BillingPage() {
 
   const money = (value: number, currency?: string) => new Intl.NumberFormat('fr-FR', { style: 'currency', currency: currency ?? summary?.currency ?? 'EUR', maximumFractionDigits: 0 }).format(value)
   const download = async (id: string) => { const response = await downloadInvoicePdf(id); const blob = await response.blob(); const url = URL.createObjectURL(blob); window.open(url, '_blank', 'noopener,noreferrer') }
+  /** Compteur d'usage : un nombre de tâches, jamais un montant. */
+  const tasks = new Intl.NumberFormat('fr-FR', { maximumFractionDigits: 0 })
   const maxUsers = plans.find((plan) => plan.key === summary?.planKey)?.limits.maxUsers
   const statusBadge = (value: string) => STATUS_LABELS[value] ?? { label: value, cls: 'is-pending' }
 
@@ -39,8 +47,14 @@ export function BillingPage() {
         {status === 'ready' && summary && (
           <div className="billing-stats">
             <Card><small>Formule</small><strong>{summary.plan}</strong><span>{maxUsers ? `Jusqu'à ${maxUsers} membres` : ''}</span></Card>
-            {/* Consommation runtime non disponible en v1 (télémétrie à venir). */}
-            <Card><small>Consommation du mois</small><strong>{summary.consumption != null ? money(summary.consumption) : '—'}</strong><span className="billing-included">{summary.included != null ? `sur ${money(summary.included)} inclus` : 'Bientôt disponible'}</span></Card>
+            {/* La consommation se compte en TÂCHES, pas en francs : la passer
+                dans le formateur monétaire affichait « 41 F CFA » à côté d'une
+                facture de 2,4 millions, ce qui ne voulait rien dire. */}
+            <Card>
+              <small>Consommation du mois</small>
+              <strong>{summary.consumption != null ? `${tasks.format(summary.consumption)} tâche${summary.consumption > 1 ? 's' : ''}` : '—'}</strong>
+              <span className="billing-included">{summary.included != null ? `sur ${tasks.format(summary.included)} incluses au forfait` : 'Bientôt disponible'}</span>
+            </Card>
             <Card><small>Prochaine facture</small><strong>{summary.next ? money(summary.next.amount) : '—'}</strong><span>{summary.next ? `le ${new Intl.DateTimeFormat('fr-FR').format(new Date(summary.next.date))}` : ''}</span></Card>
           </div>
         )}

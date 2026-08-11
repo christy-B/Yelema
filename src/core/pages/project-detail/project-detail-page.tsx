@@ -1,4 +1,4 @@
-import { ArrowLeft, Blocks, Bot, CalendarDays, CheckCircle2, ChevronRight, Circle, Clock3, FileText, FolderOpen, ListChecks, Plus, ShieldCheck, Users } from 'lucide-react'
+import { ArrowLeft, Bot, CalendarDays, CheckCircle2, Check, ChevronRight, Circle, Clock3, FileText, FolderOpen, ListChecks, Plus, ShieldCheck, Users } from 'lucide-react'
 import { useEffect, useMemo, useState } from 'react'
 import { useNavigate, useParams } from 'react-router'
 
@@ -12,8 +12,10 @@ import { AgentAvatar } from '../../../shared/components/agent-avatar/agent-avata
 import { Button } from '../../../shared/components/button/button'
 import { LoadError } from '../../../shared/components/load-error/load-error'
 import { ProjectTeamModal } from '../../../shared/components/project-team-modal/project-team-modal'
+import { CONNECTOR_LOGOS } from '../../../features/agents/connector-logos'
 import { listConnectors, uploadFiles } from '../../../features/files/api/api'
 import type { Connector } from '../../../features/files/api/contracts'
+import { CONNECTOR_CATEGORIES } from '../../../features/files/connector-categories'
 import { DEFAULT_WORKSPACE_ID, paths } from '../../routes/paths'
 
 const dateFormatter = new Intl.DateTimeFormat('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })
@@ -54,6 +56,12 @@ export function ProjectDetailPage() {
   const inputs = project.resources.filter((resource) => resource.kind === 'input')
   const artifacts = project.resources.filter((resource) => resource.kind === 'artifact')
   const linkedConnectors = connectors.filter((connector) => connector.status === 'connected')
+  // Même regroupement que l'onglet Connecteurs d'un expert : par thématique,
+  // catalogue complet, l'état porté par la carte. Les deux écrans montrent la
+  // même chose, ils doivent donc se lire de la même façon.
+  const connectorGroups = CONNECTOR_CATEGORIES
+    .map((category) => ({ ...category, items: connectors.filter((connector) => connector.category === category.name) }))
+    .filter((group) => group.items.length > 0)
   const tabs = projectDetailTabs({
     activities: project.activities.length,
     resources: inputs.length,
@@ -221,29 +229,35 @@ export function ProjectDetailPage() {
         {tab === 'connectors' && (
           <section className="project-resource-section project-resource-tab">
             <div className="project-section-head"><div><span className="project-section-kicker">Outils et données</span><h2>Connecteurs liés au projet</h2><p>Sources de données et outils que les experts du projet peuvent consulter.</p></div><span>{linkedConnectors.length}</span></div>
-            <div className="project-resource-list">
-              {linkedConnectors.map((connector) => (
-                <div key={connector.id} className="project-resource-row">
-                  <span className="project-resource-icon"><Blocks size={18} /></span>
-                  <div><strong>{connector.name}</strong><span>{connector.category} · {connector.metier}</span></div>
-                </div>
+            {connectorGroups.length === 0
+              ? <p className="act-empty">Aucun connecteur disponible pour l'instant.</p>
+              : connectorGroups.map((group) => (
+                <section className="connectors-section" key={group.name}>
+                  <h3 className="section-title">{group.name}</h3>
+                  <div className="connectors-grid">
+                    {group.items.map((connector) => {
+                      const connected = connector.status === 'connected'
+                      const busy = loadingConnector === connector.id
+                      return (
+                        <div key={connector.id} className={connected ? 'connector-card is-connected' : 'connector-card'}>
+                          {CONNECTOR_LOGOS[connector.provider]
+                            ? <span className="connector-icon connector-icon--logo"><img src={CONNECTOR_LOGOS[connector.provider]} alt="" /></span>
+                            : <span className="connector-icon" style={{ background: group.color }}>{connector.name[0]}</span>}
+                          <div className="connector-copy">
+                            <strong>{connector.name}</strong>
+                            <small>{connected ? 'Connecté' : 'Disponible'}</small>
+                          </div>
+                          {connected
+                            ? <span className="connector-badge"><Check size={13} /> Connecté</span>
+                            : <button type="button" className="connector-add" disabled={busy} onClick={() => linkConnector(connector)}>
+                                <Plus size={14} /> {busy ? 'Connexion…' : 'Lier'}
+                              </button>}
+                        </div>
+                      )
+                    })}
+                  </div>
+                </section>
               ))}
-              {linkedConnectors.length === 0 && <p className="project-clear-state"><CheckCircle2 size={17} />Aucun connecteur lié pour le moment.</p>}
-            </div>
-            <div className="project-resource-actions">
-              {connectors.filter((connector) => connector.status === 'available').map((connector) => (
-                <Button
-                  key={connector.id}
-                  type="button"
-                  variant="tertiary"
-                  size="small"
-                  disabled={loadingConnector === connector.id}
-                  onClick={() => linkConnector(connector)}
-                >
-                  {loadingConnector === connector.id ? 'Connexion…' : `Lier ${connector.name}`}
-                </Button>
-              ))}
-            </div>
           </section>
         )}
       </main>

@@ -12,8 +12,20 @@ export const billingHandlers = [
     return requireAuth(request) ?? HttpResponse.json(SUMMARY)
   }),
 
+  /**
+   * ATTENTION : `/billing/plans` est la seule route de facturation que le front
+   * consomme SANS adaptateur — le contrat BillingPlan doit donc être rendu tel
+   * quel. Servir la forme du magasin de démonstration (amount, seats) laissait
+   * `limits` absent, et l'écran plantait sur `limits.maxUsers`.
+   */
   http.get(`${API_BASE}/billing/plans`, ({ request }) => {
-    return requireAuth(request) ?? HttpResponse.json(PLANS)
+    return requireAuth(request) ?? HttpResponse.json(PLANS.map((plan) => ({
+      key: plan.key,
+      name: plan.name,
+      priceMonthly: plan.amount,
+      currency: plan.currency,
+      limits: { maxUsers: plan.seats, maxTools: null },
+    })))
   }),
 
   // Déclaré avant /billing/invoices/:id pour ne pas être capté par le paramètre.

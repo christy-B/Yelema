@@ -1277,6 +1277,8 @@ button.work-row:hover { border-color: #cbb8f5; }
 .invoice-badge { justify-self: start; padding: 3px 10px; border-radius: 999px; font-size: 11.5px; font-weight: 600; font-style: normal; }
 .invoice-badge.is-paid { color: #0ea371; background: #e6f8f5; }
 .invoice-badge.is-pending { color: #b7791f; background: #fbf1dc; }
+/* Retard : le rouge distingue ce qui appelle une action de ce qui attend. */
+.invoice-badge.is-late { color: #b3403f; background: #fcebeb; }
 .invoice-row button { display: inline-flex; align-items: center; gap: 5px; color: var(--primary); background: transparent; font-weight: 600; }
 .period-tabs { display: flex; overflow: hidden; border: 1px solid var(--line); border-radius: 10px; }
 .period-tabs button { min-height: 38px; padding: 0 15px; color: var(--muted); border-left: 1px solid var(--line); background: #fff; font-size: 12.5px; }
