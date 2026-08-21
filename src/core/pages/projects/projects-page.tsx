@@ -1,4 +1,4 @@
-import { ArrowRight, CalendarDays, Clock3, FolderKanban, Plus, Users } from 'lucide-react'
+import { AlertTriangle, ArrowRight, CalendarDays, Clock3, FolderKanban, Plus, Users } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router'
 
@@ -56,6 +56,18 @@ export function ProjectsPage() {
             {projects.map((project) => {
               const progress = projectProgress(project.tasks)
               const recentActivities = sortProjectActivities(project.activities).slice(0, 3)
+              // Ce qui est a l'arret faute d'une reponse. Un plan entierement
+              // valide mais jamais lance compte aussi : tout est pret et
+              // personne ne travaille.
+              const planReady = project.planState !== 'running'
+                && project.tasks.length > 0
+                && project.assignments.length > 0
+                && project.tasks.every((task) => task.approved && !!task.agentId)
+              const waiting = project.decisions.length > 0
+                ? `${project.decisions.length} ${project.decisions.length > 1 ? 'décisions attendent' : 'décision attend'} votre réponse`
+                : planReady ? 'Le plan est validé — le projet attend son lancement'
+                : project.planState !== 'running' ? 'Le plan attend votre validation'
+                : null
               return (
                 <Card key={project.id} interactive className="project-card" onClick={() => openProject(project.id)}>
                   <div className="project-card-layout">
@@ -66,6 +78,13 @@ export function ProjectsPage() {
                       </div>
                       <h2>{project.name}</h2>
                       <p>{project.objective}</p>
+                      {/* Avant meme d'ouvrir : ce projet attend-il quelque
+                          chose de moi ? */}
+                      {waiting && (
+                        <span className={project.decisions.length > 0 ? 'project-card-wait is-urgent' : 'project-card-wait'}>
+                          <AlertTriangle size={13} />{waiting}
+                        </span>
+                      )}
                       <div className="project-progress-row"><span>Progression</span><strong>{progress} %</strong></div>
                       <div className="project-progress"><span style={{ width: `${progress}%` }} /></div>
                     </div>
@@ -78,7 +97,7 @@ export function ProjectsPage() {
                         if (!agent) return null
                         return (
                           <div key={assignment.agentId} className="project-card-agent">
-                            <AgentAvatar id={agent.id} name={agent.name} avatarUrl={agent.avatarUrl} size={32} mono />
+                            <AgentAvatar id={agent.id} name={agent.name} avatarUrl={agent.avatarUrl} size={32} variant="square" mono />
                             <div className="project-card-agent-main"><strong>{agent.name}</strong><span>{assignment.responsibility}</span>{currentTask && <small>{currentTask.title}</small>}</div>
                             {currentTask && <span className={`project-task-status project-task-status--${currentTask.status}`}>{PROJECT_TASK_STATUS_LABELS[currentTask.status]}</span>}
                           </div>

@@ -8,29 +8,97 @@
     {
       "id": "c_1_m2",
       "role": "agent",
-      "text": "7 relances envoyées, 2 clients ont déjà répondu."
+      "text": "J’ai 9 devis de mai sans réponse, pour 47,3 millions au total. Je relance les 9, ou seulement ceux au-dessus d’un seuil ?"
+    },
+    {
+      "id": "c_1_m3",
+      "role": "user",
+      "text": "Tous, mais adapte le ton pour les gros dossiers"
+    },
+    {
+      "id": "c_1_m4",
+      "role": "agent",
+      "text": "Compris. Deux modèles : une relance courte pour les 6 devis sous 5 millions, et une relance nominative pour les 3 autres — Ivoire Digital, Sotra Services, Groupe Bernabé. Je vous montre celle d’Ivoire Digital avant envoi ?"
+    },
+    {
+      "id": "c_1_m5",
+      "role": "user",
+      "text": "Oui, montre-moi"
+    },
+    {
+      "id": "c_1_m6",
+      "role": "agent",
+      "text": "« Bonjour M. Kouadio, je reviens vers vous au sujet de notre proposition du 12 mai pour l’ouverture de vos comptes filiales. Vous évoquiez une décision après votre conseil de juin — puis-je vous apporter un élément d’ici là ? »"
+    },
+    {
+      "id": "c_1_m7",
+      "role": "user",
+      "text": "Parfait, envoie"
+    },
+    {
+      "id": "c_1_m8",
+      "role": "agent",
+      "text": "7 relances envoyées, 2 clients ont déjà répondu. Sotra Services demande un délai de deux semaines, Bernabé souhaite un rendez-vous. Je vous ai mis les deux en attente de décision.",
+      "sources": [
+        "Devis mai 2026.xlsx",
+        "Historique CRM"
+      ]
     }
   ],
   "c_2": [
     {
       "id": "c_2_m1",
       "role": "user",
-      "text": "Prospection distributeurs Bouaké"
+      "text": "Prospection des distributeurs à Bouaké"
     },
     {
       "id": "c_2_m2",
       "role": "agent",
-      "text": "12 profils qualifiés, message d'approche prêt pour chacun."
+      "text": "Combien de profils vous faut-il, et sur quel critère je les retiens : la taille, la zone, ou les produits déjà distribués ?"
+    },
+    {
+      "id": "c_2_m3",
+      "role": "user",
+      "text": "Une douzaine, ceux qui couvrent le centre du pays"
+    },
+    {
+      "id": "c_2_m4",
+      "role": "agent",
+      "text": "J’ai 34 distributeurs sur la zone. J’en écarte 22 : 14 sont déjà chez un concurrent sous exclusivité, 8 n’ont pas de dépôt propre."
+    },
+    {
+      "id": "c_2_m5",
+      "role": "user",
+      "text": "Les 12 restants, tu les connais comment ?"
+    },
+    {
+      "id": "c_2_m6",
+      "role": "agent",
+      "text": "12 profils qualifiés, message d'approche prêt pour chacun.",
+      "sources": [
+        "Annuaire des distributeurs",
+        "Relevés de tournée 2026"
+      ]
     }
   ],
   "c_3": [
     {
       "id": "c_3_m1",
       "role": "user",
-      "text": "Offre grossiste supermarché Cocody"
+      "text": "Une offre pour le grossiste du supermarché de Cocody"
     },
     {
       "id": "c_3_m2",
+      "role": "agent",
+      "text": "Sur quel volume ? La remise change à partir de 500 unités, et il m’a demandé 800 la dernière fois."
+    },
+    {
+      "id": "c_3_m3",
+      "role": "user",
+      "text": "Pars sur 800, avec la remise volume"
+    },
+    {
+      "id": "c_3_m4",
       "role": "agent",
       "text": "Devis à 4,2 M FCFA avec remise volume — prêt à envoyer."
     }
@@ -44,7 +112,30 @@
     {
       "id": "c_4_m2",
       "role": "agent",
-      "text": "9 demandes triées : 3 chaudes, 4 à relancer, 2 hors cible."
+      "text": "312 messages reçus depuis lundi. Sur quels critères je qualifie : budget annoncé, échéance, ou décideur identifié ?"
+    },
+    {
+      "id": "c_4_m3",
+      "role": "user",
+      "text": "Les trois, et dis-moi ce qui ressort"
+    },
+    {
+      "id": "c_4_m4",
+      "role": "agent",
+      "text": "41 demandes qualifiées sur 312. Le reste : 180 demandes de solde ou d’opposition de carte — du support, pas du commercial —, 62 hors périmètre, 29 sans réponse à mes questions."
+    },
+    {
+      "id": "c_4_m5",
+      "role": "user",
+      "text": "Les 41, elles valent combien ?"
+    },
+    {
+      "id": "c_4_m6",
+      "role": "agent",
+      "text": "Estimation à 128 millions, dont 4 dossiers au-dessus de 15 millions. J’ai poussé les 41 dans le pipeline et prévenu Awa pour les 180 demandes de support.",
+      "sources": [
+        "Export WhatsApp — semaine 34"
+      ]
     }
   ],
   "c_5": [
@@ -63,46 +154,117 @@
     {
       "id": "c_6_m1",
       "role": "user",
-      "text": "Préparer le rendez-vous Ivoire Digital"
+      "text": "Prépare le rendez-vous Ivoire Digital de jeudi"
     },
     {
       "id": "c_6_m2",
       "role": "agent",
-      "text": "Fiche commerciale et argumentaire prêts pour jeudi 10h."
+      "text": "Leur dernier échange remonte à mars, sur une demande de ligne de crédit restée sans suite. C’est ce point qu’il faut ouvrir, ou autre chose ?"
+    },
+    {
+      "id": "c_6_m3",
+      "role": "user",
+      "text": "Non, c’est bien ça. Ils ont grandi depuis"
+    },
+    {
+      "id": "c_6_m4",
+      "role": "agent",
+      "text": "Alors l’argument change : en mars ils demandaient 40 millions sur des comptes de 2024. Leurs flux ont doublé depuis."
+    },
+    {
+      "id": "c_6_m5",
+      "role": "user",
+      "text": "Exactement"
+    },
+    {
+      "id": "c_6_m6",
+      "role": "agent",
+      "text": "Fiche commerciale et argumentaire prêts pour jeudi 10h.",
+      "sources": [
+        "Historique CRM — Ivoire Digital",
+        "Flux 12 mois"
+      ]
     }
   ],
   "c_7": [
     {
       "id": "c_7_m1",
       "role": "user",
-      "text": "Scoring du pipeline du mois"
+      "text": "Note-moi le pipeline du mois"
     },
     {
       "id": "c_7_m2",
       "role": "agent",
-      "text": "18 pistes notées, 5 au-dessus de 80."
+      "text": "Sur quels critères je pondère ? J’ai le montant, l’ancienneté de la piste, et le fait qu’un décideur soit identifié ou non."
+    },
+    {
+      "id": "c_7_m3",
+      "role": "user",
+      "text": "Le décideur compte le plus"
+    },
+    {
+      "id": "c_7_m4",
+      "role": "agent",
+      "text": "18 pistes notées, 5 au-dessus de 80.",
+      "sources": [
+        "Pipeline août 2026"
+      ]
     }
   ],
   "c_8": [
     {
       "id": "c_8_m1",
       "role": "user",
-      "text": "Répondre aux messages de la nuit"
+      "text": "Réponses aux réclamations de la semaine"
     },
     {
       "id": "c_8_m2",
       "role": "agent",
-      "text": "14 messages traités, 2 escalades laissées à l'équipe."
+      "text": "54 réclamations. 38 relèvent de trois motifs répétés : frais de tenue de compte mal comprises, virement UEMOA en attente, carte avalée au distributeur. Je réponds sur ces trois-là avec un modèle, et je vous remonte les 16 autres ?"
+    },
+    {
+      "id": "c_8_m3",
+      "role": "user",
+      "text": "Vas-y. Mais pour les cartes avalées, sois précise sur le délai"
+    },
+    {
+      "id": "c_8_m4",
+      "role": "agent",
+      "text": "Noté — j’annonce 72 heures ouvrées et je nomme l’agence où récupérer la carte, plutôt qu’un délai vague. C’est ce qui générait les relances."
+    },
+    {
+      "id": "c_8_m5",
+      "role": "user",
+      "text": "Bien vu"
+    },
+    {
+      "id": "c_8_m6",
+      "role": "agent",
+      "text": "38 réponses envoyées. 16 réclamations vous attendent : 9 contestations de débit, 5 clôtures de compte, 2 mises en cause d’un conseiller — celles-là je ne les traite pas seule.",
+      "sources": [
+        "Boîte réclamations",
+        "Grille des frais 2026"
+      ]
     }
   ],
   "c_9": [
     {
       "id": "c_9_m1",
       "role": "user",
-      "text": "Suivi de la commande #4820"
+      "text": "Où en est la commande #4820 ?"
     },
     {
       "id": "c_9_m2",
+      "role": "agent",
+      "text": "Expédiée le 14, bloquée depuis trois jours au dépôt de Yopougon. Le client n’a pas été prévenu."
+    },
+    {
+      "id": "c_9_m3",
+      "role": "user",
+      "text": "Préviens-le et donne-lui une date"
+    },
+    {
+      "id": "c_9_m4",
       "role": "agent",
       "text": "Client informé, lien de suivi envoyé, rappel programmé."
     }
@@ -123,12 +285,36 @@
     {
       "id": "c_11_m1",
       "role": "user",
-      "text": "Réclamation colis abîmé"
+      "text": "Un client signale un colis abîmé"
     },
     {
       "id": "c_11_m2",
       "role": "agent",
-      "text": "Geste commercial proposé, en attente de votre validation."
+      "text": "Photos reçues, l’emballage est bien endommagé. Commande de 86 000 F, deuxième incident pour ce client cette année."
+    },
+    {
+      "id": "c_11_m3",
+      "role": "user",
+      "text": "Qu’est-ce que tu proposes ?"
+    },
+    {
+      "id": "c_11_m4",
+      "role": "agent",
+      "text": "Le remplacement plutôt que le remboursement — il a recommandé quatre fois depuis janvier. Et je fais remonter le transporteur : trois colis abîmés ce mois-ci viennent du même."
+    },
+    {
+      "id": "c_11_m5",
+      "role": "user",
+      "text": "D’accord pour le remplacement"
+    },
+    {
+      "id": "c_11_m6",
+      "role": "agent",
+      "text": "Geste commercial proposé, en attente de votre validation.",
+      "sources": [
+        "Photos client",
+        "Incidents transporteur — août"
+      ]
     }
   ],
   "c_12": [
@@ -147,12 +333,26 @@
     {
       "id": "c_13_m1",
       "role": "user",
-      "text": "Clients à risque ce mois"
+      "text": "Quels clients risquent de partir ?"
     },
     {
       "id": "c_13_m2",
       "role": "agent",
-      "text": "4 comptes en alerte, séquence de rétention prête."
+      "text": "Sur quel signal : la baisse de commandes, le silence, ou les réclamations ? Les trois ne donnent pas la même liste."
+    },
+    {
+      "id": "c_13_m3",
+      "role": "user",
+      "text": "Les trois ensemble"
+    },
+    {
+      "id": "c_13_m4",
+      "role": "agent",
+      "text": "4 comptes en alerte, séquence de rétention prête.",
+      "sources": [
+        "Commandes 6 mois",
+        "Historique réclamations"
+      ]
     }
   ],
   "c_14": [
@@ -171,12 +371,36 @@
     {
       "id": "c_15_m1",
       "role": "user",
-      "text": "Prévisionnel pour la demande de crédit"
+      "text": "Prévisionnel de trésorerie sur 90 jours"
     },
     {
       "id": "c_15_m2",
       "role": "agent",
-      "text": "Prévisionnel 3 ans prêt : résultat, trésorerie, remboursement."
+      "text": "Il me manque les échéances fournisseurs de septembre. Sans elles je projette sur la moyenne des trois derniers mois, ce qui lissera un pic réel."
+    },
+    {
+      "id": "c_15_m3",
+      "role": "user",
+      "text": "Je te les mets dans le drive"
+    },
+    {
+      "id": "c_15_m4",
+      "role": "agent",
+      "text": "Reçues. Le pic est bien là : 18 septembre, sortie de 62 millions — l’acompte des travaux de l’agence de Yopougon plus les salaires. Trésorerie au plus bas ce jour-là : 9,4 millions."
+    },
+    {
+      "id": "c_15_m5",
+      "role": "user",
+      "text": "C’est tendu. On fait quoi ?"
+    },
+    {
+      "id": "c_15_m6",
+      "role": "agent",
+      "text": "Trois leviers, du moins au plus coûteux : décaler l’acompte de dix jours, ce qui suffit ; mobiliser 30 millions sur la ligne de découvert, à 11,5 % annuels ; ou avancer l’encaissement des deux gros devis en attente. Je recommande le décalage — il ne coûte rien et le fournisseur l’a déjà accepté une fois.",
+      "sources": [
+        "Échéancier fournisseurs.xlsx",
+        "Relevés bancaires 12 mois"
+      ]
     }
   ],
   "c_16": [
@@ -195,24 +419,62 @@
     {
       "id": "c_17_m1",
       "role": "user",
-      "text": "Coût employeur d'un commercial"
+      "text": "Combien coûte un commercial à 400 000 net ?"
     },
     {
       "id": "c_17_m2",
       "role": "agent",
-      "text": "À 400 000 net : environ 610 000 FCFA de coût total."
+      "text": "Avec les charges patronales CNPS, la contribution employeur et la prime de transport conventionnelle ?"
+    },
+    {
+      "id": "c_17_m3",
+      "role": "user",
+      "text": "Tout compris"
+    },
+    {
+      "id": "c_17_m4",
+      "role": "agent",
+      "text": "À 400 000 net : environ 610 000 FCFA de coût total.",
+      "sources": [
+        "Barème CNPS 2026",
+        "Convention collective"
+      ]
     }
   ],
   "c_18": [
     {
       "id": "c_18_m1",
       "role": "user",
-      "text": "Marge par gamme de produits"
+      "text": "Rapprochement bancaire de juillet"
     },
     {
       "id": "c_18_m2",
       "role": "agent",
-      "text": "Gamme B sous les 12 % — détail ligne par ligne."
+      "text": "Terminé. 1 204 écritures rapprochées, 7 en écart pour 2,3 millions."
+    },
+    {
+      "id": "c_18_m3",
+      "role": "user",
+      "text": "Détaille les 7"
+    },
+    {
+      "id": "c_18_m4",
+      "role": "agent",
+      "text": "4 sont des frais bancaires non comptabilisés — 84 000 F au total, je passe l’écriture. 2 sont des encaissements clients arrivés le 31 au soir, ils basculent sur août. Le 7ᵉ est un débit de 2,1 millions que je ne rattache à rien : libellé « VIR SEPA 4471 », aucun tiers connu."
+    },
+    {
+      "id": "c_18_m5",
+      "role": "user",
+      "text": "Celui-là, creuse"
+    },
+    {
+      "id": "c_18_m6",
+      "role": "agent",
+      "text": "Je n’ai pas la pièce. Elle est chez qui a ordonné le virement — sans elle je ne peux ni l’imputer ni l’écarter. C’est une dépense de 2,1 millions non justifiée : je la laisse en suspens et je vous la remonte plutôt que de l’absorber en charges diverses.",
+      "sources": [
+        "Relevé juillet",
+        "Grand livre 411/512"
+      ]
     }
   ],
   "c_19": [
@@ -236,7 +498,31 @@
     {
       "id": "c_20_m2",
       "role": "agent",
-      "text": "3 écarts trouvés, dont un double prélèvement."
+      "text": "1 118 écritures rapprochées. Je vous détaille les écarts ?"
+    },
+    {
+      "id": "c_20_m3",
+      "role": "user",
+      "text": "Oui"
+    },
+    {
+      "id": "c_20_m4",
+      "role": "agent",
+      "text": "L’abonnement au terminal de paiement a été prélevé deux fois pour le même mois, 45 000 F. Les deux autres sont des encaissements du 30 qui basculent sur juillet."
+    },
+    {
+      "id": "c_20_m5",
+      "role": "user",
+      "text": "Fais la réclamation pour le TPE"
+    },
+    {
+      "id": "c_20_m6",
+      "role": "agent",
+      "text": "3 écarts trouvés, dont un double prélèvement.",
+      "sources": [
+        "Releve juin",
+        "Contrat TPE"
+      ]
     }
   ],
   "c_21": [
@@ -255,12 +541,36 @@
     {
       "id": "c_22_m1",
       "role": "user",
-      "text": "Relancer les impayés de mai"
+      "text": "Pièces manquantes du dossier de crédit"
     },
     {
       "id": "c_22_m2",
       "role": "agent",
-      "text": "7 factures relancées, 2,3 M FCFA en jeu."
+      "text": "Sur les 14 pièces du référentiel OHADA, il en manque 4 : les statuts à jour, le Kbis de moins de trois mois, l’attestation fiscale, et le bail de l’agence."
+    },
+    {
+      "id": "c_22_m3",
+      "role": "user",
+      "text": "Le bail arrive demain. Les autres ?"
+    },
+    {
+      "id": "c_22_m4",
+      "role": "agent",
+      "text": "Les statuts et le Kbis sont demandables au greffe du tribunal de commerce d’Abidjan — comptez cinq jours. L’attestation fiscale s’obtient en ligne, sous 48 heures."
+    },
+    {
+      "id": "c_22_m5",
+      "role": "user",
+      "text": "Lance ce qui peut se lancer"
+    },
+    {
+      "id": "c_22_m6",
+      "role": "agent",
+      "text": "Je ne peux pas déposer une demande au greffe en votre nom : c’est un acte engageant, il est dans la liste de ce qui exige votre accord. Je vous ai préparé les deux formulaires pré-remplis, il ne reste que la signature.",
+      "sources": [
+        "Référentiel OHADA",
+        "Dossier crédit — pièces"
+      ]
     }
   ],
   "c_23": [
@@ -272,6 +582,16 @@
     {
       "id": "c_23_m2",
       "role": "agent",
+      "text": "23 factures à émettre. Deux clients ont changé d’adresse de facturation depuis juillet — je prends la nouvelle ?"
+    },
+    {
+      "id": "c_23_m3",
+      "role": "user",
+      "text": "Oui"
+    },
+    {
+      "id": "c_23_m4",
+      "role": "agent",
       "text": "23 factures émises et envoyées automatiquement."
     }
   ],
@@ -279,12 +599,26 @@
     {
       "id": "c_24_m1",
       "role": "user",
-      "text": "Alerte stock savon et détergent"
+      "text": "Où en est le stock de savon et de détergent ?"
     },
     {
       "id": "c_24_m2",
       "role": "agent",
-      "text": "12 jours de couverture, commande fournisseur préparée."
+      "text": "12 jours de couverture, contre 21 il y a un mois. La consommation a augmenté de 40 % sans que le réapprovisionnement suive."
+    },
+    {
+      "id": "c_24_m3",
+      "role": "user",
+      "text": "Prépare la commande"
+    },
+    {
+      "id": "c_24_m4",
+      "role": "agent",
+      "text": "12 jours de couverture, commande fournisseur préparée.",
+      "sources": [
+        "État des stocks",
+        "Consommation 3 mois"
+      ]
     }
   ],
   "c_25": [
@@ -327,12 +661,357 @@
     {
       "id": "c_28_m1",
       "role": "user",
-      "text": "Cartographie des clients actifs"
+      "text": "Classe les clients actifs"
     },
     {
       "id": "c_28_m2",
       "role": "agent",
-      "text": "126 clients classés par zone et par volume."
+      "text": "Par zone et par volume, ou faut-il aussi la fréquence de commande ?"
+    },
+    {
+      "id": "c_28_m3",
+      "role": "user",
+      "text": "Zone et volume suffisent"
+    },
+    {
+      "id": "c_28_m4",
+      "role": "agent",
+      "text": "126 clients classés par zone et par volume.",
+      "sources": [
+        "Base clients"
+      ]
+    }
+  ],
+  "c_29": [
+    {
+      "id": "c_29_m1",
+      "role": "user",
+      "text": "Il me faut le calendrier éditorial de septembre"
+    },
+    {
+      "id": "c_29_m2",
+      "role": "agent",
+      "text": "Sur quels canaux, et à quelle fréquence ? En août vous étiez à 3 publications par semaine sur LinkedIn et Facebook."
+    },
+    {
+      "id": "c_29_m3",
+      "role": "user",
+      "text": "Pareil, plus une newsletter mensuelle"
+    },
+    {
+      "id": "c_29_m4",
+      "role": "agent",
+      "text": "Calendrier prêt : 13 publications, 4 thèmes — l’offre PME, la sécurité des paiements, deux portraits de clients, et la rentrée scolaire pour les crédits à la consommation. La newsletter part le 24."
+    },
+    {
+      "id": "c_29_m5",
+      "role": "user",
+      "text": "La rentrée scolaire, c’est bien vu"
+    },
+    {
+      "id": "c_29_m6",
+      "role": "agent",
+      "text": "C’est votre pic de demandes de crédit conso : +38 % en septembre l’an dernier. J’ai calé trois publications dessus, dont une le 1er.",
+      "sources": [
+        "Statistiques réseaux 2025",
+        "Demandes crédit conso — historique"
+      ]
+    }
+  ],
+  "c_30": [
+    {
+      "id": "c_30_m1",
+      "role": "user",
+      "text": "La page du Compte Élan ne convertit pas. Tu peux la reprendre ?"
+    },
+    {
+      "id": "c_30_m2",
+      "role": "agent",
+      "text": "Je l’ai lue. Trois problèmes : elle annonce le prix en douzième ligne, elle emploie « nantissement » et « domiciliation » sans les expliquer, et elle ne dit jamais à qui le compte s’adresse."
+    },
+    {
+      "id": "c_30_m3",
+      "role": "user",
+      "text": "Propose"
+    },
+    {
+      "id": "c_30_m4",
+      "role": "agent",
+      "text": "Première version : le titre devient « Le compte des commerçants qui encaissent tous les jours », le prix monte en troisième ligne, et je remplace les deux termes par « garantie » et « versement de votre salaire ». Je vous la mets dans le drive.",
+      "sources": [
+        "Page actuelle",
+        "Grille tarifaire Élan"
+      ]
+    }
+  ],
+  "c_31": [
+    {
+      "id": "c_31_m1",
+      "role": "user",
+      "text": "Des visuels pour la campagne virements UEMOA"
+    },
+    {
+      "id": "c_31_m2",
+      "role": "agent",
+      "text": "Il me faut la charte à jour — celle que j’ai date de 2024 et le violet a changé. Sans elle, je produirais des visuels hors marque."
+    },
+    {
+      "id": "c_31_m3",
+      "role": "user",
+      "text": "Je demande à Koffi"
+    },
+    {
+      "id": "c_31_m4",
+      "role": "agent",
+      "text": "Je mets la demande en pause en attendant. Le reste est prêt : trois formats, les textes, et les mentions légales sur les délais de virement."
+    }
+  ],
+  "c_32": [
+    {
+      "id": "c_32_m1",
+      "role": "user",
+      "text": "Quels contrats arrivent à échéance ?"
+    },
+    {
+      "id": "c_32_m2",
+      "role": "agent",
+      "text": "7 CDD arrivent à terme avant le 31 octobre. 4 sont sur leur deuxième renouvellement — au troisième, la requalification en CDI devient automatique."
+    },
+    {
+      "id": "c_32_m3",
+      "role": "user",
+      "text": "Lesquels ?"
+    },
+    {
+      "id": "c_32_m4",
+      "role": "agent",
+      "text": "Deux chargés de clientèle à Treichville, un gestionnaire de back-office, une assistante à la direction. Ancienneté cumulée : 22 mois en moyenne."
+    },
+    {
+      "id": "c_32_m5",
+      "role": "user",
+      "text": "Prépare les CDI pour les deux chargés de clientèle"
+    },
+    {
+      "id": "c_32_m6",
+      "role": "agent",
+      "text": "Les deux projets de contrat sont prêts, aux conditions de la convention collective bancaire. Je ne les envoie pas : la signature d’un contrat vous appartient.",
+      "sources": [
+        "Registre du personnel",
+        "Convention collective bancaire"
+      ]
+    }
+  ],
+  "c_33": [
+    {
+      "id": "c_33_m1",
+      "role": "user",
+      "text": "Vérifie la paie de juillet"
+    },
+    {
+      "id": "c_33_m2",
+      "role": "agent",
+      "text": "Je n’ai pas pu : l’export du logiciel de paie est illisible, les colonnes sont décalées à partir de la ligne 40. Je ne devine pas des salaires."
+    },
+    {
+      "id": "c_33_m3",
+      "role": "user",
+      "text": "Ah. Je le regénère"
+    },
+    {
+      "id": "c_33_m4",
+      "role": "agent",
+      "text": "Merci. Dès que j’ai un export propre, le contrôle prend dix minutes : cotisations CNPS, retenues, heures supplémentaires, et comparaison avec juin ligne à ligne."
+    }
+  ],
+  "c_34": [
+    {
+      "id": "c_34_m1",
+      "role": "user",
+      "text": "On doit bâtir le plan de formation 2027"
+    },
+    {
+      "id": "c_34_m2",
+      "role": "agent",
+      "text": "Sur quelle enveloppe ? En 2026 vous avez consommé 18 millions sur 24 prévus."
+    },
+    {
+      "id": "c_34_m3",
+      "role": "user",
+      "text": "Même enveloppe, mais mieux dépensée"
+    },
+    {
+      "id": "c_34_m4",
+      "role": "agent",
+      "text": "Les 6 millions non consommés venaient de deux formations annulées faute d’inscrits — la conformité LCB-FT et l’anglais bancaire. Je propose de rendre la première obligatoire, elle l’est de fait depuis le contrôle de la BCEAO, et de retirer la seconde.",
+      "sources": [
+        "Bilan formation 2026",
+        "Rapport de contrôle BCEAO"
+      ]
+    }
+  ],
+  "c_35": [
+    {
+      "id": "c_35_m1",
+      "role": "user",
+      "text": "Relis le contrat avec le prestataire de maintenance"
+    },
+    {
+      "id": "c_35_m2",
+      "role": "agent",
+      "text": "Lu. Trois clauses posent problème au regard du droit ivoirien et de vos obligations bancaires."
+    },
+    {
+      "id": "c_35_m3",
+      "role": "user",
+      "text": "Vas-y"
+    },
+    {
+      "id": "c_35_m4",
+      "role": "agent",
+      "text": "L’article 7 prévoit un accès aux données clients sans encadrement : il faut une clause de confidentialité et l’interdiction de sous-traiter en cascade. L’article 12 fixe une responsabilité plafonnée à un mois de facturation, ce qui est dérisoire face au risque. Et il n’y a aucune clause de réversibilité : à la rupture, vous ne récupérez rien."
+    },
+    {
+      "id": "c_35_m5",
+      "role": "user",
+      "text": "Le plafond de responsabilité, c’est négociable ?"
+    },
+    {
+      "id": "c_35_m6",
+      "role": "agent",
+      "text": "C’est le point le plus dur, et le plus important. Un prestataire accepte rarement l’illimité ; visez douze mois de facturation, c’est l’usage sur ce type de marché. Je vous ai rédigé les trois clauses de remplacement.",
+      "sources": [
+        "Contrat maintenance — v3",
+        "Circulaire BCEAO sur l’externalisation"
+      ]
+    }
+  ],
+  "c_36": [
+    {
+      "id": "c_36_m1",
+      "role": "user",
+      "text": "Les mentions légales pour l’offre Élan"
+    },
+    {
+      "id": "c_36_m2",
+      "role": "agent",
+      "text": "Il me faut le TEG exact et la durée d’engagement. Une mention avec un taux approximatif vous expose plus qu’une absence de mention."
+    },
+    {
+      "id": "c_36_m3",
+      "role": "user",
+      "text": "TEG 14,2 %, sans engagement"
+    },
+    {
+      "id": "c_36_m4",
+      "role": "agent",
+      "text": "Rédigé. Deux versions : la mention complète pour les supports imprimés, et la version courte pour les réseaux, avec le renvoi vers la page tarifaire. Le « sans engagement » doit apparaître aussi en caractères normaux, pas seulement dans les mentions."
+    }
+  ],
+  "c_37": [
+    {
+      "id": "c_37_m1",
+      "role": "user",
+      "text": "On a reçu une mise en demeure d’un ancien client"
+    },
+    {
+      "id": "c_37_m2",
+      "role": "agent",
+      "text": "Je l’ai lue. Avant de rédiger quoi que ce soit, il me faut l’historique complet du compte et les échanges avec le conseiller. Répondre sans les pièces, c’est prendre le risque d’écrire le contraire de ce que vos archives montrent."
+    },
+    {
+      "id": "c_37_m3",
+      "role": "user",
+      "text": "Je te les fais parvenir"
+    },
+    {
+      "id": "c_37_m4",
+      "role": "agent",
+      "text": "En pause jusque-là. Le délai court jusqu’au 5 septembre, nous avons le temps de bien faire."
+    }
+  ],
+  "c_38": [
+    {
+      "id": "c_38_m1",
+      "role": "user",
+      "text": "Je veux suivre les ouvertures de compte par agence"
+    },
+    {
+      "id": "c_38_m2",
+      "role": "agent",
+      "text": "Sur quelle maille de temps, et avec quel découpage ? Vous avez 14 agences et quatre types de compte."
+    },
+    {
+      "id": "c_38_m3",
+      "role": "user",
+      "text": "Par mois, par agence, et par type"
+    },
+    {
+      "id": "c_38_m4",
+      "role": "agent",
+      "text": "Tableau de bord prêt. Une chose ressort tout de suite : Cocody fait 31 % des ouvertures avec 12 % des effectifs, et Adjamé fait l’inverse — 6 % des ouvertures pour 15 % des effectifs."
+    },
+    {
+      "id": "c_38_m5",
+      "role": "user",
+      "text": "Adjamé, c’est étonnant. Une explication ?"
+    },
+    {
+      "id": "c_38_m6",
+      "role": "agent",
+      "text": "Les données ne la donnent pas. Ce qu’elles disent : le délai moyen de traitement à Adjamé est de 4,2 jours contre 1,1 à Cocody, et 38 % des dossiers y sont abandonnés en cours. Le problème est dans le traitement, pas dans le flux de clients.",
+      "sources": [
+        "Base ouvertures 2026",
+        "Effectifs par agence"
+      ]
+    }
+  ],
+  "c_39": [
+    {
+      "id": "c_39_m1",
+      "role": "user",
+      "text": "Segmente le portefeuille PME"
+    },
+    {
+      "id": "c_39_m2",
+      "role": "agent",
+      "text": "Sur quel axe : le chiffre d’affaires, le secteur, ou l’usage réel des produits ? Le troisième est le plus actionnable mais demande vos données de transaction."
+    },
+    {
+      "id": "c_39_m3",
+      "role": "user",
+      "text": "L’usage réel, j’ai les données"
+    },
+    {
+      "id": "c_39_m4",
+      "role": "agent",
+      "text": "Quatre segments se dégagent nettement. Le plus intéressant : 214 PME qui n’utilisent que le compte courant alors qu’elles ont des flux réguliers à l’international — elles paient leurs virements à l’unité au lieu du forfait UEMOA.",
+      "sources": [
+        "Transactions 12 mois",
+        "Référentiel produits"
+      ]
+    }
+  ],
+  "c_40": [
+    {
+      "id": "c_40_m1",
+      "role": "user",
+      "text": "Tu peux prévoir les impayés du trimestre ?"
+    },
+    {
+      "id": "c_40_m2",
+      "role": "agent",
+      "text": "Pas de façon honnête. Je n’ai que 11 mois d’historique après la migration du système, et les impayés sont saisonniers : sans deux cycles complets, une prévision serait une illusion de précision."
+    },
+    {
+      "id": "c_40_m3",
+      "role": "user",
+      "text": "Donc rien ?"
+    },
+    {
+      "id": "c_40_m4",
+      "role": "agent",
+      "text": "Je peux vous donner ce que les données soutiennent : le taux d’impayés observé par segment et son évolution sur 11 mois, ce qui vous dit où le risque se concentre aujourd’hui. Mais je ne mettrai pas de chiffre sur le trimestre à venir."
     }
   ]
 }

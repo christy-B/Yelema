@@ -1,5 +1,5 @@
 import catalogueJson from './catalogue.json'
-import type { AgentConnector, AgentDetail, AgentSkill, AgentSummary, AgentUsecase, Metier, ToolType } from './contracts'
+import type { AgentActivityBrief, AgentConnector, AgentDetail, AgentSkill, AgentSummary, AgentUsecase, Metier, ToolType } from './contracts'
 
 /**
  * Payload RÉEL renvoyé par GET /agents et GET /agents/{id} (control-plane, v1).
@@ -13,11 +13,15 @@ export interface RealAgent {
   /** Grand groupe de métier, qui rassemble plusieurs experts. Sert aux filtres. */
   group?: { key: string; label: string } | null
   channels: string[]
+  keywords?: string[]
+  active?: boolean
   sovereignCapable: boolean
   /** Descriptif court (fourni par le roster/back). */
   description?: string
   /** Portrait de l'agent — pas encore fourni par le back (photo bundlée en attendant). */
   avatarUrl?: string | null
+  /** Resume d'activite, rendu par le back pour les experts de l'equipe. */
+  activity?: AgentActivityBrief | null
 }
 
 // Photos d'experts déposées dans assets/avatars/ nommées d'après l'expert
@@ -87,7 +91,11 @@ export function toAgentSummary(agent: RealAgent): AgentSummary {
     tags: entry?.tags ?? (agent.suite ? [agent.suite.label] : []),
     group: agent.group ? { key: agent.group.key, name: agent.group.label } : null,
     channels: agent.channels ?? [],
+    keywords: agent.keywords ?? [],
+    active: agent.active ?? true,
     avatarUrl: photoOf(agent),
+    // Absent sur un expert du catalogue : il n'a pas d'activite.
+    activity: agent.activity ?? null,
   }
 }
 

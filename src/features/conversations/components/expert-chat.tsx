@@ -1,4 +1,4 @@
-import { Paperclip, Send, X } from 'lucide-react'
+import { Plus, Send, X } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
 
 import { createConversation, listMessages, sendMessage } from '../api/api'
@@ -29,6 +29,17 @@ interface ExpertChatProps {
  * de l'expert (où le chat est immédiatement disponible) et par l'écran d'une
  * conversation reprise depuis la liste.
  */
+/**
+ * Nettoie une reponse avant affichage. La bulle rend le texte en pre-wrap :
+ * un saut de ligne en tete y devient une ligne VIDE, et le premier mot se
+ * retrouve un cran sous l'avatar — un decalage qu'aucun reglage de mise en
+ * page ne rattrape. Les runtimes de modele en produisent regulierement, et
+ * on ne peut pas compter sur eux pour s'en abstenir.
+ */
+function cleanText(text: string): string {
+  return text.trim().replace(/\n{3,}/g, '\n\n')
+}
+
 export function ExpertChat({ agent, conversationId, onCreated, onUpdated }: ExpertChatProps) {
   const { session } = useSession()
   const usesHermes = isHermesExpert(agent.id)
@@ -206,13 +217,13 @@ export function ExpertChat({ agent, conversationId, onCreated, onUpdated }: Expe
             key={message.id}
             className={`message-row message-row--${message.role}${message.id === enteringMessageId ? ' message-row--entering' : ''}`}
           >
-            {message.role === 'agent' && <AgentAvatar id={agent.id} name={agent.name} avatarUrl={agent.avatarUrl} size={38} className="chat-message-avatar" />}
-            <div className="message-bubble">{message.text}{message.sources?.length ? <small>Sources : {message.sources.join(', ')}</small> : null}</div>
+            {message.role === 'agent' && <AgentAvatar id={agent.id} name={agent.name} avatarUrl={agent.avatarUrl} variant="square" className="chat-message-avatar" />}
+            <div className="message-bubble">{cleanText(message.text)}{message.sources?.length ? <small>Sources : {message.sources.join(', ')}</small> : null}</div>
           </div>
         ))}
         {(sending || initializing) && (
-          <div className="typing-status" role="status" aria-label={`${agent.name} rédige`}>
-            <AgentAvatar id={agent.id} name={agent.name} avatarUrl={agent.avatarUrl} size={38} className="chat-message-avatar" />
+          <div className="message-row message-row--agent typing-status" role="status" aria-label={`${agent.name} rédige`}>
+            <AgentAvatar id={agent.id} name={agent.name} avatarUrl={agent.avatarUrl} variant="square" className="chat-message-avatar" />
             <span className="typing-bubble" aria-hidden="true">
               <span className="typing-dot" />
               <span className="typing-dot" />
@@ -244,7 +255,7 @@ export function ExpertChat({ agent, conversationId, onCreated, onUpdated }: Expe
         {usesHermes && attachmentError && <p className="chat-attachment-error" role="alert">{attachmentError}</p>}
         <div className="chat-composer">
           <label className="composer-action" aria-label="Joindre un fichier">
-            <Paperclip size={20} />
+            <Plus size={20} />
             <input
               type="file"
               multiple

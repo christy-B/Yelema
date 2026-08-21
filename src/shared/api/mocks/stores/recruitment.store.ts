@@ -7,7 +7,13 @@
  * l'expert, la première lecture des conversations matérialise son message
  * d'ouverture — une seule fois, comme le ferait le back.
  */
-const pending = new Set<string>()
+/**
+ * Le chef de projet y figure d'entrée : il n'est pas recruté, il vient avec les
+ * projets — sa prise de poste existe donc dès la première lecture, sans quoi
+ * son espace s'ouvrirait sur une conversation vide alors qu'il est censé avoir
+ * engagé l'échange.
+ */
+const pending = new Set<string>(['orc_dany'])
 
 export function queueOpening(agentId: string): void {
   pending.add(agentId)

@@ -137,13 +137,20 @@ export interface DemoMember {
   roleKey: string | null
   /** Allow-list : vide ⇒ tous les experts du plan. */
   toolRestrictions: string[]
+  /**
+   * Permissions accordees directement au membre. Absentes ⇒ on retombe sur
+   * celles de son role.
+   */
+  permissions?: { capability: string; actions: string[] }[]
 }
 
 export const MEMBERS: DemoMember[] = [
   { id: 'u_12', email: 'admin@banque-atlantique.ci', name: 'Aïcha Koné', status: 'active', isFirstAdmin: true, roleKey: 'owner', toolRestrictions: [] },
   { id: 'u_18', email: 'b.diallo@banque-atlantique.ci', name: 'Bakary Diallo', status: 'active', isFirstAdmin: false, roleKey: 'member', toolRestrictions: ['exp_mamadou', 'exp_salif'] },
   { id: 'u_20', email: 'n.sow@banque-atlantique.ci', name: 'Nadège Sow', status: 'invited', isFirstAdmin: false, roleKey: 'admin', toolRestrictions: [] },
-  { id: 'u_24', email: 'k.traore@banque-atlantique.ci', name: 'Kader Traoré', status: 'active', isFirstAdmin: false, roleKey: 'member', toolRestrictions: [] },
+  // Acces restreint aux trois experts de son perimetre : sa fiche montre donc
+  // les deux etats, accorde et non accorde.
+  { id: 'u_24', email: 'k.traore@banque-atlantique.ci', name: 'Kader Traoré', status: 'active', isFirstAdmin: false, roleKey: 'member', toolRestrictions: ['exp_kouassi', 'exp_awa', 'exp_fatima'] },
 ]
 
 export const WORKSPACE = {

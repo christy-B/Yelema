@@ -1,12 +1,13 @@
-import { Activity, ArrowLeft, Blocks, Check, CircleCheckBig, ClipboardList, Database, Download, FileCheck2, Gauge, LineChart, Maximize2, Minimize2, Pause, Play, Pencil, Plus, Repeat, Search, ShieldCheck, Sparkles, Trash2, Upload, UserCog, X } from 'lucide-react'
+import { Activity, ArrowLeft, Blocks, Check, CircleCheckBig, ClipboardList, Database, Download, FileCheck2, Gauge, LineChart, Maximize2, Minimize2, Pause, Play, Pencil, Plus, Repeat, Search, Sparkles, Trash2, Upload, UserCog, Users, X } from 'lucide-react'
 import type { ReactNode } from 'react'
 import { useEffect, useMemo, useState } from 'react'
 import { useLocation, useNavigate, useParams } from 'react-router'
 
-import { getAgent, getAgentProfile, listAgentResources, updateAgentProfile } from '../../../features/agents/api/api'
+import { deleteAgentResource, getAgent, getAgentProfile, listAgentResources, shareAgentResource, updateAgentProfile } from '../../../features/agents/api/api'
 import type { AgentAvatarConfig, AgentConnector, AgentDetail, AgentPortrait, AgentProfile, AgentResource, AgentResources } from '../../../features/agents/api/contracts'
-import { DETAIL_LABELS, LANGUAGE_LABELS, TONE_LABELS } from '../../../features/agents/api/contracts'
-import { channelLabel, orderChannels } from '../../../features/agents/channels'
+import { DETAIL_LABELS, LANGUAGE_LABELS, PERSONALITY_TRAITS, PERSONALITY_TRAITS_MAX, TONE_LABELS } from '../../../features/agents/api/contracts'
+import { portraitsOf } from '../../../features/agents/avatar-assets'
+import { CHANNEL_META, orderChannels } from '../../../features/agents/channels'
 import { CONNECTOR_LOGOS } from '../../../features/agents/connector-logos'
 import { useSession } from '../../../features/auth/providers/session-context'
 import { deleteAutomation, listAutomations, setAutomationActive } from '../../../features/automations/api/api'
@@ -32,7 +33,7 @@ import { ConfirmDialog } from '../../../shared/components/confirm-dialog/confirm
 import { LoadError } from '../../../shared/components/load-error/load-error'
 import { DEFAULT_WORKSPACE_ID, paths } from '../../routes/paths'
 
-type View = 'activite' | 'competences' | 'suivi' | 'profil' | 'connecteurs' | 'sources' | 'artefacts'
+type View = 'activite' | 'competences' | 'suivi' | 'profil' | 'connecteurs' | 'drive'
 type Picker = null | 'source' | 'connector' | 'automation'
 const DAY_MS = 86_400_000
 /** Panneau d'échange : largeur d'ouverture, plancher, et bande de page toujours visible. */
@@ -43,7 +44,32 @@ const WEEK_DAYS = ['D', 'L', 'M', 'M', 'J', 'V', 'S']
 const WEEK_FULL = ['dimanche', 'lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi']
 
 /** Cadrage d'un portrait retenu, appliqué à l'image du rail. */
+/** Champs de personnalité : libellé, aide et exemple, décrits une seule fois. */
+
+/** Vues du Drive : ce qui entre, ce qui sort, ce que l'equipe met a disposition. */
+type DriveTab = 'sources' | 'partagees' | 'livrables'
+/* Les livrables d'abord : c'est ce que l'expert a produit, donc ce qu'on vient
+   chercher. Les donnees qu'on lui fournit viennent ensuite. */
+const DRIVE_TABS: { key: DriveTab; label: string }[] = [
+  { key: 'livrables', label: 'Livrables' },
+  { key: 'sources', label: 'Mes données' },
+  { key: 'partagees', label: 'Données partagées' },
+]
+const DRIVE_EMPTY: Record<DriveTab, string> = {
+  sources: 'Aucune donnée reliée.',
+  partagees: 'Aucun collègue ne partage de donnée pour l’instant.',
+  livrables: 'Rien de produit pour l’instant.',
+}
+
 const CROP_POSITION: Record<string, string> = { entier: 'center', serre: 'center 6%', buste: 'center 12%', plein: 'center 30%' }
+
+/** « dim. 9 août » — repère de journée, comme dans la maquette. */
+const dayFormatter = new Intl.DateTimeFormat('fr-FR', { weekday: 'short', day: 'numeric', month: 'long' })
+const shortDay = (time: number) => dayFormatter.format(new Date(time))
+
+/** « 22:07 » — l'heure seule suffit, le jour est porté par le groupe. */
+const hourFormatter = new Intl.DateTimeFormat('fr-FR', { hour: '2-digit', minute: '2-digit' })
+const hourOf = (iso: string) => hourFormatter.format(new Date(iso))
 
 const startOfDay = (value: Date) => new Date(value.getFullYear(), value.getMonth(), value.getDate()).getTime()
 
@@ -102,10 +128,16 @@ export function AgentDetailPage() {
   const [chatFull, setChatFull] = useState(false)
   const [chatWidth, setChatWidth] = useState(() => Math.min(CHAT_WIDTH_DEFAULT, window.innerWidth - CHAT_MARGIN_MIN))
   const [newConversationRequested, setNewConversationRequested] = useState(false)
+  /** Contenu affiché dans le Drive : ce qui entre, ou ce qui sort. */
+  const [drive, setDrive] = useState<DriveTab>('livrables')
+  /** Ressource dont la suppression est en attente de confirmation. */
+  const [toRemove, setToRemove] = useState<AgentResource | null>(null)
   /** Filtre d'état de l'accueil. « all » en tête : c'est la vue par défaut. */
   const [stateFilter, setStateFilter] = useState<ConversationStatus | 'all'>('all')
   const [profile, setProfile] = useState<AgentProfile | null>(null)
   const [profileSaved, setProfileSaved] = useState(false)
+  /** Une saisie attend d'etre ecrite : declenche l'enregistrement differe. */
+  const [profileDirty, setProfileDirty] = useState(false)
   const [savingProfile, setSavingProfile] = useState(false)
   const [picker, setPicker] = useState<Picker>(null)
   const [sharedQuery, setSharedQuery] = useState('')
@@ -179,12 +211,23 @@ export function AgentDetailPage() {
   }, [activityConversations])
 
   /**
-   * Tâches affichées : une liste à plat, la plus récente en tête. Le filtre
-   * porte le regroupement — les empiler par état en plus ferait doublon.
+   * Tâches du jour par jour, filtre d'état appliqué. Le regroupement par date
+   * vient de la maquette : il donne le rythme de travail, ce qu'une liste à
+   * plat ne montre pas.
    */
-  const visibleTasks = useMemo(() => {
-    const sorted = [...activityConversations].sort((a, b) => Date.parse(b.updatedAt) - Date.parse(a.updatedAt))
-    return stateFilter === 'all' ? sorted : sorted.filter((item) => (item.status ?? 'done') === stateFilter)
+  const activityDays = useMemo(() => {
+    const retenues = stateFilter === 'all'
+      ? activityConversations
+      : activityConversations.filter((item) => (item.status ?? 'done') === stateFilter)
+    const sorted = [...retenues].sort((a, b) => Date.parse(b.updatedAt) - Date.parse(a.updatedAt))
+    const days: { label: string; items: ConversationSummary[] }[] = []
+    for (const item of sorted) {
+      const label = shortDay(Date.parse(item.updatedAt))
+      const last = days[days.length - 1]
+      if (last && last.label === label) last.items.push(item)
+      else days.push({ label, items: [item] })
+    }
+    return days
   }, [activityConversations, stateFilter])
 
   // Activité : tâches groupées par jour + volume des 7 derniers jours.
@@ -242,6 +285,24 @@ export function AgentDetailPage() {
     }
   }, [artefacts])
 
+  /**
+   * Enregistrement automatique. Il n'y a plus de bouton : attendre une action
+   * explicite pour un ecran de reglages n'apportait rien, et un reglage change
+   * mais non enregistre est un piege. On laisse retomber la frappe avant
+   * d'ecrire, sinon chaque caractere partirait au serveur.
+   */
+  useEffect(() => {
+    if (!profileDirty || !profile) return
+    const timer = window.setTimeout(() => {
+      setSavingProfile(true)
+      void updateAgentProfile(agentId, profile)
+        .then((saved) => { setProfileDirty(false); setProfile(saved); setProfileSaved(true) })
+        .catch(() => undefined)
+        .finally(() => setSavingProfile(false))
+    }, 700)
+    return () => window.clearTimeout(timer)
+  }, [profileDirty, profile, agentId])
+
   if (status === 'error') return <div className="route-loader"><LoadError onRetry={() => { setStatus('loading'); setRetryKey((key) => key + 1) }} /></div>
   if (!agent) return <div className="route-loader">Chargement de l'expert IA…</div>
 
@@ -263,6 +324,24 @@ export function AgentDetailPage() {
   // Un expert fraîchement recruté n'a rien à mesurer : on le dit plutôt que
   // d'afficher une série de zéros et des graphiques plats.
   const hasHistory = activityConversations.length > 0 || artefacts.length > 0
+  /** Les pieces de la vue courante du Drive. */
+  const driveItems = drive === 'partagees'
+    ? (shared?.shared ?? []).filter((item) => item.kind === 'source')
+    : (shared?.own ?? []).filter((item) => (drive === 'livrables' ? item.kind === 'artefact' : item.kind === 'source'))
+
+  /** Partage d'une piece : le serveur tranche, l'ecran suit sa reponse. */
+  const toggleShare = async (item: AgentResource) => {
+    const updated = await shareAgentResource(agent.id, item.id, !item.shared).catch(() => null)
+    if (!updated) return
+    setShared((current) => current ? { ...current, own: current.own.map((piece) => piece.id === item.id ? updated : piece) } : current)
+  }
+
+  const removeResource = async (item: AgentResource) => {
+    await deleteAgentResource(agent.id, item.id).catch(() => undefined)
+    setShared((current) => current ? { ...current, own: current.own.filter((piece) => piece.id !== item.id) } : current)
+    setToRemove(null)
+  }
+
   const activeRoutines = automations.filter((item) => item.active).length
   // L'échange est en permanence à l'écran sur l'accueil : « démarrer » ou
   // « reprendre » ne fait plus qu'y désigner la conversation affichée.
@@ -332,8 +411,8 @@ export function AgentDetailPage() {
     setPicker(null)
   }
   const addConnector = (c: Connector) => setConnectors((prev) => prev.some((k) => k.provider === c.provider) ? prev : [...prev, { provider: c.provider, name: c.name }])
-  const downloadArtefact = (artefact: Livrable) => void downloadLivrable(artefact.id).then((r) => r.blob()).then((b) => {
-    const url = URL.createObjectURL(b); const a = document.createElement('a'); a.href = url; a.download = artefact.title; a.click(); URL.revokeObjectURL(url)
+  const downloadArtefact = (id: string, title: string) => void downloadLivrable(id).then((r) => r.blob()).then((b) => {
+    const url = URL.createObjectURL(b); const a = document.createElement('a'); a.href = url; a.download = title; a.click(); URL.revokeObjectURL(url)
   })
   const toggleRoutine = (routine: Automation) => void setAutomationActive(routine.id, !routine.active)
     .then((updated) => setAutomations((prev) => prev.map((item) => item.id === updated.id ? updated : item)))
@@ -345,33 +424,32 @@ export function AgentDetailPage() {
     void deleteAutomation(id).then(() => setAutomations((prev) => prev.filter((item) => item.id !== id))).catch(() => undefined)
   }
 
-  const patchProfile = (patch: Partial<AgentProfile>) => { setProfile((prev) => prev ? { ...prev, ...patch } : prev); setProfileSaved(false) }
+  const patchProfile = (patch: Partial<AgentProfile>) => {
+    setProfile((prev) => prev ? { ...prev, ...patch } : prev)
+    setProfileSaved(false)
+    setProfileDirty(true)
+  }
   // Le portrait s'enregistre seul : il se règle dans sa fenêtre, pas dans le formulaire.
   const saveAvatar = async (next: AgentAvatarConfig, retained: AgentPortrait | null) => {
     if (!profile) return
     const saved = await updateAgentProfile(agent.id, { ...profile, avatar: next, portrait: retained }).catch(() => null)
     if (saved) setProfile(saved)
   }
-  const saveProfile = () => {
-    if (!profile || savingProfile) return
-    setSavingProfile(true)
-    void updateAgentProfile(agent.id, profile)
-      .then((saved) => { setProfile(saved); setProfileSaved(true) })
-      .catch(() => undefined)
-      .finally(() => setSavingProfile(false))
-  }
-
   const views: { key: View; icon: ReactNode; label: string }[] = [
     { key: 'activite', icon: <ClipboardList size={16} />, label: 'Accueil' },
     { key: 'competences', icon: <Sparkles size={16} />, label: 'Compétences' },
     { key: 'suivi', icon: <LineChart size={16} />, label: 'Suivi' },
   ]
   // Toutes les entrées du rail changent la vue principale — aucun comportement à part.
-  const manageViews: { key: View; icon: ReactNode; label: string; count?: number }[] = [
+  // Aucun compteur dans la navigation : un nombre a cote d'un libelle attire
+  // l'oeil sans rien apprendre, et vieillit mal des que la liste s'allonge.
+  const manageViews: { key: View; icon: ReactNode; label: string }[] = [
     { key: 'profil', icon: <UserCog size={16} />, label: 'Profil' },
-    { key: 'connecteurs', icon: <Blocks size={16} />, label: 'Connecteurs', count: connectors.length },
-    { key: 'sources', icon: <Database size={16} />, label: 'Sources de données', count: sources.length },
-    { key: 'artefacts', icon: <FileCheck2 size={16} />, label: 'Artefacts', count: artefacts.length },
+    { key: 'connecteurs', icon: <Blocks size={16} />, label: 'Intégrations' },
+    // Un seul espace de fichiers : ce dont l'expert se sert et ce qu'il produit
+    // sont deux moments du meme travail, les separer obligeait a chercher deux
+    // fois.
+    { key: 'drive', icon: <Database size={16} />, label: 'Drive' },
   ]
 
   return (
@@ -413,7 +491,6 @@ export function AgentDetailPage() {
             <button type="button" key={item.key} className={view === item.key ? 'wk-nav-link is-active' : 'wk-nav-link'} onClick={() => setView(item.key)}>
               {item.icon}
               <span>{item.label}</span>
-              {item.count !== undefined && <em>{item.count}</em>}
             </button>
           ))}
         </nav>
@@ -571,7 +648,7 @@ export function AgentDetailPage() {
         {view === 'connecteurs' && (
           <>
             <div className="wk-view-head">
-              <h2>Connecteurs</h2>
+              <h2>Intégrations</h2>
               <p>Connectez les outils que {agent.name} doit pouvoir utiliser.</p>
             </div>
             {connectorGroups.length === 0
@@ -603,154 +680,261 @@ export function AgentDetailPage() {
           </>
         )}
 
-        {view === 'sources' && (
-          <>
-            <div className="wk-view-head wk-view-head--action">
-              <div>
-                <h2>Sources de données</h2>
-                <p>Les documents sur lesquels {agent.name} s'appuie pour travailler.</p>
-              </div>
-              <Button variant="tertiary" size="small" leadingIcon={<Plus size={14} />} onClick={() => { setSharedQuery(''); setPicker('source') }}>Ajouter un document</Button>
-            </div>
-            {sources.length === 0
-              ? <p className="act-empty">Aucune source reliée.</p>
-              : (
-                <div className="wk-rows">
-                  {sources.map((f) => (
-                    <div key={f.id} className="expert-list-row expert-list-row--static">
-                      <span className="expert-list-icon"><Database size={17} /></span>
-                      <span className="expert-list-main"><strong>{f.name}</strong><small>{f.kind}</small></span>
-                      <span className="expert-list-meta">{f.size}</span>
-                    </div>
-                  ))}
-                </div>
-              )}
-
-            {borrowed.length > 0 && (
-              <>
-                <span className="wk-group-label">Partagé par l'équipe</span>
-                <div className="wk-rows">
-                  {borrowed.map((item) => (
-                    <div key={item.id} className="expert-list-row expert-list-row--static">
-                      <span className="expert-list-icon">{item.kind === 'artefact' ? <FileCheck2 size={17} /> : <Database size={17} />}</span>
-                      <span className="expert-list-main"><strong>{item.name}</strong><small>{item.meta}</small></span>
-                      <span className="wk-owner">{item.ownerName}</span>
-                      <span className="expert-list-meta">{item.size}</span>
-                    </div>
-                  ))}
-                </div>
-              </>
-            )}
-          </>
-        )}
-
-        {view === 'artefacts' && (
+        {view === 'drive' && (
           <>
             <div className="wk-view-head">
-              <h2>Artefacts</h2>
-              <p>Tout ce que {agent.name} a produit, prêt à télécharger.</p>
+              <h2>Drive</h2>
             </div>
-            {artefacts.length === 0
-              ? <p className="act-empty">Rien de produit pour l'instant.</p>
-              : (
-                <div className="wk-rows">
-                  {artefacts.map((a) => (
-                    <div key={a.id} className="expert-list-row expert-list-row--static">
-                      <span className="expert-list-icon"><FileCheck2 size={17} /></span>
-                      <span className="expert-list-main"><strong>{a.title}</strong><small>{a.skill} · {a.format} · {a.size}</small></span>
-                      <span className="expert-list-meta">{new Intl.DateTimeFormat('fr-FR', { day: 'numeric', month: 'short' }).format(Date.parse(a.createdAt))}</span>
-                      <button type="button" className="expert-list-action" aria-label={`Télécharger « ${a.title} »`} onClick={() => downloadArtefact(a)}><Download size={16} /></button>
-                    </div>
-                  ))}
-                </div>
-              )}
+
+            {/* TROIS vues, jamais empilees : avec cent sources de l'expert,
+                les sources partagees disparaissaient sous la liste. On choisit
+                ce qu'on regarde. L'ajout flotte a droite de la barre, la ou se
+                placent les actions. */}
+            <div className="drive-bar">
+              <div className="wk-filters" role="tablist" aria-label="Contenu du Drive">
+                {DRIVE_TABS.map((entry) => (
+                  <button
+                    type="button"
+                    key={entry.key}
+                    role="tab"
+                    aria-selected={drive === entry.key}
+                    className={drive === entry.key ? 'wk-filter is-on' : 'wk-filter'}
+                    onClick={() => setDrive(entry.key)}
+                  >
+                    {entry.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* L'ajout ne concerne que les donnees de l'expert, et il se place
+                juste au-dessus de la liste qu'il alimente. */}
+            {drive === 'sources' && (
+              <div className="drive-actions">
+                {/* Une commande visible : c'est le seul geste de cette vue, on
+                    ne doit pas avoir a le chercher. */}
+                <Button leadingIcon={<Plus size={17} />} onClick={() => { setSharedQuery(''); setPicker('source') }}>
+                  Ajouter un document
+                </Button>
+              </div>
+            )}
+
+            {driveItems.length === 0 ? (
+              <p className="act-empty">{DRIVE_EMPTY[drive]}</p>
+            ) : (
+              <div className="wk-rows drive-rows">
+                {driveItems.map((item) => (
+                  <div key={item.id} className="expert-list-row expert-list-row--static">
+                    <span className="expert-list-icon">{item.kind === 'artefact' ? <FileCheck2 size={17} /> : <Database size={17} />}</span>
+                    <span className="expert-list-main"><strong>{item.name}</strong><small>{item.meta}</small></span>
+                    {drive === 'partagees' && <span className="wk-owner">{item.ownerName}</span>}
+                    <span className="expert-list-meta">{item.size}</span>
+                    {/* Les pieces d'un collegue ne se pilotent pas d'ici : elles
+                        appartiennent a quelqu'un d'autre. */}
+                    {drive !== 'partagees' && (
+                      <>
+                        {/* Une commande nommee, pas un interrupteur : le rail
+                            gris ne disait ni ce qu'il declenchait, ni avec
+                            qui. L'etat se lit dans le libelle. */}
+                        <button
+                          type="button"
+                          className={item.shared ? 'drive-share is-on' : 'drive-share'}
+                          aria-pressed={item.shared}
+                          title={item.shared ? 'Retirer du partage avec les autres experts' : 'Partager avec les autres experts'}
+                          onClick={() => void toggleShare(item)}
+                        >
+                          {item.shared ? <><Check size={12} />Partagé</> : <><Users size={12} />Partager</>}
+                        </button>
+                        {item.kind === 'artefact' && (
+                          <button type="button" className="expert-list-action" aria-label={`Télécharger « ${item.name} »`} onClick={() => downloadArtefact(item.id, item.name)}>
+                            <Download size={16} />
+                          </button>
+                        )}
+                        <button type="button" className="expert-list-action" aria-label={`Supprimer « ${item.name} »`} onClick={() => setToRemove(item)}>
+                          <Trash2 size={16} />
+                        </button>
+                      </>
+                    )}
+                  </div>
+                ))}
+              </div>
+            )}
           </>
         )}
 
         {view === 'profil' && (
           <>
-            <div className="wk-view-head">
-              <h2>Profil</h2>
-              <p>Comment {agent.name} s'exprime et travaille, dans tous ses échanges.</p>
+            {/* En-tete : identite a gauche, portraits a droite. Le choix du
+                visage rouvre la configuration d'avatar, qui existe deja. */}
+            <div className="pf-head">
+              <div className="pf-id">
+                {/* Son etat seul : la langue se regle plus bas, elle n'a pas
+                    a occuper l'en-tete de sa fiche. */}
+                {/* Son etat seul : la langue se regle plus bas dans la
+                    meme page, elle n'a pas a occuper l'en-tete. */}
+                <span className={profile?.active === false ? 'pf-eyebrow is-off' : 'pf-eyebrow'}>
+                  <i aria-hidden="true" />{profile?.active === false ? 'Hors service' : 'En service'}
+                </span>
+                <h2>{agent.name}</h2>
+                {agent.tags[0] && <p className="pf-role">{agent.tags[0]}</p>}
+              </div>
+              {/* Tous les cadrages livres pour cet expert : plan large et
+                  portraits. Celui qui est retenu s'affiche partout ou l'usage
+                  demande ce cadrage. */}
+              <div className="pf-faces">
+                <div className="pf-faces-row">
+                  {portraitsOf(agent.name).map((choice) => (
+                    <button
+                      type="button"
+                      key={choice.key}
+                      className={profile?.portrait?.url === choice.url ? 'pf-face-pick is-on' : 'pf-face-pick'}
+                      aria-pressed={profile?.portrait?.url === choice.url}
+                      title={choice.label}
+                      onClick={() => patchProfile({ portrait: { url: choice.url, crop: choice.variant === 'square' ? 'buste' : 'entier' } })}
+                    >
+                      <img className={choice.variant === 'square' ? 'pf-face pf-face--square' : 'pf-face'} src={choice.url} alt={choice.label} />
+                    </button>
+                  ))}
+                </div>
+                <button type="button" className="pf-faces-action" onClick={() => setAvatarOpen(true)}>
+                  <Sparkles size={14} /> Générer un autre visage
+                </button>
+              </div>
             </div>
             {!profile ? <p className="act-empty">Réglages indisponibles pour l'instant.</p> : (
               <div className="wk-form">
+                {/* Integration des canaux : des cartes portant le logo du
+                    service — on branche l'expert la ou l'equipe parle deja. */}
+                <section className="pf-block">
+                  <h3>Intégration des canaux</h3>
+                  <p>Branchez {agent.name} là où votre équipe échange déjà.</p>
+                  <div className="pf-channels" role="group" aria-label="Canaux de déploiement">
+                    {orderChannels(agent.channels).map((option) => {
+                      const meta = CHANNEL_META[option]
+                      const logo = meta ? CONNECTOR_LOGOS[meta.logo] : undefined
+                      const on = profile.channels.includes(option)
+                      const last = on && profile.channels.length === 1
+                      return (
+                        <button
+                          type="button"
+                          key={option}
+                          role="checkbox"
+                          aria-checked={on}
+                          aria-disabled={last}
+                          title={last ? 'Au moins un canal est requis.' : undefined}
+                          className={on ? 'pf-channel is-on' : 'pf-channel'}
+                          onClick={() => patchProfile({
+                            channels: on
+                              ? (last ? profile.channels : profile.channels.filter((value) => value !== option))
+                              : [...profile.channels, option],
+                          })}
+                        >
+                          {on && <span className="pf-channel-tick"><Check size={12} /></span>}
+                          <span className="pf-channel-logo">{logo ? <img src={logo} alt="" /> : <Blocks size={20} />}</span>
+                          {meta?.label ?? option}
+                        </button>
+                      )
+                    })}
+                  </div>
+                </section>
+
+                <section className="wk-settings">
+                  <button type="button" className="wk-set-row wk-set-row--action" aria-pressed={profile.shareResources} onClick={() => patchProfile({ shareResources: !profile.shareResources })}>
+                    <span className="wk-set-txt">
+                      <strong>Partage de son travail</strong>
+                      <small>{profile.shareResources ? 'Ses sources et ses livrables servent à toute l’équipe.' : 'Ses sources et ses livrables restent dans son espace.'}</small>
+                    </span>
+                    <span className={profile.shareResources ? 'switch is-on' : 'switch'}><b /></span>
+                  </button>
+                </section>
+
+                {/* A plat, dans la meme carte que les autres reglages. Le
+                    depliant disait « Ton » sur son en-tete puis « Ton » sur sa
+                    premiere ligne, et « Personnalite » n'abritait plus qu'un
+                    seul reglage : deux raisons de s'en passer. */}
                 <section className="wk-settings">
                   <div className="wk-set-row">
-                    <span className="wk-set-txt"><strong>Canaux</strong></span>
-                    {/* Plusieurs canaux à la fois. Le dernier coché reste coché :
-                        un expert joignable nulle part n'aurait aucun sens. */}
-                    <div className="wk-seg wk-seg--multi" role="group" aria-label="Canaux">
-                      {orderChannels(agent.channels).map((option) => {
-                        const on = profile.channels.includes(option)
-                        const last = on && profile.channels.length === 1
+                    <span className="wk-set-txt"><strong>Ton</strong></span>
+                    <div className="pf-opts">
+                      {Object.entries(TONE_LABELS).map(([key, label]) => (
+                        <button
+                          key={key}
+                          type="button"
+                          className={profile.tone === key ? 'pf-opt is-on' : 'pf-opt'}
+                          aria-pressed={profile.tone === key}
+                          onClick={() => patchProfile({ tone: key as AgentProfile['tone'] })}
+                        >
+                          {label}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                  <div className="wk-set-row">
+                    <span className="wk-set-txt"><strong>Longueur des réponses</strong></span>
+                    <div className="pf-opts">
+                      {Object.entries(DETAIL_LABELS).map(([key, label]) => (
+                        <button
+                          key={key}
+                          type="button"
+                          className={profile.detail === key ? 'pf-opt is-on' : 'pf-opt'}
+                          aria-pressed={profile.detail === key}
+                          onClick={() => patchProfile({ detail: key as AgentProfile['detail'] })}
+                        >
+                          {label}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                  <div className="wk-set-row">
+                    <span className="wk-set-txt"><strong>Langue</strong></span>
+                    <div className="pf-opts">
+                      {Object.entries(LANGUAGE_LABELS).map(([key, label]) => (
+                        <button
+                          key={key}
+                          type="button"
+                          className={profile.language === key ? 'pf-opt is-on' : 'pf-opt'}
+                          aria-pressed={profile.language === key}
+                          onClick={() => patchProfile({ language: key as AgentProfile['language'] })}
+                        >
+                          {label}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                  {/* Huit choix ne tiennent pas au bout d'une ligne : celui-la
+                      passe sous son libelle. */}
+                  <div className="wk-set-row wk-set-row--stack">
+                    <span className="wk-set-txt">
+                      <strong>Caractère</strong>
+                      <small>Comment il aborde le travail — {PERSONALITY_TRAITS_MAX} au maximum, {profile.personality.traits.length} choisi{profile.personality.traits.length > 1 ? 's' : ''}.</small>
+                    </span>
+                    <div className="pf-opts pf-opts--wrap">
+                      {PERSONALITY_TRAITS.map((trait) => {
+                        const chosen = profile.personality.traits.includes(trait.key)
+                        // Au-dela du maximum on bloque l'ajout, jamais le retrait.
+                        const full = !chosen && profile.personality.traits.length >= PERSONALITY_TRAITS_MAX
                         return (
                           <button
+                            key={trait.key}
                             type="button"
-                            key={option}
-                            role="checkbox"
-                            aria-checked={on}
-                            aria-disabled={last}
-                            title={last ? 'Au moins un canal est requis.' : undefined}
-                            className={on ? 'is-on' : undefined}
+                            className={chosen ? 'pf-opt is-on' : 'pf-opt'}
+                            aria-pressed={chosen}
+                            disabled={full}
+                            title={trait.hint}
                             onClick={() => patchProfile({
-                              channels: on
-                                ? (last ? profile.channels : profile.channels.filter((value) => value !== option))
-                                : [...profile.channels, option],
+                              personality: {
+                                traits: chosen
+                                  ? profile.personality.traits.filter((key) => key !== trait.key)
+                                  : [...profile.personality.traits, trait.key],
+                              },
                             })}
                           >
-                            {channelLabel(option)}
+                            {trait.label}
                           </button>
                         )
                       })}
                     </div>
                   </div>
-
-                  <div className="wk-set-row">
-                    <span className="wk-set-txt"><strong>Ton employé</strong></span>
-                    <div className="wk-seg">
-                      {(Object.keys(TONE_LABELS) as (keyof typeof TONE_LABELS)[]).map((key) => (
-                        <button type="button" key={key} className={profile.tone === key ? 'is-on' : undefined} onClick={() => patchProfile({ tone: key })}>{TONE_LABELS[key]}</button>
-                      ))}
-                    </div>
-                  </div>
-
-                  <div className="wk-set-row">
-                    <span className="wk-set-txt"><strong>Langue de réponse</strong></span>
-                    <div className="wk-seg">
-                      {(Object.keys(LANGUAGE_LABELS) as (keyof typeof LANGUAGE_LABELS)[]).map((key) => (
-                        <button type="button" key={key} className={profile.language === key ? 'is-on' : undefined} onClick={() => patchProfile({ language: key })}>{LANGUAGE_LABELS[key]}</button>
-                      ))}
-                    </div>
-                  </div>
-
-                  <div className="wk-set-row">
-                    <span className="wk-set-txt"><strong>Niveau de détail</strong></span>
-                    <div className="wk-seg">
-                      {(Object.keys(DETAIL_LABELS) as (keyof typeof DETAIL_LABELS)[]).map((key) => (
-                        <button type="button" key={key} className={profile.detail === key ? 'is-on' : undefined} onClick={() => patchProfile({ detail: key })}>{DETAIL_LABELS[key]}</button>
-                      ))}
-                    </div>
-                  </div>
-
-                  <button type="button" className="wk-set-row wk-set-row--action" aria-pressed={profile.shareResources} onClick={() => patchProfile({ shareResources: !profile.shareResources })}>
-                    <span className="wk-set-txt">
-                      <strong>Partage de son travail</strong>
-                      <small>{profile.shareResources ? 'Ses sources et ses artefacts servent à toute l’équipe.' : 'Ses sources et ses artefacts restent dans son espace.'}</small>
-                    </span>
-                    <span className={profile.shareResources ? 'switch is-on' : 'switch'}><b /></span>
-                  </button>
-
-                  {/* Arrêté au cadrage : on le signale parmi les réglages, sans commande. */}
-                  {agent.approvals.length > 0 && (
-                    <div className="wk-set-row">
-                      <span className="wk-set-txt">
-                        <strong>Soumis à votre accord</strong>
-                        <small>{agent.approvals.join(' · ')}</small>
-                      </span>
-                      <ShieldCheck className="wk-set-mark" size={17} />
-                    </div>
-                  )}
                 </section>
 
                 <section className="wk-settings wk-settings--stack">
@@ -761,11 +945,6 @@ export function AgentDetailPage() {
                   <span className="wk-count">{profile.instructions.length} / 2000</span>
                 </section>
 
-                <div className="wk-form-foot">
-                  <Button onClick={saveProfile} disabled={savingProfile}>{savingProfile ? 'Enregistrement…' : 'Enregistrer'}</Button>
-                  {profileSaved && <span className="wk-saved"><Check size={15} /> Enregistré</span>}
-                </div>
-
                 <section className="wk-settings">
                   <button type="button" className="wk-set-row wk-set-row--action" aria-pressed={profile.active} onClick={() => patchProfile({ active: !profile.active })}>
                     <span className="wk-set-txt">
@@ -775,92 +954,55 @@ export function AgentDetailPage() {
                     <span className={profile.active ? 'switch is-on' : 'switch'}><b /></span>
                   </button>
                 </section>
+
+                {/* Pas de bouton : l'ecran s'enregistre seul. Reste la trace
+                    de ce qui vient d'etre ecrit, sans quoi on douterait. */}
+                {(savingProfile || profileSaved) && (
+                  <p className="wk-autosave">
+                    {savingProfile ? 'Enregistrement…' : <><Check size={14} /> Enregistré</>}
+                  </p>
+                )}
               </div>
             )}
           </>
         )}
 
-        {view === 'activite' && <>
-        {/* Filtres d'état, « Tout » en tête. Un seul à la fois : c'est ce
-            sélecteur qui range les tâches, il n'y a donc plus de regroupement
-            en dessous — ce serait dire deux fois la même chose. */}
-        <div className="wk-filters" role="tablist" aria-label="Filtrer les tâches par état">
-          <button
-            type="button"
-            role="tab"
-            aria-selected={stateFilter === 'all'}
-            className={stateFilter === 'all' ? 'wk-filter is-on' : 'wk-filter'}
-            onClick={() => setStateFilter('all')}
-          >
-            Tout <b>{activityConversations.length}</b>
-          </button>
-          {statusGroups.map((group) => (
-            <button
-              type="button"
-              key={group.key}
-              role="tab"
-              aria-selected={stateFilter === group.key}
-              disabled={group.items.length === 0}
-              className={`wk-filter is-${group.key}${stateFilter === group.key ? ' is-on' : ''}`}
-              onClick={() => setStateFilter(group.key)}
-            >
-              <i aria-hidden="true" />{group.plural} <b>{group.items.length}</b>
-            </button>
-          ))}
-        </div>
-
-        <div className="wk-timeline">
-          {activityConversations.length === 0 ? (
-            <p className="act-empty">Aucune tâche confiée à {agent.name} pour l'instant. Demandez-lui quelque chose pour démarrer.</p>
-          ) : (
-            <table className="wk-log" aria-label={`Activité de ${agent.name}`}>
-              <thead>
-                <tr><th>État</th><th>Tâche</th><th>Résultat</th><th>Quand</th></tr>
-              </thead>
-              <tbody>
-                {visibleTasks.map((item) => {
-                  const key = item.status ?? 'done'
-                  const state = CONVERSATION_STATUSES.find((entry) => entry.key === key)
-                  const open = () => openConversation(item.id)
-                  return (
-                    <tr
-                      key={item.id}
-                      role="button"
-                      tabIndex={0}
-                      aria-label={`${item.title} — ${state?.label}`}
-                      onClick={open}
-                      onKeyDown={(event) => {
-                        if (event.key !== 'Enter' && event.key !== ' ') return
-                        event.preventDefault()
-                        open()
-                      }}
-                    >
-                      {/* La couleur ne porte jamais l'information seule : la
-                          pastille contient toujours le mot. */}
-                      <td><span className={`wk-pill is-${key}`}>{state?.label}</span></td>
-                      <td className="wk-log-task">{item.title}</td>
-                      <td className="wk-log-result">{item.preview}</td>
-                      <td className="wk-log-when">{item.time}</td>
-                    </tr>
-                  )
-                })}
-              </tbody>
-            </table>
-          )}
-        </div>
-
-        </>}
+        {view === 'activite' && (
+          <div className="wk-conversation">
+            <div className="wk-chat-block">
+              <div className="wk-chat-head">
+                <AgentAvatar id={agent.id} name={agent.name} avatarUrl={agent.avatarUrl} variant="square" className="chat-modal-av" />
+                <span className="chat-modal-id">{agent.name}</span>
+                <button type="button" className="chat-modal-x" aria-label="Passer en plein écran" onClick={() => setChatFull(true)}>
+                  <Maximize2 size={16} />
+                </button>
+              </div>
+              <ExpertChat
+                key={activeConversation ?? `nouveau-${chatKey}`}
+                agent={agent}
+                conversationId={activeConversation}
+                onUpdated={refreshHermesActivity}
+                onCreated={(created) => {
+                  setConversations((prev) => [created, ...prev])
+                  setOpenedConversation(created.id)
+                  // L'échange ne se ferme plus : la relecture de l'activité
+                  // Hermes se déclenche donc ici, au moment où un fil naît.
+                  refreshHermesActivity()
+                }}
+              />
+            </div>
+          </div>
+        )}
       </main>
 
-      {/* Colonne de droite : l'échange, toujours là. Ce n'est plus une fenêtre
-          qu'on ouvre et qu'on ferme — c'est un bloc de la page, qu'on élargit
-          en tirant son bord ou qu'on passe en plein écran. */}
+      {/* Colonne de droite : ce que l'expert a fait, et ce qu'il fait tout seul.
+          La conversation occupe le centre — c'est elle qu'on vient chercher. */}
       {view === 'activite' && !chatFull && (
-        <aside className="wk-side wk-side--chat" style={{ ['--side-w' as string]: `${chatWidth}px` }}>
+        <aside className="wk-side wk-side--work" style={{ ['--side-w' as string]: `${chatWidth}px` }}>
           <div
             className="wk-side-grip"
             role="separator"
-            aria-label="Largeur de l’échange"
+            aria-label="Largeur de la colonne"
             aria-orientation="vertical"
             tabIndex={0}
             onPointerDown={startResize}
@@ -870,20 +1012,56 @@ export function AgentDetailPage() {
               resizeBy(event.key === 'ArrowLeft' ? 40 : -40)
             }}
           />
-          {/* Les routines coiffent la colonne : toujours visibles, quelle que
-              soit la longueur de la frise d'activité à gauche. */}
+          <div className="wk-side-scroll">
+          {/* Journal d'activité : un en-tête, des filtres portant leur
+              compte, puis les tâches groupées par jour. Chaque ligne se réduit
+              à l'essentiel — une pastille d'état, un intitulé, une heure. */}
+          <section className="act">
+            <div className="act-head"><ClipboardList size={14} aria-hidden="true" /><h2>Activité</h2></div>
+
+            <div className="act-chips" role="tablist" aria-label="Filtrer par état">
+              {statusGroups.map((group) => (
+                <button
+                  type="button"
+                  key={group.key}
+                  role="tab"
+                  aria-selected={stateFilter === group.key}
+                  className={stateFilter === group.key ? `act-chip is-${group.key} is-on` : `act-chip is-${group.key}`}
+                  onClick={() => setStateFilter((current) => (current === group.key ? 'all' : group.key))}
+                >
+                  <b>{group.items.length}</b>{group.plural}
+                </button>
+              ))}
+            </div>
+
+            {activityDays.length === 0 ? (
+              <p className="act-blank">Aucune activité récente.</p>
+            ) : activityDays.map((day) => (
+              <div className="act-day" key={day.label}>
+                <div className="act-day-label">{day.label}</div>
+                {day.items.map((item) => (
+                  <button type="button" key={item.id} className="act-row" onClick={() => openConversation(item.id)}>
+                    <i aria-hidden="true" className={`is-${item.status ?? 'done'}`} />
+                    <span className="act-row-title">{item.title}</span>
+                    <em>{hourOf(item.updatedAt)}</em>
+                  </button>
+                ))}
+              </div>
+            ))}
+          </section>
+
           <section className="wk-routines">
-            <div className="wk-side-head">
-              {/* Le compteur « routines actives » vivait dans la rangée de
-                  compteurs de l'accueil : il se lit désormais ici, à sa place. */}
-              <h2>Ses routines <em>({activeRoutines} active{activeRoutines > 1 ? 's' : ''} sur {automations.length})</em></h2>
-              <button type="button" className="act-more" onClick={() => setPicker('automation')}><Plus size={14} /> Ajouter</button>
+            {/* Meme en-tete que l'activite : icone, titre, action a droite. */}
+            <div className="act-head">
+              <Repeat size={14} aria-hidden="true" />
+              <h2>Routines <em>({activeRoutines}/{automations.length})</em></h2>
+              <button type="button" className="act-head-action" aria-label="Ajouter une routine" onClick={() => setPicker('automation')}><Plus size={15} /></button>
             </div>
             {automations.length === 0 ? (
-              <p className="act-empty">Aucune routine programmée. {agent.name} n'agit que sur demande.</p>
+              <p className="act-blank">Aucune routine programmée.</p>
             ) : automations.map((routine) => (
               <div key={routine.id} className={routine.active ? 'wk-routine' : 'wk-routine is-paused'}>
-                <AgentAvatar id={agent.id} name={agent.name} avatarUrl={agent.avatarUrl} className="wk-routine-av" />
+                <AgentAvatar id={agent.id} name={agent.name} avatarUrl={agent.avatarUrl} variant="square" className="wk-routine-av" />
                 <div className="wk-routine-txt">
                   <strong>{routine.name}</strong>
                   <small><Repeat size={12} /> {triggerLabel(routine.trigger)}</small>
@@ -897,28 +1075,6 @@ export function AgentDetailPage() {
               </div>
             ))}
           </section>
-
-          <div className="wk-chat-block">
-            <div className="wk-chat-head">
-              <AgentAvatar id={agent.id} name={agent.name} avatarUrl={agent.avatarUrl} className="chat-modal-av" />
-              <span className="chat-modal-id">{agent.name}</span>
-              <button type="button" className="chat-modal-x" aria-label="Passer en plein écran" onClick={() => setChatFull(true)}>
-                <Maximize2 size={16} />
-              </button>
-            </div>
-            <ExpertChat
-              key={activeConversation ?? `nouveau-${chatKey}`}
-              agent={agent}
-              conversationId={activeConversation}
-              onUpdated={refreshHermesActivity}
-              onCreated={(created) => {
-                setConversations((prev) => [created, ...prev])
-                setOpenedConversation(created.id)
-                // L'échange ne se ferme plus : la relecture de l'activité
-                // Hermes se déclenche donc ici, au moment où un fil naît.
-                refreshHermesActivity()
-              }}
-            />
           </div>
         </aside>
       )}
@@ -930,7 +1086,7 @@ export function AgentDetailPage() {
         <div className="chat-modal-overlay chat-modal-overlay--dock" role="dialog" aria-modal="true" aria-label={`Échange avec ${agent.name}`}>
           <div className="chat-modal chat-modal--dock chat-modal--full">
             <div className="chat-modal-head">
-              <AgentAvatar id={agent.id} name={agent.name} avatarUrl={agent.avatarUrl} className="chat-modal-av" />
+              <AgentAvatar id={agent.id} name={agent.name} avatarUrl={agent.avatarUrl} variant="square" className="chat-modal-av" />
               <span className="chat-modal-id">{agent.name}</span>
               <button type="button" className="chat-modal-x" aria-label="Réduire en panneau" onClick={() => setChatFull(false)}>
                 <Minimize2 size={16} />
@@ -1012,6 +1168,16 @@ export function AgentDetailPage() {
           lockedAgentName={agent.name}
           onCreated={(created) => { setAutomations((prev) => [created, ...prev]); setPicker(null) }}
           onClose={() => setPicker(null)}
+        />
+      )}
+
+      {toRemove && (
+        <ConfirmDialog
+          title="Supprimer cette ressource ?"
+          message={`« ${toRemove.name} » sera retirée de l'espace de ${agent.name}, et de ceux qui y avaient accès par partage.`}
+          confirmLabel="Supprimer"
+          onConfirm={() => void removeResource(toRemove)}
+          onCancel={() => setToRemove(null)}
         />
       )}
 

@@ -10,9 +10,21 @@ interface Paginated<T> {
   hasMore: boolean
 }
 
+/**
+ * Tous les experts du catalogue Yelema, equipe et marketplace confondues.
+ *
+ * ATTENTION — ce n'est PAS l'inventaire de l'organisation : celui-ci depend du
+ * plan souscrit et n'est connu que du back-office. `/agents` ne renvoie que ce
+ * a quoi le membre CONNECTE a acces, ce qui en fait une base fausse pour
+ * accorder des droits a quelqu'un d'autre. En attendant que le back expose
+ * l'inventaire, on prend l'union des deux listes.
+ */
 async function fetchEntitledAgentIds(): Promise<string[]> {
-  const agents = await apiRequest<{ id: string }[]>('/agents')
-  return agents.map((agent) => agent.id)
+  const [team, catalogue] = await Promise.all([
+    apiRequest<{ id: string }[]>('/agents'),
+    apiRequest<{ id: string }[]>('/agents/marketplace').catch((): { id: string }[] => []),
+  ])
+  return [...new Set([...team, ...catalogue].map((agent) => agent.id))]
 }
 
 export async function listMembers(): Promise<Member[]> {
@@ -36,7 +48,9 @@ export async function addMember(payload: AddMemberRequest): Promise<Member> {
   const allAgentIds = await fetchEntitledAgentIds()
   const body: Record<string, unknown> = { email: payload.email }
   if (payload.name) body.name = payload.name
-  if (payload.roleKey) body.role = payload.roleKey
+  // Les permissions cochees partent telles quelles : le serveur reste
+  // l'autorite, il refusera toute paire capacite:action inconnue.
+  if (payload.permissionKeys?.length) body.permissions = payload.permissionKeys
   const toolRestrictions = toToolRestrictions(payload.excludedAgentIds, allAgentIds)
   if (toolRestrictions) body.toolRestrictions = toolRestrictions
   const created = await apiRequest<RealMember>('/members', {
@@ -51,6 +65,18 @@ export async function setMemberRole(memberId: string, roleKey: string): Promise<
     apiRequest<RealMember>(`/members/${memberId}`, {
       method: 'PATCH',
       body: JSON.stringify({ role: roleKey }),
+    }),
+    fetchEntitledAgentIds(),
+  ])
+  return toMember(real, allAgentIds)
+}
+
+/** Regler les permissions d'un membre deja invite. */
+export async function setMemberPermissions(memberId: string, permissionKeys: string[]): Promise<Member> {
+  const [real, allAgentIds] = await Promise.all([
+    apiRequest<RealMember>(`/members/${memberId}`, {
+      method: 'PATCH',
+      body: JSON.stringify({ permissions: permissionKeys }),
     }),
     fetchEntitledAgentIds(),
   ])

@@ -5,6 +5,8 @@ import type { FileItem } from '../../../../features/files/api/contracts'
 import filesFixture from '../fixtures/files.json'
 import livrablesFixture from '../fixtures/livrables.json'
 import { sharesResources } from '../stores/agent-profile.store'
+import { isInTeam } from '../stores/team.store'
+import { isRemoved, isShared, remove, setShared } from '../stores/resource-sharing.store'
 import { API_BASE, notFound, requireAuth } from './helpers'
 
 /**
@@ -16,8 +18,7 @@ import { API_BASE, notFound, requireAuth } from './helpers'
  * est le réglage `shareResources` de son profil.
  */
 
-const TEAM_AGENT_IDS = new Set(['exp_kouassi', 'exp_awa', 'exp_mamadou', 'exp_salif'])
-const teamAgents = () => ROSTER.filter((expert) => TEAM_AGENT_IDS.has(expert.id))
+const teamAgents = () => ROSTER.filter((expert) => isInTeam(expert.id))
 
 const files = filesFixture.files as FileItem[]
 // Les artefacts du jeu de données portent le nom de leur auteur (l'identifiant
@@ -35,10 +36,15 @@ interface ResourceDto {
   ownerName: string
   /** Métier de l'auteur — sert au regroupement dans le sélecteur. */
   ownerMetier: string
+  /** Cette pièce est-elle mise à disposition des autres experts ? */
+  shared: boolean
 }
 
 /** Sources et artefacts appartenant à un employé, dans un format commun. */
 function resourcesOf(expert: RosterExpert): ResourceDto[] {
+  // Le réglage global du profil sert de valeur par défaut ; chaque pièce peut
+  // ensuite être ouverte ou refermée individuellement.
+  const defaut = sharesResources(expert.id)
   const owner = { ownerId: expert.id, ownerName: expert.name, ownerMetier: expert.metier }
   const sources = files
     .filter((file) => file.agent === expert.name)
@@ -48,6 +54,7 @@ function resourcesOf(expert: RosterExpert): ResourceDto[] {
       kind: 'source',
       meta: file.kind,
       size: file.size,
+      shared: isShared(file.id, defaut),
       ...owner,
     }))
   const produced = artefacts
@@ -58,9 +65,11 @@ function resourcesOf(expert: RosterExpert): ResourceDto[] {
       kind: 'artefact',
       meta: `${artefact.format} · ${artefact.type.toUpperCase()}`,
       size: artefact.size,
+      shared: isShared(artefact.id, defaut),
       ...owner,
     }))
-  return [...sources, ...produced]
+  // Une pièce supprimée disparaît pour tout le monde, propriétaire compris.
+  return [...sources, ...produced].filter((item) => !isRemoved(item.id))
 }
 
 export const resourceHandlers = [
@@ -75,16 +84,52 @@ export const resourceHandlers = [
 
     // Ce que les collègues mettent à disposition : leur consentement fait foi.
     const shared = team
-      .filter((item) => item.id !== agentId && sharesResources(item.id))
+      .filter((item) => item.id !== agentId)
       .flatMap((item) => resourcesOf(item))
+      .filter((item) => item.shared)
 
     return HttpResponse.json({
       own: resourcesOf(expert),
       shared,
       /** Employés de l'équipe qui gardent leur travail pour leurs propres tâches. */
       withheldBy: team
-        .filter((item) => item.id !== agentId && !sharesResources(item.id))
+        .filter((item) => item.id !== agentId && resourcesOf(item).every((piece) => !piece.shared))
         .map((item) => item.name),
     })
+  }),
+
+  /**
+   * Partager ou retirer du partage UNE ressource. La décision est prise par
+   * l'expert propriétaire ; le serveur reste l'autorité, l'écran ne fait que
+   * refléter ce qu'il renvoie.
+   */
+  http.patch(`${API_BASE}/agents/:agentId/resources/:resourceId`, async ({ request, params }) => {
+    const unauthorized = await requireAuth(request)
+    if (unauthorized) return unauthorized
+    const expert = teamAgents().find((item) => item.id === String(params.agentId))
+    if (!expert) return notFound('Employé IA introuvable.')
+    const resourceId = String(params.resourceId)
+    const piece = resourcesOf(expert).find((item) => item.id === resourceId)
+    // On ne partage que ce qui nous appartient : une pièce d'un collègue n'est
+    // pas modifiable ici, quelle que soit la requête.
+    if (!piece) return notFound('Ressource introuvable pour cet expert.')
+    const body = (await request.json()) as { shared?: unknown }
+    if (typeof body.shared !== 'boolean') return notFound('Le partage attend un booléen.')
+    setShared(resourceId, body.shared)
+    return HttpResponse.json({ ...piece, shared: body.shared })
+  }),
+
+  /** Supprimer une ressource — uniquement celles de l'expert lui-même. */
+  http.delete(`${API_BASE}/agents/:agentId/resources/:resourceId`, async ({ request, params }) => {
+    const unauthorized = await requireAuth(request)
+    if (unauthorized) return unauthorized
+    const expert = teamAgents().find((item) => item.id === String(params.agentId))
+    if (!expert) return notFound('Employé IA introuvable.')
+    const resourceId = String(params.resourceId)
+    if (!resourcesOf(expert).some((item) => item.id === resourceId)) {
+      return notFound('Ressource introuvable pour cet expert.')
+    }
+    remove(resourceId)
+    return new HttpResponse(null, { status: 204 })
   }),
 ]

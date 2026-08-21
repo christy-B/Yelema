@@ -1,6 +1,6 @@
 import { apiRequest } from '../../../shared/api/client/http-client'
 import { deriveMetiers, toAgentDetail, toAgentSummary, type RealAgent, type RealAgentDetail } from './agent-adapter'
-import type { AgentAvatarConfig, AgentDetail, AgentProfile, AgentResources, AgentSummary, Metier, PortraitJob, RecruitmentRequest } from './contracts'
+import type { AgentAvatarConfig, AgentDetail, AgentProfile, AgentResource, AgentResources, AgentSummary, Metier, PortraitJob, RecruitmentRequest } from './contracts'
 
 /**
  * GET /agents (réel) : tableau nu, déjà filtré aux agents auxquels le membre
@@ -96,4 +96,41 @@ export function requestPortrait(agentId: string, config: AgentAvatarConfig): Pro
 
 export function getPortraitJob(agentId: string, jobId: string): Promise<PortraitJob> {
   return apiRequest(`/agents/${agentId}/portrait/${jobId}`)
+}
+
+/**
+ * Demande d'un expert SUR MESURE : un métier que le catalogue ne couvre pas.
+ * Ce n'est pas un recrutement — rien ne rejoint l'équipe, la demande part au
+ * cadrage.
+ */
+export interface ExpertRequest {
+  need: string
+  /** Obligatoire : sans metier, la demande n'est pas cadrable. */
+  metier: string
+  /** Nature des donnees que l'expert devra exploiter. Au moins une. */
+  dataKinds: string[]
+}
+
+export interface ExpertRequestReceipt {
+  id: string
+  need: string
+  status: string
+  createdAt: string
+}
+
+export function requestCustomExpert(payload: ExpertRequest): Promise<ExpertRequestReceipt> {
+  return apiRequest('/agents/requests', { method: 'POST', body: JSON.stringify(payload) })
+}
+
+/**
+ * Partager ou retirer du partage UNE ressource de l'expert. Le serveur reste
+ * l'autorité : il refuse toute pièce qui n'appartient pas à cet expert.
+ */
+export function shareAgentResource(agentId: string, resourceId: string, shared: boolean): Promise<AgentResource> {
+  return apiRequest(`/agents/${agentId}/resources/${resourceId}`, { method: 'PATCH', body: JSON.stringify({ shared }) })
+}
+
+/** Supprimer une ressource de l'expert. Sans effet sur celles de ses collègues. */
+export function deleteAgentResource(agentId: string, resourceId: string): Promise<void> {
+  return apiRequest(`/agents/${agentId}/resources/${resourceId}`, { method: 'DELETE' })
 }

@@ -7,6 +7,11 @@
  * de partager leur travail. Le control-plane portera ces réglages : ils
  * appartiennent à l'organisation, pas à l'employé.
  */
+export interface PersonalitySettings {
+  /** Caracteres choisis parmi ceux du catalogue (voir PERSONALITY_TRAITS). */
+  traits: string[]
+}
+
 export interface ProfileSettings {
   active: boolean
   channels: string[]
@@ -14,6 +19,7 @@ export interface ProfileSettings {
   language: string
   detail: string
   instructions: string
+  personality: PersonalitySettings
   requireApproval: boolean
   /** L'employé met ses sources et ses artefacts à disposition de ses collègues. */
   shareResources: boolean
@@ -46,6 +52,7 @@ export const DEFAULT_PROFILE: ProfileSettings = {
   language: 'fr',
   detail: 'standard',
   instructions: '',
+  personality: { traits: [] },
   requireApproval: true,
   shareResources: true,
   avatar: { position: 'auto', style: 'auto', accessory: 'auto', background: 'auto' },
@@ -59,6 +66,10 @@ export const DEFAULT_PROFILE: ProfileSettings = {
  */
 const SEED: Record<string, Partial<ProfileSettings>> = {
   exp_mamadou: { shareResources: false },
+  // Deux employes hors service a l'arrivee : sans cela l'etat affiche sur les
+  // cartes serait le meme partout, et ne s'apprendrait donc jamais.
+  exp_nadia: { active: false },
+  exp_fatima: { active: false },
 }
 
 const profiles = new Map<string, ProfileSettings>()

@@ -4,40 +4,148 @@
     "workspaceId": "ws_3",
     "name": "Dossier de financement agence PME",
     "objective": "Préparer un dossier bancaire complet pour financer l’ouverture de la nouvelle agence PME.",
-    "status": "active",
+    "status": "draft",
     "dueDate": "2026-09-15",
     "constraints": "Le dossier doit respecter le référentiel OHADA et être prêt avant le comité de crédit.",
-    "expectedDeliverables": ["Prévisionnel financier à 3 ans", "Note de synthèse pour le comité", "Liste des pièces justificatives"],
+    "expectedDeliverables": [
+      "Prévisionnel financier à 3 ans",
+      "Note de synthèse pour le comité",
+      "Liste des pièces justificatives"
+    ],
     "createdAt": "2026-08-01T09:00:00.000Z",
     "updatedAt": "2026-08-06T10:30:00.000Z",
     "orchestrator": {
       "name": "Chef de projet IA",
+      "displayName": "Dany",
+      "agentId": "orc_dany",
       "responsibility": "Coordonner le plan, les dépendances et les validations humaines."
     },
     "tasks": [
-      { "id": "task_fin_1", "title": "Consolider les hypothèses financières", "status": "done", "agentId": "exp_mamadou" },
-      { "id": "task_fin_2", "title": "Produire le prévisionnel à 3 ans", "status": "in_progress", "agentId": "exp_mamadou" },
-      { "id": "task_fin_3", "title": "Vérifier les pièces et les risques", "status": "todo", "agentId": "exp_salif" },
-      { "id": "task_fin_4", "title": "Préparer la note pour le comité", "status": "todo", "agentId": null }
+      {
+        "id": "task_fin_1",
+        "title": "Consolider les hypothèses financières",
+        "status": "todo",
+        "agentId": "exp_mamadou",
+        "approved": false,
+        "brief": ""
+      },
+      {
+        "id": "task_fin_2",
+        "title": "Produire le prévisionnel à 3 ans",
+        "status": "todo",
+        "agentId": "exp_mamadou",
+        "approved": false,
+        "brief": ""
+      },
+      {
+        "id": "task_fin_3",
+        "title": "Vérifier les pièces et les risques",
+        "status": "todo",
+        "agentId": "exp_salif",
+        "approved": false,
+        "brief": ""
+      },
+      {
+        "id": "task_fin_4",
+        "title": "Préparer la note pour le comité",
+        "status": "todo",
+        "agentId": null,
+        "approved": false,
+        "brief": ""
+      }
     ],
     "assignments": [
-      { "agentId": "exp_mamadou", "responsibility": "Prévisionnel, trésorerie et plan de remboursement", "assignedAt": "2026-08-01T09:30:00.000Z" },
-      { "agentId": "exp_salif", "responsibility": "Revue des risques et conformité du dossier", "assignedAt": "2026-08-01T09:35:00.000Z" }
+      {
+        "agentId": "exp_mamadou",
+        "responsibility": "Prévisionnel, trésorerie et plan de remboursement",
+        "assignedAt": "2026-08-01T09:30:00.000Z",
+        "approved": false
+      },
+      {
+        "agentId": "exp_salif",
+        "responsibility": "Revue des risques et conformité du dossier",
+        "assignedAt": "2026-08-01T09:35:00.000Z",
+        "approved": false
+      }
     ],
-    "decisions": [
-      { "id": "decision_fin_1", "title": "Valider l’hypothèse de croissance du chiffre d’affaires à 12 %", "requestedAt": "2026-08-06T10:30:00.000Z", "agentId": "exp_mamadou" }
-    ],
+    "decisions": [],
     "activities": [
-      { "id": "act_fin_1", "kind": "project_created", "summary": "Aïcha Koné a créé le projet.", "createdAt": "2026-08-01T09:00:00.000Z" },
-      { "id": "act_fin_2", "kind": "assignment_added", "summary": "Mamadou et Salif ont rejoint l’équipe du projet.", "createdAt": "2026-08-01T09:35:00.000Z" },
-      { "id": "act_fin_3", "kind": "task_updated", "summary": "Mamadou a consolidé les hypothèses financières.", "createdAt": "2026-08-05T15:20:00.000Z", "agentId": "exp_mamadou", "taskId": "task_fin_1", "conversationId": "c_15" },
-      { "id": "act_fin_4", "kind": "artifact_added", "summary": "Mamadou a déposé le prévisionnel financier de travail.", "createdAt": "2026-08-06T09:45:00.000Z", "agentId": "exp_mamadou", "resourceId": "res_fin_3", "conversationId": "c_15" },
-      { "id": "act_fin_5", "kind": "decision_required", "summary": "Une validation est demandée sur l’hypothèse de croissance à 12 %.", "createdAt": "2026-08-06T10:30:00.000Z", "agentId": "exp_mamadou" }
+      {
+        "id": "act_fin_1",
+        "kind": "project_created",
+        "summary": "Aïcha Koné a créé le projet.",
+        "createdAt": "2026-08-01T09:00:00.000Z"
+      },
+      {
+        "id": "act_proj_financement_pme_plan_proposed",
+        "kind": "plan_proposed",
+        "summary": "Le chef de projet a analysé la fiche de mission et propose un plan de 4 tâches.",
+        "createdAt": "2026-08-01T09:00:00.000Z",
+        "agentId": null
+      },
+      {
+        "id": "act_proj_financement_pme_assignment_added",
+        "kind": "assignment_added",
+        "summary": "Le chef de projet propose de mobiliser Mamadou et Salif.",
+        "createdAt": "2026-08-01T09:00:00.000Z",
+        "agentId": null
+      }
     ],
     "resources": [
-      { "id": "res_fin_1", "kind": "input", "name": "Comptes annuels 2025.xlsx", "format": "XLSX", "createdAt": "2026-08-01T09:10:00.000Z" },
-      { "id": "res_fin_2", "kind": "input", "name": "Hypothèses nouvelle agence.docx", "format": "DOCX", "createdAt": "2026-08-01T09:12:00.000Z" },
-      { "id": "res_fin_3", "kind": "artifact", "name": "Prévisionnel financier — version de travail.xlsx", "format": "XLSX", "createdAt": "2026-08-06T09:45:00.000Z", "agentId": "exp_mamadou" }
+      {
+        "id": "res_fin_1",
+        "kind": "input",
+        "name": "Comptes annuels 2025.xlsx",
+        "format": "XLSX",
+        "createdAt": "2026-08-01T09:10:00.000Z"
+      },
+      {
+        "id": "res_fin_2",
+        "kind": "input",
+        "name": "Hypothèses nouvelle agence.docx",
+        "format": "DOCX",
+        "createdAt": "2026-08-01T09:12:00.000Z"
+      }
+    ],
+    "planState": "proposed",
+    "suggestedDeliverables": [
+      {
+        "id": "sug_remboursement",
+        "label": "Plan de remboursement détaillé",
+        "reason": "Le comité de crédit le réclame systématiquement ; sans lui, le dossier revient."
+      },
+      {
+        "id": "sug_sensibilite",
+        "label": "Analyse de sensibilité, scénario bas",
+        "reason": "Montre que le remboursement tient même si la croissance est ratée de moitié."
+      }
+    ],
+    "suggestedInputs": [
+      {
+        "id": "need_releves",
+        "label": "Relevés bancaires des 12 derniers mois",
+        "reason": "Mamadou en tire la trésorerie réelle : sans eux, le prévisionnel repose sur des estimations."
+      },
+      {
+        "id": "need_bail",
+        "label": "Bail et devis de la nouvelle agence",
+        "reason": "Chiffre le besoin de financement au lieu de le supposer."
+      },
+      {
+        "id": "need_kbis",
+        "label": "Statuts et pièces juridiques à jour",
+        "reason": "Salif vérifie la conformité du dossier avant le passage en comité."
+      }
+    ],
+    "suggestedConnectors": [
+      {
+        "name": "Sage",
+        "reason": "Mamadou lit le grand livre à la source, au lieu d’attendre un export mensuel."
+      },
+      {
+        "name": "SharePoint",
+        "reason": "Salif y récupère les statuts et le bail sans que vous ayez à les chercher."
+      }
     ]
   },
   {
@@ -48,33 +156,228 @@
     "status": "active",
     "dueDate": "2026-08-28",
     "constraints": "Conserver une validation humaine pour les gestes commerciaux et les devis.",
-    "expectedDeliverables": ["Parcours conversationnel cible", "Réponses types", "Tableau de suivi des demandes"],
+    "expectedDeliverables": [
+      "Parcours conversationnel cible",
+      "Réponses types",
+      "Tableau de suivi des demandes"
+    ],
     "createdAt": "2026-07-28T08:30:00.000Z",
-    "updatedAt": "2026-08-05T16:10:00.000Z",
+    "updatedAt": "2026-08-19T15:40:00.000Z",
     "orchestrator": {
       "name": "Chef de projet IA",
+      "displayName": "Dany",
+      "agentId": "orc_dany",
       "responsibility": "Coordonner le plan, les dépendances et les validations humaines."
     },
     "tasks": [
-      { "id": "task_wa_1", "title": "Cartographier les demandes fréquentes", "status": "done", "agentId": "exp_awa" },
-      { "id": "task_wa_2", "title": "Définir les critères de qualification", "status": "done", "agentId": "exp_kouassi" },
-      { "id": "task_wa_3", "title": "Rédiger le parcours conversationnel", "status": "in_progress", "agentId": "exp_awa" },
-      { "id": "task_wa_4", "title": "Valider les règles d’escalade", "status": "todo", "agentId": null }
+      {
+        "id": "task_wa_1",
+        "title": "Cartographier les demandes fréquentes",
+        "status": "done",
+        "agentId": "exp_awa",
+        "approved": true,
+        "brief": "Cartographie des 1 240 demandes de juillet, regroupees en 9 motifs."
+      },
+      {
+        "id": "task_wa_2",
+        "title": "Définir les critères de qualification",
+        "status": "done",
+        "agentId": "exp_kouassi",
+        "approved": true,
+        "brief": "Trois criteres retenus : budget annonce, echeance, decideur identifie."
+      },
+      {
+        "id": "task_wa_3",
+        "title": "Rédiger le parcours conversationnel",
+        "status": "in_progress",
+        "agentId": "exp_awa",
+        "approved": true,
+        "brief": "Parcours en cours de rédaction : 9 motifs, 4 branches, 2 cas passés à un conseiller."
+      },
+      {
+        "id": "task_wa_4",
+        "title": "Valider les règles d’escalade",
+        "status": "todo",
+        "agentId": "exp_awa",
+        "approved": true,
+        "brief": "Attend votre accord sur les deux cas qu’Awa veut passer à un conseiller."
+      }
     ],
     "assignments": [
-      { "agentId": "exp_awa", "responsibility": "Parcours client, réponses types et règles d’escalade", "assignedAt": "2026-07-28T09:00:00.000Z" },
-      { "agentId": "exp_kouassi", "responsibility": "Qualification commerciale et suivi des opportunités", "assignedAt": "2026-07-28T09:05:00.000Z" }
+      {
+        "agentId": "exp_awa",
+        "responsibility": "Parcours client, réponses types et règles d’escalade",
+        "assignedAt": "2026-07-28T09:00:00.000Z",
+        "approved": true
+      },
+      {
+        "agentId": "exp_kouassi",
+        "responsibility": "Qualification commerciale et suivi des opportunités",
+        "assignedAt": "2026-07-28T09:05:00.000Z",
+        "approved": true
+      }
     ],
-    "decisions": [],
+    "decisions": [
+      {
+        "id": "dec_wa_1",
+        "title": "Faut-il transférer les réclamations et les litiges de paiement à un conseiller ?",
+        "requestedAt": "2026-08-19T15:40:00.000Z",
+        "agentId": "exp_awa"
+      }
+    ],
     "activities": [
-      { "id": "act_wa_1", "kind": "project_created", "summary": "Aïcha Koné a créé le projet.", "createdAt": "2026-07-28T08:30:00.000Z" },
-      { "id": "act_wa_2", "kind": "assignment_added", "summary": "Awa et Kouassi ont rejoint l’équipe du projet.", "createdAt": "2026-07-28T09:05:00.000Z" },
-      { "id": "act_wa_3", "kind": "task_updated", "summary": "Awa a cartographié les demandes fréquentes.", "createdAt": "2026-08-03T14:00:00.000Z", "agentId": "exp_awa", "taskId": "task_wa_1", "conversationId": "c_12" },
-      { "id": "act_wa_4", "kind": "task_updated", "summary": "Kouassi a défini les critères de qualification commerciale.", "createdAt": "2026-08-05T16:10:00.000Z", "agentId": "exp_kouassi", "taskId": "task_wa_2", "conversationId": "c_2" }
+      {
+        "id": "act_wa_01",
+        "kind": "project_created",
+        "summary": "Aïcha Koné a créé le projet.",
+        "createdAt": "2026-07-28T08:30:00.000Z",
+        "agentId": null
+      },
+      {
+        "id": "act_wa_02",
+        "kind": "plan_proposed",
+        "summary": "Le chef de projet a analysé la fiche de mission et propose un plan de 4 tâches.",
+        "createdAt": "2026-07-28T08:45:00.000Z",
+        "agentId": null
+      },
+      {
+        "id": "act_wa_03",
+        "kind": "assignment_added",
+        "summary": "Le chef de projet propose de mobiliser Awa et Kouassi.",
+        "createdAt": "2026-07-28T08:47:00.000Z",
+        "agentId": null
+      },
+      {
+        "id": "act_wa_04",
+        "kind": "task_updated",
+        "summary": "Aïcha Koné a validé le plan et lancé le projet.",
+        "createdAt": "2026-07-29T09:10:00.000Z",
+        "agentId": null
+      },
+      {
+        "id": "act_wa_05",
+        "kind": "task_updated",
+        "summary": "Awa a terminé la cartographie des demandes fréquentes : 9 motifs pour 1 240 messages.",
+        "createdAt": "2026-08-03T13:55:00.000Z",
+        "agentId": "exp_awa"
+      },
+      {
+        "id": "act_wa_06",
+        "kind": "artifact_added",
+        "summary": "Awa a déposé la cartographie des demandes fréquentes.",
+        "createdAt": "2026-08-03T14:00:00.000Z",
+        "agentId": "exp_awa"
+      },
+      {
+        "id": "act_wa_07",
+        "kind": "task_updated",
+        "summary": "Kouassi a arrêté les critères de qualification commerciale.",
+        "createdAt": "2026-08-07T11:20:00.000Z",
+        "agentId": "exp_kouassi"
+      },
+      {
+        "id": "act_wa_08",
+        "kind": "artifact_added",
+        "summary": "Kouassi a déposé la grille de qualification.",
+        "createdAt": "2026-08-07T11:25:00.000Z",
+        "agentId": "exp_kouassi"
+      },
+      {
+        "id": "act_wa_09",
+        "kind": "task_updated",
+        "summary": "Awa a commencé la rédaction du parcours conversationnel.",
+        "createdAt": "2026-08-12T09:30:00.000Z",
+        "agentId": "exp_awa"
+      },
+      {
+        "id": "act_wa_10",
+        "kind": "artifact_added",
+        "summary": "Awa a déposé les réponses types, première série.",
+        "createdAt": "2026-08-17T16:05:00.000Z",
+        "agentId": "exp_awa"
+      },
+      {
+        "id": "act_wa_11",
+        "kind": "decision_required",
+        "summary": "Awa demande votre accord : elle propose de passer les réclamations et les litiges de paiement à un conseiller plutôt que d’y répondre seule.",
+        "createdAt": "2026-08-19T15:40:00.000Z",
+        "agentId": "exp_awa"
+      }
     ],
     "resources": [
-      { "id": "res_wa_1", "kind": "input", "name": "Export des demandes WhatsApp — juillet.csv", "format": "CSV", "createdAt": "2026-07-28T08:40:00.000Z" },
-      { "id": "res_wa_2", "kind": "artifact", "name": "Cartographie des demandes fréquentes.pdf", "format": "PDF", "createdAt": "2026-08-03T14:00:00.000Z", "agentId": "exp_awa" }
+      {
+        "id": "res_wa_1",
+        "kind": "input",
+        "name": "Export des demandes WhatsApp — juillet.csv",
+        "format": "CSV",
+        "createdAt": "2026-07-28T08:40:00.000Z"
+      },
+      {
+        "id": "res_wa_2",
+        "kind": "input",
+        "name": "Catalogue et tarifs — août 2026.xlsx",
+        "format": "XLSX",
+        "createdAt": "2026-07-30T10:15:00.000Z"
+      },
+      {
+        "id": "res_wa_10",
+        "kind": "artifact",
+        "name": "Cartographie des demandes fréquentes.pdf",
+        "format": "PDF",
+        "createdAt": "2026-08-03T14:00:00.000Z",
+        "agentId": "exp_awa"
+      },
+      {
+        "id": "res_wa_11",
+        "kind": "artifact",
+        "name": "Grille de qualification commerciale.xlsx",
+        "format": "XLSX",
+        "createdAt": "2026-08-07T11:25:00.000Z",
+        "agentId": "exp_kouassi"
+      },
+      {
+        "id": "res_wa_12",
+        "kind": "artifact",
+        "name": "Réponses types — série 1.docx",
+        "format": "DOCX",
+        "createdAt": "2026-08-17T16:05:00.000Z",
+        "agentId": "exp_awa"
+      }
+    ],
+    "planState": "running",
+    "suggestedDeliverables": [
+      {
+        "id": "sug_escalade",
+        "label": "Liste des cas passés à un conseiller",
+        "reason": "Fixe noir sur blanc ce qu’Awa ne traite pas seule : c’est ce qui évite les incidents."
+      },
+      {
+        "id": "sug_mesure",
+        "label": "Indicateurs de suivi du parcours",
+        "reason": "Sans eux, impossible de dire dans un mois si le parcours a servi à quelque chose."
+      }
+    ],
+    "suggestedInputs": [
+      {
+        "id": "need_faq",
+        "label": "Réponses types déjà utilisées par l’équipe",
+        "reason": "Awa part de votre langage plutôt que d’en inventer un."
+      },
+      {
+        "id": "need_escalade",
+        "label": "Liste des cas à ne jamais traiter sans un conseiller",
+        "reason": "Fixe la limite du parcours automatique : c’est ce qui évite les incidents."
+      }
+    ],
+    "suggestedConnectors": [
+      {
+        "name": "Gmail",
+        "reason": "Awa voit aussi les demandes arrivées par mail, que l’export WhatsApp ne couvre pas."
+      },
+      {
+        "name": "Confluence",
+        "reason": "Vos réponses types y sont déjà rédigées : le parcours reprend votre langage."
+      }
     ]
   }
 ]

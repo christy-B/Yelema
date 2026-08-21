@@ -21,8 +21,8 @@ export function WorkspaceLayout() {
   const { workspaceId = DEFAULT_WORKSPACE_ID } = useParams()
   const { session, signOut } = useSession()
   const navigation: NavigationItem[] = [
-    { label: 'Accueil', to: paths.workspace(workspaceId), icon: Home, end: true },
-    { label: 'Mes experts IA', to: paths.agents(workspaceId), icon: Grid2X2 },
+    { label: 'Experts', to: paths.workspace(workspaceId), icon: Home, end: true },
+    { label: 'Mon équipe', to: paths.agents(workspaceId), icon: Grid2X2 },
     { label: 'Projets', to: paths.projects(workspaceId), icon: FolderKanban },
     { label: 'Facturation', to: paths.billing(workspaceId), icon: CreditCard, permission: { capability: 'invoices', action: 'view' } },
     { label: 'Membres', to: paths.members(workspaceId), icon: Users, permission: { capability: 'members', action: 'view' } },

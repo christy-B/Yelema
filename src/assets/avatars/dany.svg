@@ -1,0 +1,34 @@
+<svg viewBox="0 0 400 717" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Portrait de Dany">
+  <defs>
+    <linearGradient id="dl-bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#efeafc"/>
+      <stop offset="1" stop-color="#cfc1ef"/>
+    </linearGradient>
+    <clipPath id="dl-frame"><rect width="400" height="717"/></clipPath>
+  </defs>
+  <g clip-path="url(#dl-frame)">
+    <rect width="400" height="717" fill="url(#dl-bg)"/>
+    <!-- Buste cadre en plan large : veste sombre, chemise claire, cravate -->
+    <path d="M30 717 C30 545 105 470 200 470 C295 470 370 545 370 717 Z" fill="#2f3355"/>
+    <path d="M168 470 L200 585 L232 470 L214 462 L186 462 Z" fill="#f5f3fb"/>
+    <path d="M200 585 L182 528 L200 512 L218 528 Z" fill="#6b4fc7"/>
+    <path d="M147 486 L186 462 L200 512 Z" fill="#272b48"/>
+    <path d="M253 486 L214 462 L200 512 Z" fill="#272b48"/>
+    <!-- Cou -->
+    <path d="M172 388 H228 V478 H172 Z" fill="#8a5a30"/>
+    <!-- Tete -->
+    <ellipse cx="200" cy="300" rx="88" ry="97" fill="#9c663a"/>
+    <!-- Oreilles -->
+    <circle cx="112" cy="308" r="17" fill="#8a5a30"/>
+    <circle cx="288" cy="308" r="17" fill="#8a5a30"/>
+    <!-- Cheveux courts -->
+    <path d="M110 292 Q110 190 200 190 Q290 190 290 292 Q290 248 200 248 Q110 248 110 292 Z" fill="#241d24"/>
+    <!-- Sourcils, yeux, nez, bouche -->
+    <rect x="141" y="285" width="42" height="10" rx="5" fill="#241d24"/>
+    <rect x="217" y="285" width="42" height="10" rx="5" fill="#241d24"/>
+    <circle cx="162" cy="313" r="10.5" fill="#241d24"/>
+    <circle cx="238" cy="313" r="10.5" fill="#241d24"/>
+    <path d="M200 318 L200 344 Q200 350 193 351" stroke="#7a4a25" stroke-width="6" fill="none" stroke-linecap="round"/>
+    <path d="M175 372 Q200 389 225 372" stroke="#5d3418" stroke-width="9" fill="none" stroke-linecap="round"/>
+  </g>
+</svg>

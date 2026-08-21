@@ -2,6 +2,7 @@ import type { Member, MemberStatus } from './contracts'
 
 /** DTO RÉEL de /members (control-plane, v1). */
 export interface RealMember {
+  permissions?: { capability: string; actions: string[] }[]
   id: string
   email: string
   name: string | null
@@ -72,6 +73,7 @@ export function toMember(real: RealMember, allAgentIds: string[]): Member {
     status: STATUS_MAP[real.status] ?? 'active',
     isFirstAdmin: real.isFirstAdmin,
     role: real.role,
+    permissions: real.permissions ?? [],
     excludedAgentIds: toExcludedAgentIds(real.toolRestrictions, allAgentIds),
   }
 }

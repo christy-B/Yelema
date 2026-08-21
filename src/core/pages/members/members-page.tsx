@@ -1,14 +1,15 @@
-import { Check, MoreHorizontal, Plus, Search, Trash2, UserRound, X } from 'lucide-react'
+import { Check, MoreHorizontal, Pencil, Plus, Search, Trash2, UserRound, X } from 'lucide-react'
 import { useEffect, useMemo, useState } from 'react'
 import { useNavigate, useParams } from 'react-router'
 
-import { listAgents, listMetiers } from '../../../features/agents/api/api'
+import { listAgents, listMarketplaceAgents, listMetiers } from '../../../features/agents/api/api'
 import type { AgentSummary, Metier } from '../../../features/agents/api/contracts'
-import { addMember, deleteMember, listMembers, listRoles } from '../../../features/members/api/api'
-import type { Member, RoleDefinition } from '../../../features/members/api/contracts'
-import { AgentIcon } from '../../../shared/components/agent-icon/agent-icon'
+import { addMember, deleteMember, listMembers } from '../../../features/members/api/api'
+import { CAPABILITY_LABELS, MEMBER_PERMISSIONS, permissionKey } from '../../../features/members/api/contracts'
+import type { Member } from '../../../features/members/api/contracts'
 import { Button } from '../../../shared/components/button/button'
 import { ConfirmDialog } from '../../../shared/components/confirm-dialog/confirm-dialog'
+import { AgentIcon } from '../../../shared/components/agent-icon/agent-icon'
 import { Filter } from '../../../shared/components/filter/filter'
 import { Input } from '../../../shared/components/input/input'
 import { LoadError } from '../../../shared/components/load-error/load-error'
@@ -24,15 +25,15 @@ export function MembersPage() {
   const domain = session?.workspace.domain ?? ''
   const canCreate = can(session, 'members', 'create')
   const canDelete = can(session, 'members', 'delete')
+  const canEdit = can(session, 'members', 'edit')
   const [members, setMembers] = useState<Member[]>([])
-  const [roles, setRoles] = useState<RoleDefinition[]>([])
   const [agents, setAgents] = useState<AgentSummary[]>([])
   const [metiers, setMetiers] = useState<Metier[]>([])
   const [query, setQuery] = useState('')
 
   const [inviteOpen, setInviteOpen] = useState(false)
   const [email, setEmail] = useState('')
-  const [inviteRole, setInviteRole] = useState('')
+  const [invitePerms, setInvitePerms] = useState<string[]>([])
   const [inviteExcluded, setInviteExcluded] = useState<string[]>([])
   const [inviteError, setInviteError] = useState('')
   const [inviting, setInviting] = useState(false)
@@ -44,36 +45,60 @@ export function MembersPage() {
   const [retryKey, setRetryKey] = useState(0)
 
   useEffect(() => {
-    // Le registre des rôles exige tenant-roles·view : s'il est refusé, la page
-    // reste utilisable (les rôles ne servent qu'à la modale d'invitation).
-    void Promise.all([listMembers(), listRoles().catch((): RoleDefinition[] => []), listAgents(), listMetiers()]).then(([memberItems, roleItems, agentItems, metierItems]) => {
-      setMembers(memberItems); setRoles(roleItems); setAgents(agentItems); setMetiers(metierItems); setStatus('ready')
-    }).catch(() => setStatus('error'))
+    // Le registre des rôles n'est plus chargé : l'écran attribue des
+    // permissions, le rôle n'est qu'un raccourci côté serveur.
+    // Tous les experts, equipe ET catalogue : accorder un acces ne se limite
+    // pas a ce que le membre connecte peut lui-meme voir.
+    void Promise.all([listMembers(), listAgents(), listMarketplaceAgents().catch(() => []), listMetiers()])
+      .then(([memberItems, teamItems, catalogueItems, metierItems]) => {
+        const tous = [...teamItems, ...catalogueItems]
+          .filter((agent, index, all) => all.findIndex((other) => other.id === agent.id) === index)
+          .sort((a, b) => a.name.localeCompare(b.name, 'fr'))
+        setMembers(memberItems); setAgents(tous); setMetiers(metierItems); setStatus('ready')
+      })
+      .catch(() => setStatus('error'))
   }, [retryKey])
 
   const filtered = useMemo(() => members.filter((member) => `${member.name} ${member.email}`.toLowerCase().includes(query.toLowerCase())), [members, query])
   const totalAgents = agents.length || 10
 
-  const roleLabel = (member: Member) => {
-    if (member.status === 'pending') return { label: 'En attente', cls: 'is-pending' }
-    return { label: member.role?.name ?? 'Aucun rôle', cls: '' }
+  /**
+   * Ce que le membre peut faire, en clair. On lit les permissions de son rôle
+   * plutôt que le nom du rôle : « Facturation · Experts IA » renseigne, alors
+   * que « Administrateur » oblige à connaître la grille par cœur.
+   */
+  const permissionsOf = (member: Member): string => {
+    if (member.status === 'pending') return 'En attente'
+    if (member.permissions.length === 0) return 'Aucune permission'
+    return Object.keys(CAPABILITY_LABELS)
+      .filter((capability) => member.permissions.some((entry) => entry.capability === capability))
+      .map((capability) => CAPABILITY_LABELS[capability])
+      .join(' · ')
   }
   const agentsLabel = (member: Member) => {
     if (member.status === 'pending') return '—'
+    // On annonce le nombre reel : « tous les experts » laissait croire a un
+    // catalogue entier alors que l'equipe n'en compte que quelques-uns.
     const access = totalAgents - member.excludedAgentIds.length
-    return access >= totalAgents ? 'Tous les experts IA' : `${access} expert${access > 1 ? 's' : ''} IA`
+    return `${access} expert${access > 1 ? 's' : ''} IA sur ${totalAgents}`
   }
 
   // Aucun rôle présélectionné : le choix est explicite (moindre privilège).
-  const openInvite = () => { setEmail(''); setInviteRole(''); setInviteExcluded([]); setInviteError(''); setInviteOpen(true) }
-  const agentOn = (id: string) => !inviteExcluded.includes(id)
-  const toggleAgent = (id: string) => setInviteExcluded((items) => items.includes(id) ? items.filter((item) => item !== id) : [...items, id])
+  const openInvite = () => { setEmail(''); setInvitePerms([]); setInviteExcluded([]); setInviteError(''); setInviteOpen(true) }
   const allAgentsOn = inviteExcluded.length === 0
   const toggleAllAgents = () => setInviteExcluded(allAgentsOn ? agents.map((agent) => agent.id) : [])
-  const removeMetier = (metierId: string) => {
+  /**
+   * Rendre l'acces aux experts d'un metier. « Tout retirer » existe deja : ce
+   * qui manquait, c'etait de pouvoir remonter metier par metier apres avoir
+   * fait table rase.
+   */
+  const agentOn = (id: string) => !inviteExcluded.includes(id)
+  const toggleAgent = (id: string) => setInviteExcluded((items) => items.includes(id) ? items.filter((item) => item !== id) : [...items, id])
+
+  const addMetier = (metierId: string) => {
     if (!metierId) return
     const ids = metiers.find((item) => item.id === metierId)?.agentIds ?? []
-    setInviteExcluded((items) => Array.from(new Set([...items, ...ids])))
+    setInviteExcluded((items) => items.filter((id) => !ids.includes(id)))
   }
 
   const invite = async (event: React.FormEvent) => {
@@ -81,7 +106,7 @@ export function MembersPage() {
     setInviting(true)
     setInviteError('')
     try {
-      const created = await addMember({ email, roleKey: inviteRole || undefined, excludedAgentIds: inviteExcluded })
+      const created = await addMember({ email, permissionKeys: invitePerms, excludedAgentIds: inviteExcluded })
       setMembers((items) => [...items, created]); setInviteOpen(false)
     } catch (reason) {
       setInviteError(reason instanceof Error ? reason.message : 'Invitation impossible.')
@@ -103,25 +128,26 @@ export function MembersPage() {
       <PageBody>
         <div className="files-toolbar">
           <Input className="list-search" aria-label="Rechercher un membre" placeholder="Rechercher un membre…" value={query} onChange={(event) => setQuery(event.target.value)} icon={<Search size={17} />} />
-          {canCreate && <button type="button" className="files-import" onClick={openInvite}><Plus size={17} /> Ajouter un membre</button>}
+          {canCreate && <Button leadingIcon={<Plus size={17} />} onClick={openInvite}>Ajouter un membre</Button>}
         </div>
 
         {status === 'error' && <LoadError onRetry={() => { setStatus('loading'); setRetryKey((key) => key + 1) }} />}
         {status !== 'error' && <div className="members-table">
-          <div className="members-head"><span /><span>Membre</span><span>Rôle</span><span>Experts IA accessibles</span><span /></div>
+          <div className="members-head"><span /><span>Membre</span><span>Permissions</span><span>Experts IA accessibles</span><span /></div>
           {filtered.map((member) => {
-            const role = roleLabel(member)
+            const permissions = permissionsOf(member)
             return (
               <div key={member.id} className="members-row" role="link" tabIndex={0} onClick={() => navigate(paths.member(member.id, workspaceId))} onKeyDown={(event) => { if (event.key === 'Enter') navigate(paths.member(member.id, workspaceId)) }}>
                 <span className={member.status === 'pending' ? 'member-avatar is-pending' : 'member-avatar'} style={member.status === 'pending' ? undefined : { background: member.color }}>{member.status === 'pending' ? <UserRound size={17} /> : member.initials}</span>
                 <span className="member-id"><strong>{member.name}</strong><small>{member.email}</small></span>
-                <span><span className={`caps-badge ${role.cls}`}>{role.label}</span></span>
+                <span className="member-perms">{permissions}</span>
                 <span className="member-agents">{agentsLabel(member)}</span>
                 <div className="file-actions" onClick={(event) => event.stopPropagation()} onKeyDown={(event) => event.stopPropagation()}>
-                  {canDelete && <button type="button" aria-label="Plus d'actions" onClick={() => setMenuId(menuId === member.id ? null : member.id)}><MoreHorizontal size={18} /></button>}
-                  {canDelete && menuId === member.id && (
+                  {(canEdit || canDelete) && <button type="button" aria-label="Plus d'actions" onClick={() => setMenuId(menuId === member.id ? null : member.id)}><MoreHorizontal size={18} /></button>}
+                  {menuId === member.id && (
                     <div className="row-menu">
-                      <button type="button" className="row-menu-danger" onClick={() => { setMenuId(null); setMemberToRemove(member) }}><Trash2 size={15} /> Retirer le membre</button>
+                      {canEdit && <button type="button" className="row-menu-edit" onClick={() => { setMenuId(null); navigate(paths.member(member.id, workspaceId)) }}><Pencil size={15} /> Modifier</button>}
+                      {canDelete && <button type="button" className="row-menu-danger" onClick={() => { setMenuId(null); setMemberToRemove(member) }}><Trash2 size={15} /> Retirer</button>}
                     </div>
                   )}
                 </div>
@@ -143,21 +169,32 @@ export function MembersPage() {
 
       {inviteOpen && (
         <div className="modal-overlay" onClick={() => setInviteOpen(false)}>
-          <form className="modal-card modal-card--lg" onClick={(event) => event.stopPropagation()} onSubmit={invite}>
+          <form className="modal-card modal-card--lg member-modal" onClick={(event) => event.stopPropagation()} onSubmit={invite}>
             <div className="modal-head"><h2>Ajouter un membre</h2><button type="button" className="modal-close" onClick={() => setInviteOpen(false)} aria-label="Fermer"><X size={18} /></button></div>
-            <p className="modal-intro">Le membre recevra un e-mail pour définir son mot de passe et accéder au workspace.</p>
+            <p className="modal-intro">Il recevra un lien pour définir son mot de passe.</p>
 
             <Input label="Adresse e-mail" type="email" value={email} onChange={(event) => setEmail(event.target.value)} placeholder={domain ? `prenom.nom@${domain}` : 'prenom.nom@organisation.ci'} required autoFocus />
 
             <div className="modal-field">
-              <div className="modal-field-head"><span>Rôle <em>· ce que le membre pourra faire</em></span></div>
+              <div className="modal-field-head"><span>Permissions <em>· ce que le membre pourra faire</em></span></div>
+              {/* Des permissions, pas des roles : un client ne raisonne pas en
+                  « proprietaire / administrateur », il dit « celui-la peut voir
+                  la facturation, pas inviter des gens ». */}
               <div className="modal-list">
-                {roles.map((role) => {
-                  const on = inviteRole === role.key
+                {MEMBER_PERMISSIONS.map((option) => {
+                  const key = permissionKey(option.capability, option.action)
+                  const on = invitePerms.includes(key)
                   return (
-                    <button type="button" key={role.key} className="modal-check-row" onClick={() => setInviteRole(role.key)}>
+                    <button
+                      type="button"
+                      key={key}
+                      role="checkbox"
+                      aria-checked={on}
+                      className="modal-check-row"
+                      onClick={() => setInvitePerms((current) => current.includes(key) ? current.filter((item) => item !== key) : [...current, key])}
+                    >
                       <span className={on ? 'check-box is-on' : 'check-box'}>{on && <Check size={12} />}</span>
-                      <span>{role.name}{role.description ? <em className="modal-role-hint"> · {role.description}</em> : null}</span>
+                      <span>{option.label}</span>
                     </button>
                   )
                 })}
@@ -165,10 +202,10 @@ export function MembersPage() {
             </div>
 
             <div className="modal-field">
-              <div className="modal-field-head"><span>Experts IA accessibles <em>· par défaut tous ; décochez pour retirer</em></span></div>
+              <div className="modal-field-head"><span>Experts IA accessibles <em>· {agents.length} au catalogue ; décochez pour retirer</em></span></div>
               <div className="modal-agent-bulk">
-                <button type="button" className={allAgentsOn ? 'bulk-chip is-on' : 'bulk-chip'} onClick={toggleAllAgents}>{allAgentsOn ? 'Tout retirer' : 'Tous les experts IA'}</button>
-                <Filter label="Retirer les experts IA d'un métier" value="" onChange={removeMetier} options={[{ value: '', label: "Retirer les experts IA d'un métier…" }, ...metiers.map((metier) => ({ value: metier.id, label: metier.name }))]} />
+                <button type="button" className={allAgentsOn ? 'bulk-chip is-on' : 'bulk-chip'} onClick={toggleAllAgents}>{allAgentsOn ? 'Tout retirer' : 'Tout ajouter'}</button>
+                <Filter label="Ajouter par métier" value="" onChange={addMetier} options={[{ value: '', label: 'Ajouter par métier…' }, ...metiers.map((metier) => ({ value: metier.id, label: metier.name }))]} />
               </div>
               <div className="modal-list modal-list--scroll">
                 {agents.map((agent) => (
@@ -184,7 +221,7 @@ export function MembersPage() {
             {inviteError && <p className="form-error" role="alert">{inviteError}</p>}
             <div className="modal-actions">
               <Button type="button" variant="tertiary" onClick={() => setInviteOpen(false)}>Annuler</Button>
-              <Button type="submit" disabled={inviting || (roles.length > 0 && !inviteRole)} leadingIcon={<Plus size={17} />}>{inviting ? 'Envoi…' : 'Ajouter le membre'}</Button>
+              <Button type="submit" disabled={inviting || invitePerms.length === 0} leadingIcon={<Plus size={17} />}>{inviting ? 'Envoi…' : 'Ajouter le membre'}</Button>
             </div>
           </form>
         </div>

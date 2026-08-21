@@ -1,55 +1,1010 @@
 {
-  "stats": [
-    { "label": "Conversations", "value": "1 248", "delta": "+18% vs. mai" },
-    { "label": "Crédits consommés", "value": "48 200", "delta": "sur 60 000 inclus" },
-    { "label": "Membres actifs", "value": "5", "delta": "sur 6 membres" },
-    { "label": "Temps estimé gagné", "value": "312 h", "delta": "+22% vs. mai" }
-  ],
-  "series": {
+  "headcount": 8,
+  "seats": 6,
+  "periods": {
     "month": {
-      "title": "Conversations par mois",
-      "sub": "12 derniers mois",
-      "points": [
-        { "label": "juil.", "value": 62 }, { "label": "août", "value": 78 }, { "label": "sept.", "value": 70 },
-        { "label": "oct.", "value": 95 }, { "label": "nov.", "value": 88 }, { "label": "déc.", "value": 106 },
-        { "label": "janv.", "value": 99 }, { "label": "févr.", "value": 120 }, { "label": "mars", "value": 112 },
-        { "label": "avr.", "value": 134 }, { "label": "mai", "value": 126 }, { "label": "juin", "value": 150 }
-      ]
+      "tasksDone": 127,
+      "deliverables": 41,
+      "tasksDelta": 23,
+      "deliverablesDelta": 18,
+      "series": {
+        "sub": "12 derniers mois",
+        "points": [
+          {
+            "label": "sept.",
+            "value": 31
+          },
+          {
+            "label": "oct.",
+            "value": 38
+          },
+          {
+            "label": "nov.",
+            "value": 44
+          },
+          {
+            "label": "déc.",
+            "value": 29
+          },
+          {
+            "label": "janv.",
+            "value": 47
+          },
+          {
+            "label": "févr.",
+            "value": 52
+          },
+          {
+            "label": "mars",
+            "value": 61
+          },
+          {
+            "label": "avr.",
+            "value": 58
+          },
+          {
+            "label": "mai",
+            "value": 74
+          },
+          {
+            "label": "juin",
+            "value": 83
+          },
+          {
+            "label": "juil.",
+            "value": 96
+          },
+          {
+            "label": "août",
+            "value": 127
+          }
+        ]
+      },
+      "perAgent": [
+        {
+          "agentId": "exp_awa",
+          "name": "Awa",
+          "monthlySalary": 300000,
+          "tasksDone": 34,
+          "tasksRunning": 3,
+          "deliverables": 12
+        },
+        {
+          "agentId": "exp_kouassi",
+          "name": "Kouassi",
+          "monthlySalary": 300000,
+          "tasksDone": 26,
+          "tasksRunning": 4,
+          "deliverables": 6
+        },
+        {
+          "agentId": "exp_mamadou",
+          "name": "Mamadou",
+          "monthlySalary": 300000,
+          "tasksDone": 21,
+          "tasksRunning": 2,
+          "deliverables": 8
+        },
+        {
+          "agentId": "exp_salif",
+          "name": "Salif",
+          "monthlySalary": 300000,
+          "tasksDone": 18,
+          "tasksRunning": 1,
+          "deliverables": 5
+        },
+        {
+          "agentId": "exp_fatou",
+          "name": "Fatou",
+          "monthlySalary": 300000,
+          "tasksDone": 12,
+          "tasksRunning": 2,
+          "deliverables": 4
+        },
+        {
+          "agentId": "exp_ibrahim",
+          "name": "Ibrahim",
+          "monthlySalary": 300000,
+          "tasksDone": 9,
+          "tasksRunning": 1,
+          "deliverables": 3
+        },
+        {
+          "agentId": "exp_fatima",
+          "name": "Fatima",
+          "monthlySalary": 300000,
+          "tasksDone": 5,
+          "tasksRunning": 0,
+          "deliverables": 2
+        },
+        {
+          "agentId": "exp_nadia",
+          "name": "Nadia",
+          "monthlySalary": 300000,
+          "tasksDone": 2,
+          "tasksRunning": 0,
+          "deliverables": 1
+        }
+      ],
+      "perMember": [
+        {
+          "userId": "u_12",
+          "name": "Aïcha Koné",
+          "initials": "AK",
+          "role": "Directrice de la transformation",
+          "tasks": 41,
+          "resources": 21,
+          "deliverables": 18,
+          "connectors": 6,
+          "lastSeenAt": "2026-08-20T09:12:00.000Z",
+          "active": true
+        },
+        {
+          "userId": "u_18",
+          "name": "Bakary Diallo",
+          "initials": "BD",
+          "role": "Responsable financier",
+          "tasks": 28,
+          "resources": 15,
+          "deliverables": 11,
+          "connectors": 4,
+          "lastSeenAt": "2026-08-19T17:40:00.000Z",
+          "active": true
+        },
+        {
+          "userId": "u_24",
+          "name": "Fatou Sangaré",
+          "initials": "FS",
+          "role": "Chargée de clientèle",
+          "tasks": 19,
+          "resources": 9,
+          "deliverables": 7,
+          "connectors": 3,
+          "lastSeenAt": "2026-08-20T08:05:00.000Z",
+          "active": true
+        },
+        {
+          "userId": "u_21",
+          "name": "Clarisse Touré",
+          "initials": "CT",
+          "role": "Juriste",
+          "tasks": 5,
+          "resources": 1,
+          "deliverables": 2,
+          "connectors": 2,
+          "lastSeenAt": "2026-08-11T14:22:00.000Z",
+          "active": true
+        },
+        {
+          "userId": "u_30",
+          "name": "Moussa Traoré",
+          "initials": "MT",
+          "role": "Contrôleur de gestion",
+          "tasks": 0,
+          "resources": 0,
+          "deliverables": 0,
+          "connectors": 1,
+          "lastSeenAt": "2026-06-28T10:03:00.000Z",
+          "active": false
+        },
+        {
+          "userId": "u_33",
+          "name": "Adama Cissé",
+          "initials": "AC",
+          "role": "Assistant de direction",
+          "tasks": 0,
+          "resources": 0,
+          "deliverables": 0,
+          "connectors": 0,
+          "lastSeenAt": null,
+          "active": false
+        }
+      ],
+      "connectors": [
+        {
+          "provider": "gdrive",
+          "name": "Google Drive",
+          "items": 486,
+          "connected": true
+        },
+        {
+          "provider": "whatsapp",
+          "name": "WhatsApp",
+          "items": 412,
+          "connected": true
+        },
+        {
+          "provider": "slack",
+          "name": "Slack",
+          "items": 208,
+          "connected": true
+        },
+        {
+          "provider": "hubspot",
+          "name": "HubSpot",
+          "items": 164,
+          "connected": true
+        },
+        {
+          "provider": "notion",
+          "name": "Notion",
+          "items": 97,
+          "connected": true
+        },
+        {
+          "provider": "stripe",
+          "name": "Stripe",
+          "items": 63,
+          "connected": true
+        },
+        {
+          "provider": "s3",
+          "name": "Amazon S3",
+          "items": 24,
+          "connected": true
+        },
+        {
+          "provider": "sage",
+          "name": "Sage",
+          "items": 0,
+          "connected": false
+        }
+      ],
+      "resources": {
+        "inputs": 58,
+        "deliverables": 41,
+        "shared": 23,
+        "byFormat": [
+          {
+            "format": "PDF",
+            "count": 24
+          },
+          {
+            "format": "XLSX",
+            "count": 17
+          },
+          {
+            "format": "DOCX",
+            "count": 14
+          },
+          {
+            "format": "CSV",
+            "count": 9
+          },
+          {
+            "format": "Autres",
+            "count": 12
+          }
+        ]
+      }
     },
     "quarter": {
-      "title": "Conversations par trimestre",
-      "sub": "4 derniers trimestres",
-      "points": [
-        { "label": "T3 25", "value": 210 }, { "label": "T4 25", "value": 283 },
-        { "label": "T1 26", "value": 331 }, { "label": "T2 26", "value": 410 }
-      ]
+      "tasksDone": 356,
+      "deliverables": 113,
+      "tasksDelta": 35,
+      "deliverablesDelta": 27,
+      "series": {
+        "sub": "4 derniers trimestres",
+        "points": [
+          {
+            "label": "T4 25",
+            "value": 113
+          },
+          {
+            "label": "T1 26",
+            "value": 160
+          },
+          {
+            "label": "T2 26",
+            "value": 215
+          },
+          {
+            "label": "T3 26",
+            "value": 306
+          }
+        ]
+      },
+      "perAgent": [
+        {
+          "agentId": "exp_awa",
+          "name": "Awa",
+          "monthlySalary": 300000,
+          "tasksDone": 96,
+          "tasksRunning": 5,
+          "deliverables": 33
+        },
+        {
+          "agentId": "exp_kouassi",
+          "name": "Kouassi",
+          "monthlySalary": 300000,
+          "tasksDone": 74,
+          "tasksRunning": 6,
+          "deliverables": 18
+        },
+        {
+          "agentId": "exp_mamadou",
+          "name": "Mamadou",
+          "monthlySalary": 300000,
+          "tasksDone": 61,
+          "tasksRunning": 3,
+          "deliverables": 22
+        },
+        {
+          "agentId": "exp_salif",
+          "name": "Salif",
+          "monthlySalary": 300000,
+          "tasksDone": 48,
+          "tasksRunning": 2,
+          "deliverables": 14
+        },
+        {
+          "agentId": "exp_fatou",
+          "name": "Fatou",
+          "monthlySalary": 300000,
+          "tasksDone": 33,
+          "tasksRunning": 3,
+          "deliverables": 11
+        },
+        {
+          "agentId": "exp_ibrahim",
+          "name": "Ibrahim",
+          "monthlySalary": 300000,
+          "tasksDone": 24,
+          "tasksRunning": 1,
+          "deliverables": 8
+        },
+        {
+          "agentId": "exp_fatima",
+          "name": "Fatima",
+          "monthlySalary": 300000,
+          "tasksDone": 14,
+          "tasksRunning": 1,
+          "deliverables": 5
+        },
+        {
+          "agentId": "exp_nadia",
+          "name": "Nadia",
+          "monthlySalary": 300000,
+          "tasksDone": 6,
+          "tasksRunning": 0,
+          "deliverables": 2
+        }
+      ],
+      "perMember": [
+        {
+          "userId": "u_12",
+          "name": "Aïcha Koné",
+          "initials": "AK",
+          "role": "Directrice de la transformation",
+          "tasks": 118,
+          "resources": 55,
+          "deliverables": 52,
+          "connectors": 6,
+          "lastSeenAt": "2026-08-20T09:12:00.000Z",
+          "active": true
+        },
+        {
+          "userId": "u_18",
+          "name": "Bakary Diallo",
+          "initials": "BD",
+          "role": "Responsable financier",
+          "tasks": 82,
+          "resources": 41,
+          "deliverables": 33,
+          "connectors": 4,
+          "lastSeenAt": "2026-08-19T17:40:00.000Z",
+          "active": true
+        },
+        {
+          "userId": "u_24",
+          "name": "Fatou Sangaré",
+          "initials": "FS",
+          "role": "Chargée de clientèle",
+          "tasks": 54,
+          "resources": 25,
+          "deliverables": 21,
+          "connectors": 3,
+          "lastSeenAt": "2026-08-20T08:05:00.000Z",
+          "active": true
+        },
+        {
+          "userId": "u_21",
+          "name": "Clarisse Touré",
+          "initials": "CT",
+          "role": "Juriste",
+          "tasks": 14,
+          "resources": 4,
+          "deliverables": 6,
+          "connectors": 2,
+          "lastSeenAt": "2026-08-11T14:22:00.000Z",
+          "active": true
+        },
+        {
+          "userId": "u_30",
+          "name": "Moussa Traoré",
+          "initials": "MT",
+          "role": "Contrôleur de gestion",
+          "tasks": 2,
+          "resources": 1,
+          "deliverables": 0,
+          "connectors": 1,
+          "lastSeenAt": "2026-06-28T10:03:00.000Z",
+          "active": true
+        },
+        {
+          "userId": "u_33",
+          "name": "Adama Cissé",
+          "initials": "AC",
+          "role": "Assistant de direction",
+          "tasks": 0,
+          "resources": 0,
+          "deliverables": 0,
+          "connectors": 0,
+          "lastSeenAt": null,
+          "active": false
+        }
+      ],
+      "connectors": [
+        {
+          "provider": "gdrive",
+          "name": "Google Drive",
+          "items": 1394,
+          "connected": true
+        },
+        {
+          "provider": "whatsapp",
+          "name": "WhatsApp",
+          "items": 1187,
+          "connected": true
+        },
+        {
+          "provider": "slack",
+          "name": "Slack",
+          "items": 602,
+          "connected": true
+        },
+        {
+          "provider": "hubspot",
+          "name": "HubSpot",
+          "items": 471,
+          "connected": true
+        },
+        {
+          "provider": "notion",
+          "name": "Notion",
+          "items": 288,
+          "connected": true
+        },
+        {
+          "provider": "stripe",
+          "name": "Stripe",
+          "items": 176,
+          "connected": true
+        },
+        {
+          "provider": "s3",
+          "name": "Amazon S3",
+          "items": 71,
+          "connected": true
+        },
+        {
+          "provider": "sage",
+          "name": "Sage",
+          "items": 0,
+          "connected": false
+        }
+      ],
+      "resources": {
+        "inputs": 167,
+        "deliverables": 121,
+        "shared": 64,
+        "byFormat": [
+          {
+            "format": "PDF",
+            "count": 71
+          },
+          {
+            "format": "XLSX",
+            "count": 52
+          },
+          {
+            "format": "DOCX",
+            "count": 39
+          },
+          {
+            "format": "CSV",
+            "count": 28
+          },
+          {
+            "format": "Autres",
+            "count": 33
+          }
+        ]
+      }
+    },
+    "semester": {
+      "tasksDone": 872,
+      "deliverables": 277,
+      "tasksDelta": 52,
+      "deliverablesDelta": 44,
+      "series": {
+        "sub": "4 derniers semestres",
+        "points": [
+          {
+            "label": "S1 25",
+            "value": 168
+          },
+          {
+            "label": "S2 25",
+            "value": 253
+          },
+          {
+            "label": "S1 26",
+            "value": 375
+          },
+          {
+            "label": "S2 26",
+            "value": 419
+          }
+        ]
+      },
+      "perAgent": [
+        {
+          "agentId": "exp_awa",
+          "name": "Awa",
+          "monthlySalary": 300000,
+          "tasksDone": 235,
+          "tasksRunning": 5,
+          "deliverables": 81
+        },
+        {
+          "agentId": "exp_kouassi",
+          "name": "Kouassi",
+          "monthlySalary": 300000,
+          "tasksDone": 182,
+          "tasksRunning": 6,
+          "deliverables": 44
+        },
+        {
+          "agentId": "exp_mamadou",
+          "name": "Mamadou",
+          "monthlySalary": 300000,
+          "tasksDone": 151,
+          "tasksRunning": 3,
+          "deliverables": 54
+        },
+        {
+          "agentId": "exp_salif",
+          "name": "Salif",
+          "monthlySalary": 300000,
+          "tasksDone": 118,
+          "tasksRunning": 2,
+          "deliverables": 35
+        },
+        {
+          "agentId": "exp_fatou",
+          "name": "Fatou",
+          "monthlySalary": 300000,
+          "tasksDone": 80,
+          "tasksRunning": 3,
+          "deliverables": 26
+        },
+        {
+          "agentId": "exp_ibrahim",
+          "name": "Ibrahim",
+          "monthlySalary": 300000,
+          "tasksDone": 59,
+          "tasksRunning": 1,
+          "deliverables": 19
+        },
+        {
+          "agentId": "exp_fatima",
+          "name": "Fatima",
+          "monthlySalary": 300000,
+          "tasksDone": 33,
+          "tasksRunning": 1,
+          "deliverables": 12
+        },
+        {
+          "agentId": "exp_nadia",
+          "name": "Nadia",
+          "monthlySalary": 300000,
+          "tasksDone": 14,
+          "tasksRunning": 0,
+          "deliverables": 5
+        }
+      ],
+      "perMember": [
+        {
+          "userId": "u_12",
+          "name": "Aïcha Koné",
+          "initials": "AK",
+          "role": "Directrice de la transformation",
+          "tasks": 287,
+          "resources": 142,
+          "deliverables": 126,
+          "connectors": 6,
+          "lastSeenAt": "2026-08-20T09:12:00.000Z",
+          "active": true
+        },
+        {
+          "userId": "u_18",
+          "name": "Bakary Diallo",
+          "initials": "BD",
+          "role": "Responsable financier",
+          "tasks": 201,
+          "resources": 86,
+          "deliverables": 80,
+          "connectors": 4,
+          "lastSeenAt": "2026-08-19T17:40:00.000Z",
+          "active": true
+        },
+        {
+          "userId": "u_24",
+          "name": "Fatou Sangaré",
+          "initials": "FS",
+          "role": "Chargée de clientèle",
+          "tasks": 132,
+          "resources": 53,
+          "deliverables": 50,
+          "connectors": 3,
+          "lastSeenAt": "2026-08-20T08:05:00.000Z",
+          "active": true
+        },
+        {
+          "userId": "u_21",
+          "name": "Clarisse Touré",
+          "initials": "CT",
+          "role": "Juriste",
+          "tasks": 34,
+          "resources": 10,
+          "deliverables": 13,
+          "connectors": 2,
+          "lastSeenAt": "2026-08-11T14:22:00.000Z",
+          "active": true
+        },
+        {
+          "userId": "u_30",
+          "name": "Moussa Traoré",
+          "initials": "MT",
+          "role": "Contrôleur de gestion",
+          "tasks": 6,
+          "resources": 2,
+          "deliverables": 1,
+          "connectors": 1,
+          "lastSeenAt": "2026-06-28T10:03:00.000Z",
+          "active": true
+        },
+        {
+          "userId": "u_33",
+          "name": "Adama Cissé",
+          "initials": "AC",
+          "role": "Assistant de direction",
+          "tasks": 0,
+          "resources": 0,
+          "deliverables": 0,
+          "connectors": 0,
+          "lastSeenAt": null,
+          "active": false
+        }
+      ],
+      "connectors": [
+        {
+          "provider": "gdrive",
+          "name": "Google Drive",
+          "items": 3497,
+          "connected": true
+        },
+        {
+          "provider": "whatsapp",
+          "name": "WhatsApp",
+          "items": 2957,
+          "connected": true
+        },
+        {
+          "provider": "slack",
+          "name": "Slack",
+          "items": 1498,
+          "connected": true
+        },
+        {
+          "provider": "hubspot",
+          "name": "HubSpot",
+          "items": 1173,
+          "connected": true
+        },
+        {
+          "provider": "notion",
+          "name": "Notion",
+          "items": 703,
+          "connected": true
+        },
+        {
+          "provider": "stripe",
+          "name": "Stripe",
+          "items": 433,
+          "connected": true
+        },
+        {
+          "provider": "s3",
+          "name": "Amazon S3",
+          "items": 173,
+          "connected": true
+        },
+        {
+          "provider": "sage",
+          "name": "Sage",
+          "items": 0,
+          "connected": false
+        }
+      ],
+      "resources": {
+        "inputs": 412,
+        "deliverables": 292,
+        "shared": 146,
+        "byFormat": [
+          {
+            "format": "PDF",
+            "count": 174
+          },
+          {
+            "format": "XLSX",
+            "count": 128
+          },
+          {
+            "format": "DOCX",
+            "count": 96
+          },
+          {
+            "format": "CSV",
+            "count": 69
+          },
+          {
+            "format": "Autres",
+            "count": 80
+          }
+        ]
+      }
     },
     "year": {
-      "title": "Conversations par an",
-      "sub": "3 dernières années",
-      "points": [
-        { "label": "2024", "value": 640 }, { "label": "2025", "value": 980 }, { "label": "2026", "value": 1248 }
-      ]
+      "tasksDone": 1294,
+      "deliverables": 411,
+      "tasksDelta": 89,
+      "deliverablesDelta": 71,
+      "series": {
+        "sub": "3 dernières années",
+        "points": [
+          {
+            "label": "2024",
+            "value": 148
+          },
+          {
+            "label": "2025",
+            "value": 421
+          },
+          {
+            "label": "2026",
+            "value": 794
+          }
+        ]
+      },
+      "perAgent": [
+        {
+          "agentId": "exp_awa",
+          "name": "Awa",
+          "monthlySalary": 300000,
+          "tasksDone": 348,
+          "tasksRunning": 5,
+          "deliverables": 121
+        },
+        {
+          "agentId": "exp_kouassi",
+          "name": "Kouassi",
+          "monthlySalary": 300000,
+          "tasksDone": 271,
+          "tasksRunning": 6,
+          "deliverables": 66
+        },
+        {
+          "agentId": "exp_mamadou",
+          "name": "Mamadou",
+          "monthlySalary": 300000,
+          "tasksDone": 224,
+          "tasksRunning": 3,
+          "deliverables": 81
+        },
+        {
+          "agentId": "exp_salif",
+          "name": "Salif",
+          "monthlySalary": 300000,
+          "tasksDone": 176,
+          "tasksRunning": 2,
+          "deliverables": 52
+        },
+        {
+          "agentId": "exp_fatou",
+          "name": "Fatou",
+          "monthlySalary": 300000,
+          "tasksDone": 118,
+          "tasksRunning": 3,
+          "deliverables": 39
+        },
+        {
+          "agentId": "exp_ibrahim",
+          "name": "Ibrahim",
+          "monthlySalary": 300000,
+          "tasksDone": 87,
+          "tasksRunning": 1,
+          "deliverables": 28
+        },
+        {
+          "agentId": "exp_fatima",
+          "name": "Fatima",
+          "monthlySalary": 300000,
+          "tasksDone": 49,
+          "tasksRunning": 1,
+          "deliverables": 17
+        },
+        {
+          "agentId": "exp_nadia",
+          "name": "Nadia",
+          "monthlySalary": 300000,
+          "tasksDone": 21,
+          "tasksRunning": 0,
+          "deliverables": 7
+        }
+      ],
+      "perMember": [
+        {
+          "userId": "u_12",
+          "name": "Aïcha Koné",
+          "initials": "AK",
+          "role": "Directrice de la transformation",
+          "tasks": 426,
+          "resources": 213,
+          "deliverables": 187,
+          "connectors": 6,
+          "lastSeenAt": "2026-08-20T09:12:00.000Z",
+          "active": true
+        },
+        {
+          "userId": "u_18",
+          "name": "Bakary Diallo",
+          "initials": "BD",
+          "role": "Responsable financier",
+          "tasks": 298,
+          "resources": 122,
+          "deliverables": 118,
+          "connectors": 4,
+          "lastSeenAt": "2026-08-19T17:40:00.000Z",
+          "active": true
+        },
+        {
+          "userId": "u_24",
+          "name": "Fatou Sangaré",
+          "initials": "FS",
+          "role": "Chargée de clientèle",
+          "tasks": 196,
+          "resources": 76,
+          "deliverables": 74,
+          "connectors": 3,
+          "lastSeenAt": "2026-08-20T08:05:00.000Z",
+          "active": true
+        },
+        {
+          "userId": "u_21",
+          "name": "Clarisse Touré",
+          "initials": "CT",
+          "role": "Juriste",
+          "tasks": 51,
+          "resources": 14,
+          "deliverables": 19,
+          "connectors": 2,
+          "lastSeenAt": "2026-08-11T14:22:00.000Z",
+          "active": true
+        },
+        {
+          "userId": "u_30",
+          "name": "Moussa Traoré",
+          "initials": "MT",
+          "role": "Contrôleur de gestion",
+          "tasks": 9,
+          "resources": 3,
+          "deliverables": 2,
+          "connectors": 1,
+          "lastSeenAt": "2026-06-28T10:03:00.000Z",
+          "active": true
+        },
+        {
+          "userId": "u_33",
+          "name": "Adama Cissé",
+          "initials": "AC",
+          "role": "Assistant de direction",
+          "tasks": 0,
+          "resources": 0,
+          "deliverables": 0,
+          "connectors": 0,
+          "lastSeenAt": null,
+          "active": false
+        }
+      ],
+      "connectors": [
+        {
+          "provider": "gdrive",
+          "name": "Google Drive",
+          "items": 5218,
+          "connected": true
+        },
+        {
+          "provider": "whatsapp",
+          "name": "WhatsApp",
+          "items": 4406,
+          "connected": true
+        },
+        {
+          "provider": "slack",
+          "name": "Slack",
+          "items": 2231,
+          "connected": true
+        },
+        {
+          "provider": "hubspot",
+          "name": "HubSpot",
+          "items": 1748,
+          "connected": true
+        },
+        {
+          "provider": "notion",
+          "name": "Notion",
+          "items": 1043,
+          "connected": true
+        },
+        {
+          "provider": "stripe",
+          "name": "Stripe",
+          "items": 644,
+          "connected": true
+        },
+        {
+          "provider": "s3",
+          "name": "Amazon S3",
+          "items": 257,
+          "connected": true
+        },
+        {
+          "provider": "sage",
+          "name": "Sage",
+          "items": 0,
+          "connected": false
+        }
+      ],
+      "resources": {
+        "inputs": 612,
+        "deliverables": 431,
+        "shared": 214,
+        "byFormat": [
+          {
+            "format": "PDF",
+            "count": 258
+          },
+          {
+            "format": "XLSX",
+            "count": 191
+          },
+          {
+            "format": "DOCX",
+            "count": 142
+          },
+          {
+            "format": "CSV",
+            "count": 103
+          },
+          {
+            "format": "Autres",
+            "count": 119
+          }
+        ]
+      }
     }
-  },
-  "topAgents": [
-    { "name": "Analyse documentaire", "count": 420 },
-    { "name": "Synthèse & notes", "count": 318 },
-    { "name": "Courrier administratif", "count": 236 },
-    { "name": "Vérification d'infos", "count": 174 },
-    { "name": "Aide à la décision", "count": 100 }
-  ],
-  "creditsByUser": [
-    { "userId": "u_12", "name": "Aïcha Koné", "initials": "AK", "credits": 18600 },
-    { "userId": "u_18", "name": "Bakary Diallo", "initials": "BD", "credits": 13100 },
-    { "userId": "u_24", "name": "Fatou Sangaré", "initials": "FS", "credits": 9800 },
-    { "userId": "u_21", "name": "Clarisse Touré", "initials": "CT", "credits": 6700 }
-  ],
-  "creditsByAgent": [
-    { "agentId": "analyse", "name": "Analyse documentaire", "credits": 18600 },
-    { "agentId": "synthese", "name": "Synthèse & notes", "credits": 12100 },
-    { "agentId": "decision", "name": "Aide à la décision", "credits": 8400 },
-    { "agentId": "courrier", "name": "Courrier administratif", "credits": 5600 },
-    { "agentId": "verif", "name": "Vérification d'infos", "credits": 3500 }
-  ]
+  }
 }

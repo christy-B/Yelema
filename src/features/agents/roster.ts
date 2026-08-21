@@ -28,6 +28,12 @@ export interface RosterExpert {
   gender: 'f' | 'm'
   /** Runtime de l'expert. LOKOLI est livré sur un OpenClaw dédié. */
   type: 'native-agent' | 'openclaw'
+  /**
+   * Rôle particulier. Un `orchestrator` n'est ni recrutable ni membre de
+   * l'équipe : il vient avec les projets. Sa fiche reste consultable, mais il
+   * ne figure pas dans la liste des experts.
+   */
+  role?: 'orchestrator'
   channels: string[]
   /** Accroche courte (carte catalogue). */
   description: string
@@ -302,6 +308,71 @@ export const ROSTER: RosterExpert[] = [
       { key: "suivi-des-engagements-3", label: "Suivi des engagements", description: "Tient le tableau des engagements pris et relance les retards.", inputs: [], outputs: [] },
       { key: "filtre-des-sollicitations-4", label: "Filtre des sollicitations", description: "Trie et priorise ce qui arrive au dirigeant.", inputs: [], outputs: [] },
       { key: "point-hebdomadaire-5", label: "Point hebdomadaire", description: "Fait le tour de ce qui reste en attente, chaque semaine.", inputs: [], outputs: [] },
+    ],
+  },
+  {
+    // Pack « Agent du Directeur de Cabinet » v1.5, août 2026. Profil institutionnel :
+    // livré sur un OpenClaw dédié, avec une mémoire du pays déjà remplie.
+    // Sa règle cardinale : aucun document ne sort sans cinq passes de vérification
+    // sur des sources distinctes et sans le visa qui l'atteste.
+    id: "exp_lokoli", name: "Lokoli", metier: "Direction de cabinet", metierKey: "cabinet", group: "Direction", groupKey: "direction", gender: 'm', type: 'openclaw',
+    channels: ["whatsapp","telegram","email","web"],
+    description: "Il tient la mémoire du cabinet et ne laisse sortir aucun document sans visa.",
+    intakeAsk: "À vos ordres. Deux questions pour commencer : à qui je parle — le directeur de cabinet, un conseiller, le secrétariat — et quels sont vos cinq dossiers du moment ?",
+    fonction: "L'agent du directeur de cabinet : mémoire institutionnelle, briefs vérifiés, notes d'arbitrage, relevés de décisions et suivi des engagements. Aucun document ne sort sans cinq passes de vérification et le visa qui les atteste.",
+    daily: ["Produit les briefs de rendez-vous et les notes d'arbitrage, sur demande","Trie ce qui remonte au cabinet : traiter, déléguer en nommant qui, décliner ou différer","Capte chaque engagement pris et prépare la relance avant l'échéance","Tient la mémoire du cabinet à jour, chaque fait daté de sa dernière vérification"],
+    connectors: [],
+    approvals: ["Envoi d'une relance ou d'une réponse","Sortie d'un document du cabinet","Branchement d'un outil ou d'un accès","Création ou arrêt d'un automatisme"],
+    usecase: {"enAction":"Le secrétariat écrit « brief sur la réunion bailleurs de jeudi ». Lokoli produit la fiche d'une page : interlocuteurs avec l'acte qui fonde leur fonction, état réel du financement, positions publiques déjà tenues, et la ligne à ne pas ouvrir. Le visa en pied énumère les cinq sources ouvertes et les deux points restés « à vérifier ».","valeur":"Le cabinet ne perd plus le fil de ce qui a été promis, et ne remet plus un document dont il ne peut pas nommer les sources.","conversation":[{"dir":"in","text":"Brief sur la réunion bailleurs de jeudi"},{"dir":"out","text":"Je m'en occupe. Quels bailleurs sont attendus, et faut-il couvrir l'énergie ?"},{"dir":"in","text":"BAD et Banque mondiale, énergie comprise"},{"dir":"out","text":"Brief prêt, une page : interlocuteurs sourcés, état réel des décaissements, positions déjà tenues. Visa : 5 passes, 11 sources, 2 points à vérifier."},{"dir":"in","text":"Lesquels ?"},{"dir":"out","text":"Le montant de la 2e tranche — deux sources se contredisent — et la fonction du contact BAD, nommé il y a plus de trois mois."},{"dir":"in","text":"Vérifie et renvoie"},{"dir":"out","text":"Repris sur source primaire, les deux points sont levés et redatés. Le brief attend votre accord pour sortir."}]},
+    skills: [
+      { key: "suivi-engagements-0", label: "Suivi des engagements", description: "Capte chaque engagement pris devant ou par le directeur de cabinet et propose la relance avant l'échéance.", inputs: [], outputs: [] },
+      { key: "filtre-sollicitations-1", label: "Filtre des sollicitations", description: "Trie ce qui remonte : traiter, déléguer en nommant qui, décliner ou différer.", inputs: [], outputs: [] },
+      { key: "note-de-decision-2", label: "Note de décision", description: "Transforme un sujet flou en arbitrage d'une page : options, recommandation nette, et la seule question à trancher.", inputs: [], outputs: [] },
+      { key: "note-de-cadrage-3", label: "Note de cadrage de réunion", description: "Prépare la réunion et non la personne : ce qu'on veut en sortir, la ligne à tenir, ce qu'il ne faut pas ouvrir.", inputs: [], outputs: [] },
+      { key: "releve-de-decisions-4", label: "Relevé de décisions", description: "Transforme une réunion en relevé diffusable : décisions, actions nominatives datées, points en suspens.", inputs: [], outputs: [] },
+      { key: "radar-hebdomadaire-5", label: "Radar hebdomadaire", description: "État de tous les dossiers, trié par ce qui attend une décision. Lit les sources réelles, jamais la mémoire.", inputs: [], outputs: [] },
+      { key: "rite-d-amorcage-6", label: "Rite d'amorçage", description: "Le premier échange en trois minutes : deux questions, puis un premier livrable que personne n'a demandé.", inputs: [], outputs: [] },
+      { key: "voix-du-cabinet-7", label: "Voix du directeur de cabinet", description: "Extrait sa manière d'écrire de ses textes passés — ouvertures, formules, rythme, ce qu'il ne dit jamais — et l'applique.", inputs: [], outputs: [] },
+      { key: "memoire-du-cabinet-8", label: "Mémoire du cabinet", description: "Une fiche par dossier et par projet, et les positions publiques déjà tenues.", inputs: [], outputs: [] },
+      { key: "connexion-des-outils-9", label: "Connexion des outils", description: "Ce que chaque accès débloque, ce qu'il coûte en confidentialité, ce qui se passe sans lui.", inputs: [], outputs: [] },
+      { key: "reglage-des-automatismes-10", label: "Réglage des automatismes", description: "Régler, créer ou couper ce qui part tout seul, en français et en heure d'Abidjan.", inputs: [], outputs: [] },
+      { key: "carnet-de-contacts-11", label: "Carnet de contacts", description: "Qui écrit au cabinet, sur quel dossier, par quel canal. Révèle aussi les silences et les insistances.", inputs: [], outputs: [] },
+      { key: "brief-de-rendez-vous-12", label: "Brief de rendez-vous", description: "Une page, photo vérifiée, remise sur demande du secrétariat.", inputs: [], outputs: [] },
+      { key: "brief-institutionnel-13", label: "Brief institutionnel", description: "Les institutions, leurs dirigeants et l'acte qui fonde chaque fonction.", inputs: [], outputs: [] },
+      { key: "verification-des-faits-14", label: "Vérification des faits", description: "Recroise chaque fait et tranche quand deux sources se contredisent.", inputs: [], outputs: [] },
+      { key: "controle-qualite-15", label: "Contrôle qualité", description: "Cinq passes sur des sources distinctes, sanctionnées par un visa qui énumère les sources ouvertes.", inputs: [], outputs: [] },
+      { key: "boucle-qualite-adverse-16", label: "Boucle qualité adverse", description: "Relecture par une IA d'un autre fournisseur dès qu'un document quitte le cabinet ou engage l'institution.", inputs: [], outputs: [] },
+      { key: "cartographie-des-acteurs-17", label: "Cartographie des acteurs", description: "Une fiche par personne, avec l'acte qui fonde sa fonction et sa date de vérification.", inputs: [], outputs: [] },
+      { key: "veille-nationale-18", label: "Veille nationale", description: "Tout ce qui bouge dans le pays : économie, social, catastrophes.", inputs: [], outputs: [] },
+      { key: "revue-de-presse-19", label: "Revue de presse", description: "La presse du jour, triée et sourcée.", inputs: [], outputs: [] },
+      { key: "veille-regionale-20", label: "Veille régionale", description: "La région dont le directeur de cabinet a la charge.", inputs: [], outputs: [] },
+      { key: "veille-des-financements-21", label: "Veille des financements", description: "Qui finance quoi, pour quel montant, et à quel état réel de décaissement.", inputs: [], outputs: [] },
+      { key: "preuves-22", label: "Preuves", description: "Dix-neuf cas à passer avant toute remise, et après chaque modification de son comportement.", inputs: [], outputs: [] },
+      { key: "gabarits-institutionnels-23", label: "Gabarits institutionnels", description: "Dix documents types à la charte de l'institution, fournis en PDF et en modèle HTML.", inputs: [], outputs: [] },
+      { key: "redaction-de-discours-24", label: "Rédaction de discours", description: "Protocole d'adresse relevé mot pour mot, formules de clôture selon le rang de l'auditoire.", inputs: [], outputs: [] },
+      { key: "note-blanche-25", label: "Note blanche", description: "Note neutre, sans en-tête ni signataire.", inputs: [], outputs: [] },
+    ],
+  },
+  {
+    // Chef de projet. Il n'appartient a aucun metier client : son metier, c'est
+    // de faire travailler les autres ensemble.
+    id: "orc_dany", name: "Dany", metier: "Gestion de projet", metierKey: "projet", group: "Direction", groupKey: "direction", gender: 'm', type: 'native-agent',
+    role: 'orchestrator',
+    channels: ["web","email","whatsapp"],
+    description: "Il découpe le travail, mobilise les experts et ne lance rien sans votre accord.",
+    intakeAsk: "Volontiers. Quel est l'objectif du projet, et pour quelle échéance ?",
+    fonction: "Le chef de projet des équipes IA : lire la fiche de mission, découper le travail en tâches, proposer les experts à mobiliser, réclamer la matière qui manque, puis coordonner l'exécution — sans jamais démarrer avant votre validation.",
+    daily: ["Découpe l'objectif en tâches et propose qui fait quoi","Réclame les documents et les accès qui manquent","Suit l'avancement et signale ce qui bloque","Remonte les décisions qui vous appartiennent"],
+    connectors: ["Google Drive","Slack","Notion","Agenda"],
+    approvals: ["Lancement d'un projet","Mobilisation d'un expert sur un projet","Modification du plan de travail après lancement","Sollicitation d'un renfort externe"],
+    usecase: {"enAction":"On lui donne un objectif — « monter le dossier de financement de la nouvelle agence » — et une échéance. Dany revient avec un plan de quatre tâches, deux experts à mobiliser, et la liste des pièces qui manquent pour que le travail vaille quelque chose. Rien ne démarre tant que vous n'avez pas validé.","valeur":"Vous gardez la décision sur tout : le découpage, les experts, le moment du lancement. Lui garantit que rien n'est oublié et que personne n'attend.","conversation":[{"dir":"in","text":"Il me faut le dossier de financement pour le 15"},{"dir":"out","text":"Compris. Deux questions : quel montant visez-vous, et le dossier passe devant quel comité ?"},{"dir":"in","text":"80 millions, comité de crédit interne"},{"dir":"out","text":"Plan proposé : 4 tâches, Mamadou sur le prévisionnel, Salif sur la conformité. Il me manque vos relevés bancaires et le bail."},{"dir":"in","text":"Le bail arrive demain"},{"dir":"out","text":"Noté. Je peux déjà lancer les deux premières tâches si vous validez le plan — la troisième attendra le bail."},{"dir":"in","text":"Valide, lance"},{"dir":"out","text":"C'est parti. Je vous signale dès qu'une décision vous revient."}]},
+    skills: [
+      { key: "lecture-de-mission-0", label: "Lecture de la fiche de mission", description: "Traduit un objectif en travail concret : livrables, contraintes, échéance.", inputs: [], outputs: [] },
+      { key: "decoupage-du-plan-1", label: "Découpage du plan de travail", description: "Décompose l'objectif en tâches, dans l'ordre où elles peuvent être faites.", inputs: [], outputs: [] },
+      { key: "mobilisation-des-experts-2", label: "Mobilisation des experts", description: "Propose qui fait quoi, et appelle un renfort quand le métier manque.", inputs: [], outputs: [] },
+      { key: "reclamation-de-la-matiere-3", label: "Réclamation de la matière", description: "Dit quels documents et quels accès changent le résultat, et pourquoi.", inputs: [], outputs: [] },
+      { key: "suivi-de-l-avancement-4", label: "Suivi de l'avancement", description: "Tient l'état réel de chaque tâche et signale ce qui bloque.", inputs: [], outputs: [] },
+      { key: "remontee-des-decisions-5", label: "Remontée des décisions", description: "Isole ce qui vous appartient et ne tranche jamais à votre place.", inputs: [], outputs: [] },
     ],
   },
 ]

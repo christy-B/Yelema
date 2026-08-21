@@ -54,7 +54,7 @@ export function AutomationCreateModal({ agents = [], lockedAgentId, lockedAgentN
     <div className="modal-overlay" onClick={onClose}>
       <form className="modal-card modal-card--lg" onClick={(clickEvent) => clickEvent.stopPropagation()} onSubmit={submit}>
         <div className="modal-head"><h2>Nouvelle automatisation</h2><button type="button" className="modal-close" onClick={onClose} aria-label="Fermer"><X size={18} /></button></div>
-        <p className="modal-intro">L'employé IA sera déclenché automatiquement selon le planning ou l'événement choisi, et déposera son artefact dans l'onglet Artefacts.</p>
+        <p className="modal-intro">L'employé IA sera déclenché automatiquement selon le planning ou l'événement choisi, et déposera son livrable dans le Drive de l'expert.</p>
 
         <Input label="Nom" value={name} onChange={(changeEvent) => setName(changeEvent.target.value)} placeholder="Ex. Analyse hebdo des états financiers" required autoFocus />
 

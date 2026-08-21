@@ -1,0 +1,31 @@
+<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Portrait de Dany">
+  <defs>
+    <linearGradient id="dc-bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#efeafc"/>
+      <stop offset="1" stop-color="#d7cbf3"/>
+    </linearGradient>
+    <clipPath id="dc-frame"><rect width="100" height="100"/></clipPath>
+  </defs>
+  <g clip-path="url(#dc-frame)">
+    <rect width="100" height="100" fill="url(#dc-bg)"/>
+    <!-- Buste : veste sombre, col de chemise clair -->
+    <path d="M8 100 C8 82 25 74 50 74 C75 74 92 82 92 100 Z" fill="#2f3355"/>
+    <path d="M41 74 L50 92 L59 74 L53 72 L47 72 Z" fill="#f5f3fb"/>
+    <path d="M50 92 L45 84 L50 80 L55 84 Z" fill="#6b4fc7"/>
+    <!-- Cou -->
+    <path d="M43 62 H57 V76 H43 Z" fill="#8a5a30"/>
+    <!-- Tete -->
+    <circle cx="50" cy="44" r="22" fill="#9c663a"/>
+    <!-- Oreilles -->
+    <circle cx="28" cy="46" r="4.2" fill="#8a5a30"/>
+    <circle cx="72" cy="46" r="4.2" fill="#8a5a30"/>
+    <!-- Cheveux courts -->
+    <path d="M27 42 Q27 20 50 20 Q73 20 73 42 Q73 33 50 33 Q27 33 27 42 Z" fill="#241d24"/>
+    <!-- Sourcils, yeux, bouche -->
+    <rect x="36" y="41" width="10" height="2.4" rx="1.2" fill="#241d24"/>
+    <rect x="54" y="41" width="10" height="2.4" rx="1.2" fill="#241d24"/>
+    <circle cx="41" cy="47" r="2.6" fill="#241d24"/>
+    <circle cx="59" cy="47" r="2.6" fill="#241d24"/>
+    <path d="M44 57 Q50 61 56 57" stroke="#5d3418" stroke-width="2.2" fill="none" stroke-linecap="round"/>
+  </g>
+</svg>

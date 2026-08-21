@@ -44,6 +44,8 @@ export interface ProvisionRequest {
   toolRestrictions?: string[]
   /** Change le texte du message ; le mécanisme, lui, est identique. */
   kind?: DemoMessageKind
+  /** Permissions accordées à l'invitation, si l'écran en a coché. */
+  permissions?: { capability: string; actions: string[] }[]
 }
 
 export interface ProvisionResult {
@@ -80,6 +82,7 @@ export function provisionAccount(request: ProvisionRequest): ProvisionResult {
     isFirstAdmin: false,
     roleKey: request.roleKey,
     toolRestrictions: request.toolRestrictions ?? [],
+    permissions: request.permissions,
   }
 
   USERS.push(user)

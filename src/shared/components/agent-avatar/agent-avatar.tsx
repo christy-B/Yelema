@@ -1,5 +1,7 @@
 import type { CSSProperties } from 'react'
 
+import { portraitOf, type PortraitVariant } from '../../../features/agents/avatar-assets'
+
 /**
  * Portrait d'un employé IA.
  *
@@ -42,14 +44,23 @@ interface AgentAvatarProps {
    * discrète (ex. cartes du catalogue) plutôt que d'afficher un dessin.
    */
   mono?: boolean
+  /**
+   * Cadrage voulu. `square` prend la tête — indispensable dans une pastille de
+   * 28 px, où un plan large ne montre qu'un buste illisible. Par défaut le
+   * portrait fourni par le back, sinon le plan large.
+   */
+  variant?: PortraitVariant
   /** Retouches ponctuelles (cadrage de l'image, par exemple). */
   style?: CSSProperties
 }
 
-export function AgentAvatar({ id, name, avatarUrl, size, className, mono = false, style }: AgentAvatarProps) {
+export function AgentAvatar({ id, name, avatarUrl, size, className, mono = false, variant, style }: AgentAvatarProps) {
   const cls = `agent-avatar ${className ?? ''}`.trim()
   const pooled = mono || !AVATARS.length ? null : AVATARS[hash(id || name) % AVATARS.length]
-  const src = avatarUrl || pooled
+  // Une variante demandée l'emporte sur le portrait du back : c'est l'usage —
+  // vignette ronde, carte, fiche — qui sait quel cadrage il lui faut.
+  const asked = variant ? portraitOf(name, variant) : null
+  const src = asked || avatarUrl || pooled
 
   if (src) {
     return <img className={cls} src={src} alt="" aria-hidden="true" width={size} height={size} style={{ ...(size ? { borderRadius: Math.round(size * 0.28) } : {}), ...style }} />

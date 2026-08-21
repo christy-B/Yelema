@@ -69,7 +69,7 @@ export function ProjectTeamModal({ projectId, workspaceId, agents, mode, onSaved
               <div key={agent.id} className={`project-agent-choice${isSelected ? ' is-selected' : ''}`}>
                 <button type="button" className="project-agent-toggle" onClick={() => toggle(agent)} aria-pressed={isSelected}>
                   <span className="project-agent-check" aria-hidden="true">{isSelected ? '✓' : ''}</span>
-                  <AgentAvatar id={agent.id} name={agent.name} avatarUrl={agent.avatarUrl} size={38} mono />
+                  <AgentAvatar id={agent.id} name={agent.name} avatarUrl={agent.avatarUrl} size={38} variant="square" mono />
                   <span><strong>{agent.name}</strong><small>{agent.tags[0]}</small></span>
                 </button>
                 {isSelected && (

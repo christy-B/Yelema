@@ -93,7 +93,7 @@ export function ExpertDemoPhone({ agent, conversation, channels }: ExpertDemoPho
 
         <div className="demo-phone-top">
           {skin.mobile && <ChevronLeft size={17} />}
-          <AgentAvatar id={agent.id} name={agent.name} avatarUrl={agent.avatarUrl} className="demo-phone-av" />
+          <AgentAvatar id={agent.id} name={agent.name} avatarUrl={agent.avatarUrl} variant="square" className="demo-phone-av" />
           <div className="demo-phone-id">
             <b>{agent.name}</b>
             <span>{skin.status}</span>
@@ -115,7 +115,7 @@ export function ExpertDemoPhone({ agent, conversation, channels }: ExpertDemoPho
                   <div className="demo-mail-head">
                     {me
                       ? <span className="demo-mail-av demo-mail-av--me" aria-hidden="true">V</span>
-                      : <AgentAvatar id={agent.id} name={agent.name} avatarUrl={agent.avatarUrl} className="demo-mail-av" />}
+                      : <AgentAvatar id={agent.id} name={agent.name} avatarUrl={agent.avatarUrl} variant="square" className="demo-mail-av" />}
                     <div className="demo-mail-who">
                       <b>{me ? 'Vous' : agent.name}</b>
                       <span>{me ? `à ${agent.name}` : 'à moi'}</span>

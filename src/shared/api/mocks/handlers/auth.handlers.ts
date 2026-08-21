@@ -17,18 +17,17 @@ export const authHandlers = [
     // Latence volontaire : le bouton doit avoir le temps de montrer son état.
     await delay(420)
 
-    if (!body.email || !body.password) {
-      return validationError('L’adresse e-mail et le mot de passe sont obligatoires.')
-    }
-
-    const user = USERS.find((candidate) => candidate.email === body.email)
-    if (!user || user.status !== 'active' || user.password !== body.password) {
-      return HttpResponse.json(
-        { code: 'invalid_credentials', message: 'Adresse e-mail ou mot de passe incorrect.' },
-        { status: 401 },
-      )
-    }
-
+    /**
+     * COPIE DE DEMONSTRATION : la connexion n'oppose aucun refus. On entre en
+     * cliquant, que les identifiants soient justes ou non — il n'y a rien a
+     * proteger ici, et une porte fermee n'empecherait que de montrer le produit.
+     *
+     * L'adresse saisie sert quand meme a choisir la personne : la taper permet
+     * d'entrer en tant qu'elle. Inconnue ou vide, on entre en tant que premier
+     * compte actif.
+     */
+    const asked = USERS.find((candidate) => candidate.email === body.email)
+    const user = asked ?? USERS.find((candidate) => candidate.status === 'active') ?? USERS[0]
     return HttpResponse.json({ token: user.token, expiresAt: EXPIRES_AT })
   }),
 

@@ -13,6 +13,18 @@ import { API_BASE, notFound, requireAuth, validationError } from './helpers'
  *     elle, raisonne en exclusions et fait la conversion.
  */
 
+/** « members:create » → { capability: 'members', actions: ['create'] }. */
+function regrouperPermissions(cles: string[]): { capability: string; actions: string[] }[] {
+  const parCapacite = new Map<string, Set<string>>()
+  for (const cle of cles) {
+    const [capability, action] = cle.split(':')
+    if (!capability || !action) continue
+    if (!parCapacite.has(capability)) parCapacite.set(capability, new Set())
+    parCapacite.get(capability)!.add(action)
+  }
+  return [...parCapacite].map(([capability, actions]) => ({ capability, actions: [...actions] }))
+}
+
 function toDto(member: DemoMember) {
   const role = roleByKey(member.roleKey)
   return {
@@ -22,6 +34,9 @@ function toDto(member: DemoMember) {
     status: member.status,
     isFirstAdmin: member.isFirstAdmin,
     role: role ? { key: role.key, name: role.name } : null,
+    // Les permissions effectives : celles attribuees a l'invitation si elles
+    // existent, sinon celles du role — le role reste un raccourci d'attribution.
+    permissions: member.permissions ?? role?.permissions ?? [],
     toolRestrictions: member.toolRestrictions,
   }
 }
@@ -59,12 +74,20 @@ export const memberHandlers = [
     // d'activation et le message partent ensemble. Auparavant seul le membre
     // était créé — le lien reçu ne contenait donc aucun jeton, et l'activation
     // était impossible.
+    // Permissions cochees a l'invitation. Toute paire inconnue est ignoree :
+    // l'ecran ne doit pas pouvoir accorder ce que le serveur ne connait pas.
+    const envoyees = Array.isArray((body as { permissions?: unknown }).permissions)
+      ? ((body as { permissions: unknown[] }).permissions).filter((value): value is string => typeof value === 'string')
+      : []
+    const permissions = regrouperPermissions(envoyees)
+
     const { member: created } = provisionAccount({
       name: body.name ?? null,
       email,
       roleKey: body.roleKey ?? null,
       toolRestrictions: body.toolRestrictions ?? [],
       kind: 'invitation',
+      permissions,
     })
     return HttpResponse.json(toDto(created), { status: 201 })
   }),
@@ -82,7 +105,7 @@ export const memberHandlers = [
     const member = MEMBERS.find((item) => item.id === String(params.memberId))
     if (!member) return notFound('Membre introuvable.')
 
-    const body = (await request.json()) as { name?: unknown; roleKey?: unknown; status?: unknown; toolRestrictions?: unknown }
+    const body = (await request.json()) as { name?: unknown; roleKey?: unknown; status?: unknown; toolRestrictions?: unknown; permissions?: unknown }
 
     if (typeof body.name === 'string') member.name = body.name.trim() || null
     if (typeof body.roleKey === 'string' || body.roleKey === null) {
@@ -99,6 +122,12 @@ export const memberHandlers = [
         return validationError('Le premier administrateur doit rester actif.')
       }
       member.status = body.status
+    }
+    // Les permissions se modifient apres l'invitation : c'est la fiche du
+    // membre qui les porte, et le serveur reste l'autorite sur ce qui existe.
+    if (Array.isArray(body.permissions)) {
+      const envoyees = body.permissions.filter((value): value is string => typeof value === 'string')
+      member.permissions = regrouperPermissions(envoyees)
     }
     if (Array.isArray(body.toolRestrictions)) {
       member.toolRestrictions = body.toolRestrictions.filter((value): value is string => typeof value === 'string')

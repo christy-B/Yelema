@@ -238,3 +238,27 @@ export const conversationHandlers = [
     return HttpResponse.json({ conversationId: id, fileId: body.fileId }, { status: 201 })
   }),
 ]
+
+/**
+ * Brief d'activité d'un expert, tel que la carte de l'équipe l'affiche : ce
+ * qu'il a en cours, ce qui attend, et depuis quand il n'a rien fait.
+ *
+ * Vit ici parce que c'est ce module qui détient les conversations. Le back
+ * réel calculera ce résumé côté serveur — l'écran ne doit pas avoir à charger
+ * toutes les tâches de tous les experts pour en compter quatre.
+ */
+export function agentActivityBrief(agentId: string, user: { id: string; email: string }) {
+  rebaseDemoDates()
+  const mine = conversations
+    .filter((item) => item.agentId === agentId && belongsTo(item, user))
+    .sort((a, b) => Date.parse(b.updatedAt) - Date.parse(a.updatedAt))
+  const count = (status: string) => mine.filter((item) => (item.status ?? 'done') === status).length
+  return {
+    total: mine.length,
+    running: count('running'),
+    paused: count('paused'),
+    failed: count('failed'),
+    // Trois suffisent : aucun ecran n'en montre davantage sur une carte.
+    recent: mine.slice(0, 3).map((item) => ({ title: item.title, time: item.time ?? null, status: item.status ?? 'done' })),
+  }
+}

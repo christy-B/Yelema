@@ -78,7 +78,11 @@
 .home-hero p { margin-top: 4px; color: var(--muted); font-size: 15px; }
 
 /* Accueil tourné vers le recrutement — sobre : aligné à gauche, sans effet. */
-.home-hero--recruit { padding: clamp(24px, 4.2vh, 42px) var(--page-x) clamp(20px, 3.4vh, 34px); }
+/* Le bandeau de recrutement ne se detache PAS du catalogue : ni degrade, ni
+   trait de separation. On decrit un besoin puis on regarde qui y repond —
+   c'est un seul geste, donc un seul bloc. */
+.home-hero--recruit { padding: clamp(24px, 4.2vh, 42px) var(--page-x) 0; background: none; border-bottom: 0; }
+.home-hero--recruit + .home-body { padding-top: clamp(14px, 2vh, 22px); }
 .home-hero--recruit h1 { margin: 0; font-size: clamp(24px, 2.3vw, 32px); line-height: 1.15; letter-spacing: -0.015em; text-wrap: balance; }
 .home-hero--recruit p { max-width: 62ch; margin: 8px 0 0; font-size: 14.5px; line-height: 1.55; }
 .need-form { display: flex; align-items: center; gap: 8px; width: min(100%, 600px); margin: clamp(14px, 2.4vh, 22px) 0 0; padding: 5px 6px 5px 16px; background: #fff; border: 1px solid var(--line); border-radius: 12px; }
@@ -168,16 +172,23 @@ button.chan-tile:hover { border-color: #cbb8f5; }
 .agent-card-cover { display: block; width: 100%; height: 100%; object-fit: contain; }
 .agent-card-photo-empty { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; color: rgba(255, 255, 255, .65); }
 .agent-card-photo-label { font-size: 14px; }
+/* L'etat de service, pose a nu sur la photo : pas de pastille, juste un point
+   et une mention en capitales. L'ombre portee remplace le fond — elle garde le
+   texte lisible sur une photo claire sans ajouter de bloc. */
+.agent-card-state { position: absolute; z-index: 1; top: 11px; right: 12px; display: inline-flex; align-items: center; gap: 5px; color: #fff; font-size: 8.5px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; text-shadow: 0 1px 3px rgb(16 6 34 / 65%); }
+.agent-card-state i { width: 4px; height: 4px; border-radius: 50%; background: #4ade80; box-shadow: 0 0 0 2px rgb(16 6 34 / 30%); }
 .agent-card-overlay { position: absolute; left: 0; right: 0; bottom: 0; padding: 46px 20px 20px; color: #fff; background: linear-gradient(to top, rgba(16, 6, 34, .95) 0%, rgba(16, 6, 34, .72) 46%, transparent 100%); }
 .agent-card-overlay h2 { font-size: 20px; line-height: 1.15; color: #fff; }
 .agent-card-metier { display: block; margin-top: 4px; color: #cbb8f5; font-size: 12px; font-weight: 600; letter-spacing: .04em; }
 .agent-card-overlay p { display: -webkit-box; margin: 9px 0 0; overflow: hidden; color: rgba(255, 255, 255, .82); font-size: 13.5px; line-height: 1.45; -webkit-box-orient: vertical; -webkit-line-clamp: 2; }
-.agent-card-link { display: inline-flex; align-items: center; gap: 6px; margin-top: 12px; color: #fff; font-size: 13px; font-weight: 700; }
+.agent-card-link { display: inline-flex; align-items: center; gap: 6px; margin-top: 12px; padding-left: 11px; color: #fff; font-size: 13px; font-weight: 700; }
 .agent-card-link svg { transition: transform .16s ease; }
 .agent-card.card--interactive:hover .agent-card-link svg { transform: translateX(3px); }
 .tag-row span { padding: 4px 10px; color: var(--primary); border-radius: 999px; background: var(--purple-100); font-size: 11.5px; font-weight: 500; }
 .agent-detail-page { flex: 1; padding: 30px 40px; overflow: auto; }
-.agent-detail-breadcrumb { display: flex; flex: 0 0 auto; align-items: center; gap: 14px; padding: 13px 30px; border-bottom: 1px solid var(--line); }
+/* Aucun rembourrage horizontal propre : la page en a deja, et le fil doit
+   partir du meme bord gauche que les blocs qui le suivent. */
+.agent-detail-breadcrumb { display: flex; flex: 0 0 auto; align-items: center; gap: 14px; margin-bottom: 22px; padding: 0 0 13px; border-bottom: 1px solid var(--line); }
 .breadcrumb { display: flex; align-items: center; gap: 7px; color: var(--muted); font-size: 13px; }
 .breadcrumb button { color: var(--muted); }
 .breadcrumb svg { color: var(--faint); }
@@ -521,17 +532,19 @@ button.expert-list-row:hover { border-color: #cfd5e2; }
 .project-tabs button span { display: inline-grid; min-width: 20px; height: 20px; padding: 0 5px; color: var(--faint); border-radius: 999px; background: var(--surface); font-size: 10.5px; place-items: center; }
 .project-tabs button.is-active span { color: var(--primary); background: var(--purple-100); }
 .project-detail-body { flex: 1; min-height: 0; padding: 28px 36px 44px; overflow-y: auto; background: var(--surface); }
-.project-overview { display: flex; max-width: 1180px; flex-direction: column; gap: 18px; }
-.project-objective, .project-panel, .project-activity-panel, .project-resource-section { border: 1px solid var(--line); border-radius: 15px; background: #fff; }
-.project-objective { padding: 22px 24px; }
+.project-overview { display: flex; flex-direction: column; gap: 18px; }
+.project-panel, .project-activity-panel, .project-resource-section { border: 1px solid var(--line); border-radius: 15px; background: #fff; }
+/* A plat : ni bordure ni fond, le rail lui sert de colonne. */
+.project-objective { padding: 2px 2px 4px; }
 .project-section-kicker { color: #6940c8; font-family: 'Space Grotesk', monospace; font-size: 10.5px; font-weight: 650; letter-spacing: .12em; text-transform: uppercase; }
-.project-objective > p { max-width: 82ch; margin-top: 8px; color: var(--body); font-size: 15px; line-height: 1.6; }
-.project-constraint { display: flex; max-width: 82ch; align-items: flex-start; gap: 10px; margin-top: 17px; padding-top: 16px; color: var(--muted); border-top: 1px solid #eef0f4; font-size: 13px; line-height: 1.5; }
+.project-objective > p { margin-top: 8px; color: var(--body); font-size: 15px; line-height: 1.6; }
+.project-constraint { display: flex; align-items: flex-start; gap: 10px; margin-top: 18px; padding-top: 14px; color: var(--muted); border-top: 1px solid #eef0f4; font-size: 13px; line-height: 1.5; }
 .project-constraint > svg { flex: 0 0 auto; margin-top: 1px; color: #1d8a64; }
 .project-constraint span { display: flex; flex-direction: column; gap: 2px; }
 .project-constraint strong { color: var(--ink); }
-.project-overview-grid { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(320px, .85fr); gap: 18px; align-items: start; }
-.project-panel { overflow: hidden; }
+.project-overview-grid { display: grid; grid-template-columns: minmax(0, 1.55fr) minmax(340px, 1fr); gap: 22px; align-items: start; }
+.project-col-main, .project-rail { display: flex; min-width: 0; flex-direction: column; gap: 18px; }
+.project-panel { overflow: visible; }
 .project-panel-head { display: flex; min-height: 61px; align-items: center; justify-content: space-between; gap: 12px; padding: 13px 18px; border-bottom: 1px solid #eef0f4; }
 .project-panel-head > div { display: flex; align-items: center; gap: 9px; color: var(--primary); }
 .project-panel-head h2 { color: var(--ink); font-size: 14.5px; }
@@ -551,7 +564,6 @@ button.expert-list-row:hover { border-color: #cfd5e2; }
 .project-team-row { display: flex; width: 100%; min-height: 68px; align-items: center; gap: 11px; padding: 12px 18px; color: var(--faint); border-top: 1px solid #f0f2f5; background: transparent; text-align: left; }
 button.project-team-row:hover { background: #faf9fd; }
 .project-team-row > div { flex: 1; min-width: 0; }
-.project-orchestrator-avatar { display: grid; width: 40px; height: 40px; flex: 0 0 auto; color: var(--primary); border-radius: 11px; background: var(--purple-100); place-items: center; }
 .project-team-row--lead { background: #fbfaff; }
 .project-decisions { max-width: none; }
 .project-decision-row { display: grid; width: 100%; grid-template-columns: minmax(0, 1fr) auto auto; align-items: center; gap: 18px; padding: 16px 18px; color: var(--ink); background: #fff; text-align: left; }
@@ -574,14 +586,11 @@ button.project-activity-row:hover { background: #faf9fd; }
 .project-resource-grid { display: grid; max-width: 1120px; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; align-items: start; }
 .project-resource-section { overflow: hidden; }
 .project-resource-tab { width: 100%; max-width: 900px; }
-/* Les sections de connecteurs viennent de l'espace de l'expert, où le gabarit
-   porte lui-meme la marge interieure. Dans un projet, le bloc est une carte :
-   sans cette regle la grille se colle au bord alors que l'en-tete est retrait
-   de 20 px, et les cartes paraissent deborder. */
+/* Les sections de connecteurs s'alignent sur l'en-tete de la carte, sinon le
+   titre et les cartes touchent la bordure. */
 .project-resource-tab .connectors-section { padding: 0 20px; }
 .project-resource-tab .connectors-section:first-of-type { padding-top: 18px; }
-.project-resource-tab .connectors-section:last-of-type { padding-bottom: 20px; }
-.project-resource-tab .act-empty { padding: 18px 20px; }
+.project-resource-tab .connectors-section:last-of-type { margin-bottom: 0; padding-bottom: 22px; }
 .project-resource-actions { display: flex; flex-wrap: wrap; gap: 8px; padding: 0 18px 18px; }
 .project-resource-section--artifacts { border-color: #d9d0ef; }
 .project-resource-row { display: flex; min-height: 70px; align-items: center; gap: 12px; padding: 13px 18px; border-top: 1px solid #f0f2f5; }
@@ -818,13 +827,17 @@ button.project-activity-row:hover { background: #faf9fd; }
 
 /* Profil : réglages en lignes (libellé à gauche, contrôle à droite), regroupés
    dans un cadre — même idiome que les paramètres de l'espace. */
-.wk-form { display: flex; flex-direction: column; gap: var(--gap-block); max-width: 720px; }
+/* Le profil se lit en colonne centree : une fiche, pas un formulaire etale sur
+   toute la largeur de l'ecran. */
+.wk-form { display: flex; flex-direction: column; gap: 14px; max-width: 720px; }
 .wk-settings { padding: 2px 16px; border: 1px solid var(--line); border-radius: 13px; background: #fff; }
 .wk-settings--stack { display: flex; flex-direction: column; gap: 6px; padding: 11px 16px; }
 /* Les réglages qui se comprennent d'eux-mêmes tiennent sur une ligne : seuls
    ceux dont l'effet est invisible portent une phrase. */
 .wk-set-row { display: flex; align-items: center; justify-content: space-between; gap: 18px; width: 100%; padding: 9px 0; text-align: left; background: none; border: 0; }
 .wk-set-row + .wk-set-row { border-top: 1px solid #f0f2f7; }
+/* Un choix trop large pour tenir au bout de la ligne passe dessous. */
+.wk-set-row--stack { display: flex; flex-direction: column; align-items: stretch; gap: 9px; padding: 12px 0; }
 .wk-set-txt { min-width: 0; }
 .wk-set-txt strong { display: block; color: var(--ink); font-size: 13.5px; }
 .wk-set-txt small { display: block; margin-top: 2px; max-width: 48ch; color: var(--muted); font-size: 12px; line-height: 1.4; }
@@ -900,6 +913,10 @@ button.project-activity-row:hover { background: #faf9fd; }
 .wk-textarea { width: 100%; padding: 9px 12px; color: var(--ink); border: 1px solid var(--line); border-radius: 10px; background: #fff; font-family: inherit; font-size: 13.5px; line-height: 1.45; outline: 0; resize: vertical; }
 .wk-textarea:focus { border-color: #cbb8f5; }
 .wk-count { align-self: flex-end; color: var(--faint); font-size: 11.5px; font-variant-numeric: tabular-nums; }
+/* La trace de l'enregistrement automatique : discrete, elle confirme sans
+   demander d'action. */
+.wk-autosave { display: flex; align-items: center; gap: 5px; color: var(--faint); font-size: 12px; }
+.wk-autosave svg { color: #2f7d4a; }
 .wk-form-foot { display: flex; align-items: center; gap: 14px; }
 @media (max-width: 760px) {
   .wk-set-row { flex-direction: column; align-items: flex-start; gap: 10px; }
@@ -1056,12 +1073,29 @@ button.work-row:hover { border-color: #cbb8f5; }
 .message-row { display: flex; align-items: flex-start; gap: 11px; margin: 18px auto; max-width: 850px; }
 .message-row--user { justify-content: flex-end; }
 .message-bubble { max-width: 600px; padding: 13px 16px; color: var(--body); border: 1px solid var(--line); border-radius: 14px; background: #fff; font-size: 14px; line-height: 1.55; white-space: pre-wrap; }
-.message-row--user .message-bubble { color: #fff; border: 0; background: var(--primary); }
+/* Ce que l'utilisateur ecrit : un fond clair, celui d'un onglet actif. Le
+   violet plein faisait de chaque phrase une annonce, et le texte blanc se
+   lisait moins bien que l'encre. Pas d'arrondi marque, pas de bordure. */
+.message-row--user .message-bubble { color: var(--ink); border: 0; border-radius: 6px; background: #efedf8; }
+/* Le texte de l'expert remonte de 15 px : sa premiere ligne se met ainsi a
+   hauteur de l'avatar, au lieu de commencer sous le rembourrage de la bulle. */
+.message-row--agent .message-bubble, .message-row--agent .typing-bubble { margin-top: -10px; }
 .message-bubble small { display: block; margin-top: 9px; color: var(--faint); font-family: 'Space Grotesk', monospace; font-size: 11px; }
-.chat-message-avatar { flex: 0 0 auto; object-fit: cover; object-position: center 18%; }
+/* Meme rendu que l'avatar de l'en-tete du fil (`.chat-modal-av`) : meme
+   taille, meme cercle, meme recadrage. Deux cadrages differents pour la meme
+   personne, sur le meme ecran, se remarquent tout de suite. */
+.chat-message-avatar { width: 28px; height: 28px; flex: 0 0 auto; border-radius: 50%; object-fit: cover; object-position: center 15%; background: #7a5a76; }
+.chat-message-avatar.agent-avatar--monogram { display: grid; place-items: center; color: #fff; font-size: 11px; }
 .message-row--entering { transform-origin: left bottom; animation: chat-message-enter .28s cubic-bezier(.2, .8, .2, 1) both; }
-.typing-status { display: flex; align-items: center; gap: 11px; max-width: 850px; margin: 18px auto; color: var(--faint); font-size: 12.5px; }
-.typing-bubble { display: inline-flex; align-items: center; justify-content: center; gap: 5px; width: 52px; min-height: 38px; padding: 9px 12px; border: 1px solid var(--line); border-radius: 14px; background: #fff; }
+.typing-status { color: var(--faint); }
+.typing-bubble { display: inline-flex; align-items: center; padding: 13px 16px; border: 0; background: none; }
+/* Cale invisible a la hauteur d'une ligne de texte : sans elle les trois points
+   se centrent dans une boite de 5 px et remontent d'autant au-dessus de
+   l'avatar.  ne sert a rien ici, le rembourrage l'absorbe deja. */
+.typing-bubble::before { content: ''; width: 0; height: 22px; }
+/* Espacement par marge et non par `gap` : la cale de hauteur compte comme un
+   enfant flex, et le `gap` decalait le premier point vers la droite. */
+.typing-dot + .typing-dot { margin-left: 5px; }
 .typing-dot { width: 5px; height: 5px; border-radius: 50%; background: currentColor; animation: chat-typing-dot 1.05s ease-in-out infinite; }
 .typing-dot:nth-last-child(2) { animation-delay: .14s; }
 .typing-dot:nth-last-child(1) { animation-delay: .28s; }
@@ -1127,7 +1161,6 @@ button.work-row:hover { border-color: #cbb8f5; }
 .connector-add { display: inline-flex; flex: 0 0 auto; align-items: center; gap: 5px; padding: 6px 11px; color: var(--primary); border: 1px solid var(--line); border-radius: 999px; background: #fff; font-size: 12.5px; font-weight: 600; white-space: nowrap; }
 .connector-add:hover { border-color: #c9baf3; background: var(--purple-100); }
 .files-toolbar { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 12px; }
-.files-import { display: inline-flex; align-items: center; gap: 8px; height: 40px; padding: 0 18px; color: #fff; border-radius: 10px; background: var(--primary); box-shadow: 0 6px 16px -8px rgba(48, 22, 103, .5); font-size: 13.5px; font-weight: 600; }
 .files-count { margin-bottom: 14px; color: var(--faint); font-size: 12.5px; }
 .files-table { overflow: hidden; border: 1px solid var(--line); border-radius: 16px; background: #fff; }
 .files-head, .files-row { display: grid; align-items: center; grid-template-columns: 38px 2fr 1.6fr .8fr 1fr 28px; gap: 14px; padding: 12px 18px; }
@@ -1146,17 +1179,25 @@ button.work-row:hover { border-color: #cbb8f5; }
 .row-menu { position: absolute; top: 30px; right: 0; z-index: 20; padding: 5px; border: 1px solid var(--line); border-radius: 11px; background: #fff; box-shadow: 0 18px 40px -18px rgba(48, 22, 103, .4); }
 .row-menu-danger { display: flex; align-items: center; gap: 9px; width: 100%; padding: 9px 12px; color: #e5484d; background: none; border-radius: 8px; font-size: 13.5px; white-space: nowrap; }
 .row-menu-danger:hover { background: #fcebec; }
+/* Meme forme que « Retirer le membre » — meme gabarit, meme fond au survol —
+   mais en bleu : modifier n'est pas destructif, la couleur ne doit pas le
+   suggerer. */
+.row-menu-edit { display: flex; align-items: center; gap: 9px; width: 100%; padding: 9px 12px; color: #2e4ec4; background: none; border-radius: 8px; font-size: 13.5px; white-space: nowrap; }
+.row-menu-edit:hover { background: #eaeefb; }
 .files-empty { padding: 36px; text-align: center; color: var(--faint); font-size: 13.5px; }
 .storage-card { width: 300px; padding: 13px 15px; border: 1px solid var(--line); border-radius: 13px; }
 .storage-card > div:first-child { display: flex; justify-content: space-between; color: var(--body); font-size: 12px; }
 .storage-card small { color: var(--faint); }
 .storage-card > div:last-child { height: 6px; margin-top: 9px; overflow: hidden; border-radius: 999px; background: var(--line); }
 .storage-card > div:last-child span { display: block; height: 100%; background: var(--primary); }
-.members-table { overflow: hidden; border: 1px solid var(--line); border-radius: 16px; background: #fff; }
+/* PAS de `overflow: hidden` : il rognait le menu des trois points, d'autant
+   plus sur les dernieres lignes. Les coins sont arrondis par la premiere et la
+   derniere ligne, ce qui donne le meme rendu sans couper ce qui depasse. */
+.members-table { border: 1px solid var(--line); border-radius: 16px; background: #fff; }
 .members-head, .members-row { display: grid; align-items: center; grid-template-columns: 38px 2fr 1.2fr 1.4fr 28px; gap: 14px; padding: 12px 18px; width: 100%; text-align: left; }
-.members-head { background: #fafbfd; border-bottom: 1px solid var(--line); color: var(--faint); font-family: 'Space Grotesk', monospace; font-size: 11px; font-weight: 500; letter-spacing: .14em; text-transform: uppercase; }
+.members-head { background: #fafbfd; border-radius: 15px 15px 0 0; border-bottom: 1px solid var(--line); color: var(--faint); font-family: 'Space Grotesk', monospace; font-size: 11px; font-weight: 500; letter-spacing: .14em; text-transform: uppercase; }
 .members-row { border-bottom: 1px solid var(--line); background: #fff; cursor: pointer; }
-.members-row:last-child { border-bottom: 0; }
+.members-row:last-child { border-bottom: 0; border-radius: 0 0 15px 15px; }
 .members-row:hover { background: #fafbfd; }
 .row-menu-item:disabled { color: #0ea371; }
 .member-avatar { display: grid; flex: 0 0 auto; width: 38px; height: 38px; color: #fff; border-radius: 50%; background: var(--purple); place-items: center; font-size: 13px; font-weight: 700; }
@@ -1293,7 +1334,9 @@ button.work-row:hover { border-color: #cbb8f5; }
 .period-tabs button:first-child { border-left: 0; }
 .period-tabs button.is-active { color: #fff; background: var(--primary); }
 .analytics-stats { grid-template-columns: repeat(4, 1fr); }
-.analytics-main { display: grid; grid-template-columns: 1.6fr 1fr; gap: 16px; }
+/* Meme marge haute que les autres blocs : la seconde rangee se collait au
+   tableau des membres, faute de marge sur la classe elle-meme. */
+.analytics-main { display: grid; grid-template-columns: 1.6fr 1fr; gap: 16px; margin-top: 18px; }
 .chart-head { display: flex; align-items: baseline; gap: 10px; }
 .chart-head span { color: var(--faint); font-size: 12.5px; }
 .bar-chart { display: flex; align-items: flex-end; gap: 16px; height: 220px; margin-top: 22px; padding-top: 12px; }
@@ -1413,7 +1456,7 @@ button.work-row:hover { border-color: #cbb8f5; }
 .cns-linkcell { display: inline-flex; align-items: center; gap: 8px; }
 .cns-linkcell a { color: var(--primary); font-weight: 600; }
 .cns-linkcell button { display: grid; width: 24px; height: 24px; color: var(--muted); border: 1px solid var(--line); border-radius: 7px; background: #fff; place-items: center; }
-.cns-mail { display: flex; flex-direction: column; gap: 10px; }
+.cns-mail { display: flex; flex-direction: column; gap: 10px; padding: 0; list-style: none; }
 .cns-mail li { padding: 13px 15px; border: 1px solid var(--line); border-radius: 11px; background: var(--surface); }
 .cns-mail-head { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
 .cns-mail-head svg { color: var(--muted); }
@@ -1439,31 +1482,99 @@ button.work-row:hover { border-color: #cbb8f5; }
    la sélection ne doit pas se déclencher. */
 body.is-resizing { cursor: col-resize; user-select: none; }
 
-/* ── L'échange en bloc de page ────────────────────────────────────────────
-   Sur l'accueil de l'expert, la conversation occupe la colonne de droite en
-   permanence : il n'y a plus rien à ouvrir ni à fermer. Sa largeur se règle en
-   tirant son bord gauche, et le bouton d'agrandissement la passe en plein
-   écran (voir .chat-modal--full). */
-.wk-side--chat { position: relative; display: flex; flex: 0 0 var(--side-w, clamp(280px, 25vw, 380px)); flex-direction: column; gap: 12px; max-width: 100%; padding: 14px; overflow: hidden; background: var(--surface); }
+/* ── L'échange au centre ──────────────────────────────────────────────────
+   AUCUN cadre. Pas de bordure, pas de fond, pas de coins arrondis : on doit
+   sentir qu'on EST dans la conversation, pas qu'on regarde un bloc posé dans
+   une page. La seule séparation de tout l'écran est le filet vertical de la
+   colonne de droite — il suffit à dire que ce sont deux choses différentes. */
+.wk-conversation { display: flex; height: 100%; min-height: 0; flex-direction: column; }
+.wk-chat-block { display: flex; flex: 1; min-height: 0; flex-direction: column; overflow: hidden; background: none; border: 0; border-radius: 0; }
+.wk-chat-head { display: flex; align-items: center; gap: 9px; flex: 0 0 auto; padding: 0 2px 12px; }
+.wk-chat-head .chat-modal-id { font-size: 13.5px; font-weight: 600; }
+.wk-chat-block .chat-main { flex: 1; min-height: 0; }
+.wk-chat-block .chat-thread { padding: 0 2px 12px; background: none; font-size: 12px; }
+/* Une bulle, pas une carte : le fond blanc et la bordure faisaient du message
+   un document pose sur la page. Et une largeur plus courte, parce qu'un
+   paragraphe de 600 px se lit comme un article, pas comme une reponse. */
+/* La conversation tient dans une colonne centree : etiree sur toute la
+   largeur du bloc, elle se lisait comme un article. */
+.wk-chat-block .message-row { gap: 7px; max-width: 620px; margin: 12px auto; }
+/* Bulle plus serree ici : la premiere ligne demarre presque au bord haut,
+   ni l'avatar ni le texte n'ont a bouger. */
+.wk-chat-block .chat-message-avatar { margin-top: 0; }
+.wk-chat-block .message-row--agent .message-bubble, .wk-chat-block .message-row--agent .typing-bubble { margin-top: -3px; }
+.wk-chat-block .message-bubble { max-width: 82%; padding: 8px 12px; border: 0; border-radius: 12px; background: var(--surface); font-size: 12px; line-height: 1.5; }
+.wk-chat-block .message-row--user .message-bubble { color: var(--ink); border-radius: 6px; background: #efedf8; }
+.wk-chat-block .message-bubble small { margin-top: 7px; font-size: 10.5px; }
+/* La zone de saisie est le seul élément encadré du centre : sans contour, on ne
+   sait plus où écrire. */
+/* Zone de saisie façon messagerie : le « + » et l'envoi HORS du champ, le champ
+   lui-même en pilule grise sans contour. Rien n'encadre plus la conversation,
+   c'est donc la pilule qui indique où écrire — un simple rectangle bordé aurait
+   ramené l'impression de bloc. */
+.wk-chat-block .chat-composer-area { padding: 4px 2px 2px; }
+.wk-chat-block .chat-composer { gap: 8px; max-width: none; min-height: 0; margin: 0; padding: 0; border: 0; border-radius: 0; }
+.wk-chat-block .composer-action { width: 34px; height: 34px; flex: 0 0 auto; padding: 0; color: var(--muted); border-radius: 50%; }
+.wk-chat-block .composer-action:hover { color: var(--ink); background: var(--surface); }
+.wk-chat-block .chat-composer textarea { min-height: 40px; padding: 11px 16px; border-radius: 999px; background: var(--surface); font-size: 13px; line-height: 1.4; }
+.wk-chat-block .chat-composer textarea::placeholder { color: var(--faint); }
+.wk-chat-block .send-action { width: 34px; height: 34px; border-radius: 50%; background: var(--ink); }
+.wk-chat-block .send-action:disabled { color: var(--faint); background: var(--surface); opacity: 1; }
+.wk-chat-block .typing-status { font-size: 12px; }
+.wk-chat-block .typing-bubble { padding: 8px 12px; }
+.wk-chat-block .typing-bubble::before { height: 18px; }
+
+/* ── Colonne de droite : l'activité, puis les routines ────────────────────
+   Même principe : des titres et de l'air, pas des cartes. Le filet vertical de
+   `.wk-side` porte à lui seul la séparation avec la conversation. */
+.wk-side--work { position: relative; display: flex; flex: 0 0 var(--side-w, clamp(280px, 25vw, 380px)); flex-direction: column; max-width: 100%; padding: 0; overflow: hidden; }
+/* Bord saisissable, volontairement SANS repère visuel : la largeur reste
+   réglable, mais l'écran ne se présente pas comme un assemblage de panneaux. */
 .wk-side-grip { position: absolute; top: 0; left: -3px; z-index: 1; width: 9px; height: 100%; cursor: col-resize; background: transparent; }
-.wk-side-grip::after { position: absolute; top: 0; left: 3px; width: 3px; height: 100%; background: var(--primary); content: ''; opacity: 0; transition: opacity .12s ease; }
-.wk-side-grip:hover::after, .wk-side-grip:focus-visible::after { opacity: .55; }
-.wk-side-grip:focus-visible { outline: none; }
-/* Deux cartes distinctes, pas un panneau continu : chacune a son fond, son
-   trait et ses coins, posées sur la teinte de la colonne. */
-.wk-chat-block { display: flex; flex: 1; flex-direction: column; min-height: 0; overflow: hidden; background: #fff; border: 1px solid var(--line); border-radius: 12px; }
-.wk-chat-head { display: flex; align-items: center; gap: 10px; flex: 0 0 auto; padding: 9px 10px 9px 13px; border-bottom: 1px solid var(--line); }
-.wk-side--chat .chat-main { flex: 1; min-height: 0; }
-.wk-side--chat .chat-thread { padding: 16px 18px; background: #fff; }
-.wk-side--chat .chat-composer-area { padding: 8px 16px 14px; }
-.wk-side--chat .chat-composer { min-height: 44px; border-width: 1px; border-radius: 12px; }
-/* Les routines coiffent la colonne de droite, au-dessus de la conversation :
-   elles restent sous les yeux quelle que soit la longueur de la frise. Si elles
-   sont nombreuses, elles défilent sur place plutôt que de chasser l'échange. */
-.wk-routines { display: flex; flex: 0 0 auto; flex-direction: column; gap: 8px; max-height: 38%; padding: 12px 14px; overflow-y: auto; background: #fff; border: 1px solid var(--line); border-radius: 12px; }
-.wk-routines .wk-side-head { position: sticky; top: -12px; z-index: 1; padding: 2px 0 6px; background: #fff; }
+.wk-side-grip:focus-visible { outline: 2px solid var(--primary); outline-offset: -2px; }
+/* La colonne est un fond gris : ce sont les intervalles entre les panneaux
+   blancs qui portent la separation, pas des filets. */
+.wk-side-scroll { display: flex; flex: 1; min-height: 0; flex-direction: column; gap: 12px; padding: 12px; overflow-y: auto; background: var(--surface); }
+/* Panneau : titre en retrait du haut, comme sur la maquette. */
+.wk-side-scroll > .act, .wk-side-scroll > .wk-routines { padding: 16px 16px 18px; background: #fff; border: 1px solid var(--line); border-radius: 14px; }
+.act-head-action { display: grid; width: 26px; height: 26px; flex: 0 0 auto; margin-left: auto; padding: 0; color: var(--faint); border-radius: 8px; background: none; place-items: center; }
+.act-head-action:hover { color: var(--primary); background: var(--surface); }
+/* Etat vide : centre, discret — il occupe la hauteur sans la meubler. */
+.act-blank { padding: 26px 0; color: var(--faint); font-size: 12.5px; text-align: center; }
 
+/* ── Journal d'activité, colonne de droite ────────────────────────────────
+   Un en-tête, des filtres portant leur compte, les tâches groupées par jour.
+   Tout est en filets et en texte : la colonne doit rester légère à côté de la
+   conversation, pas rivaliser avec elle. */
+.act { display: flex; flex-direction: column; }
+.act-head { display: flex; align-items: center; gap: 7px; margin-bottom: 12px; color: var(--muted); }
+.act-head h2 { color: var(--ink); font-size: 13px; }
+.act-head h2 em { color: var(--faint); font-style: normal; font-weight: 500; }
+.act-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.act-chip { display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; color: var(--muted); border: 1px solid var(--line); border-radius: 999px; background: #fff; font-size: 11.5px; white-space: nowrap; transition: border-color .12s ease, color .12s ease; }
+.act-chip:hover { color: var(--ink); border-color: #cbb8f5; }
+.act-chip b { display: inline-grid; min-width: 15px; height: 15px; padding: 0 4px; color: var(--muted); border-radius: 999px; background: var(--surface); font-size: 10px; font-weight: 700; font-variant-numeric: tabular-nums; place-items: center; }
+.act-chip.is-on { color: var(--ink); border-color: var(--ink); font-weight: 600; }
+.act-chip.is-on b { color: #fff; background: var(--ink); }
+/* La pastille du compte prend la teinte de l'état : c'est le seul endroit
+   coloré du panneau, il ne pèse donc rien. */
+.act-chip.is-running b { color: #2f7d4a; background: #e8f5ec; }
+.act-chip.is-paused b { color: #a8761a; background: #fbf1dc; }
+.act-chip.is-failed b { color: #b3403f; background: #fcebeb; }
+.act-day { display: flex; flex-direction: column; }
+.act-day-label { margin: 10px 0 4px; color: var(--faint); font-size: 11px; }
+.act-row { display: flex; align-items: center; gap: 9px; width: 100%; padding: 6px 0; background: none; border: 0; text-align: left; }
+.act-row:hover .act-row-title { color: var(--primary); }
+.act-row i { width: 5px; height: 5px; flex: 0 0 auto; border-radius: 50%; background: #cfd5e0; }
+.act-row i.is-running { background: #34c07a; }
+.act-row i.is-paused { background: #e0a63a; }
+.act-row i.is-failed { background: #d9534f; }
+.act-row-title { overflow: hidden; flex: 1; min-width: 0; color: var(--body); font-size: 12.5px; text-overflow: ellipsis; white-space: nowrap; }
+.act-row em { flex: 0 0 auto; color: var(--faint); font-size: 11px; font-style: normal; font-variant-numeric: tabular-nums; }
 
+/* Routines : une section, pas une carte. */
+.wk-routines { display: flex; flex: 0 0 auto; flex-direction: column; gap: 6px; }
+.wk-routine { background: none; border: 0; }
 
 /* ── Filtres d'état, sur l'accueil de l'expert ────────────────────────────
    Onglets soulignés : aucune boîte, aucun fond. Les libellés s'alignent sur le
@@ -1515,3 +1626,456 @@ body.is-resizing { cursor: col-resize; user-select: none; }
   .wk-log-result { grid-column: 2; max-width: none; white-space: normal; }
   .wk-log-when { grid-column: 2; text-align: left; }
 }
+
+/* ── Dernières activités, sur la carte d'un expert ───────────────────────
+   Des intitulés de tâches, pas des compteurs. La puce ouvre la ligne et le
+   texte suit, décalé de 11 px : la flèche du bas reçoit le même retrait pour
+   tomber à son aplomb. La puce reste petite — sa couleur porte l'état, sa
+   taille n'a rien à dire. Une tâche terminée n'a pas de couleur : seule celle
+   qui tourne ou qui bloque mérite l'œil. */
+/* padding + list-style : le reset global ne couvre que h1-h3 et p, une <ul>
+   garde donc les 40 px de retrait du navigateur — c'etait la vraie cause du
+   decalage a gauche. */
+.agent-card-overlay .agent-card-recent { display: flex; flex-direction: column; gap: 4px; margin: 9px 0 0; padding: 0; list-style: none; }
+.agent-card-overlay .agent-card-recent li { display: flex; align-items: baseline; gap: 7px; color: rgba(255, 255, 255, .84); font-size: 11.5px; line-height: 1.4; }
+.agent-card-overlay .agent-card-recent i { width: 4px; height: 4px; flex: 0 0 auto; align-self: center; border-radius: 50%; background: rgba(255, 255, 255, .38); }
+.agent-card-overlay .agent-card-recent .is-running i { background: #5fd39a; }
+.agent-card-overlay .agent-card-recent .is-paused i { background: #f0b64b; }
+.agent-card-overlay .agent-card-recent .is-failed i { background: #ff7a76; }
+.agent-card-task { overflow: hidden; flex: 1; min-width: 0; text-overflow: ellipsis; white-space: nowrap; }
+.agent-card-overlay .agent-card-recent em { flex: 0 0 auto; opacity: .6; font-size: 10.5px; font-style: normal; white-space: nowrap; }
+
+/* ── Tuile d'appel : agrandir l'équipe ──────────────────────────────────
+   Posée en fin de grille : le catalogue se propose là où on constate qu'il
+   manque quelqu'un, pas seulement dans le menu. */
+/* La tuile prend les proportions d'une carte d'expert, pas une hauteur fixe :
+   avec une hauteur minimale, elle se retrouvait a 220 px des qu'elle tombait seule sur
+   la derniere ligne de la grille, et paraissait rapetissee. */
+.agent-card-add { display: flex; aspect-ratio: 400 / 717; max-width: 400px; flex-direction: column; align-items: center; justify-content: center; gap: 7px; padding: 24px; color: var(--muted); border: 1.5px dashed var(--line); border-radius: 20px; background: transparent; text-align: center; transition: border-color .14s ease, color .14s ease, background .14s ease; }
+.agent-card-add:hover { color: var(--primary); border-color: #cbb8f5; background: rgba(123, 74, 226, .04); }
+.agent-card-add-mark { display: grid; width: 46px; height: 46px; margin-bottom: 3px; border-radius: 50%; background: var(--surface); place-items: center; }
+.agent-card-add:hover .agent-card-add-mark { background: #f1ebfd; }
+.agent-card-add strong { color: var(--ink); font-size: 15px; }
+.agent-card-add:hover strong { color: var(--primary); }
+.agent-card-add > span:last-child { font-size: 12.5px; }
+
+/* ── Commande d'un expert sur mesure ─────────────────────────────────────
+   Le cadrage a besoin du métier ET des données : ces deux blocs pèsent autant
+   que le besoin lui-même, ils ne sont donc pas relégués en options. */
+.cx-field { display: flex; flex-direction: column; gap: 7px; }
+.cx-field > span { color: var(--ink); font-size: 13px; font-weight: 600; }
+.cx-field > span em { color: var(--faint); font-style: normal; font-weight: 400; }
+.cx-field textarea, .cx-field input { padding: 10px 12px; border: 1px solid var(--line); border-radius: 10px; background: #fff; font-family: inherit; font-size: 13.5px; line-height: 1.5; resize: vertical; }
+.cx-field textarea:focus-visible, .cx-field input:focus-visible { outline: 2px solid var(--primary); outline-offset: 1px; }
+/* Choix des natures de données : une liste à cocher sur deux colonnes. Ni
+   pastilles ni cartes — c'est un contrôle de formulaire, et l'arrondi comme la
+   bordure ne faisaient qu'ajouter du bruit à huit lignes de texte. */
+.cx-picks { display: grid; grid-template-columns: 1fr 1fr; gap: 0 20px; }
+.cx-pick { display: flex; align-items: center; gap: 9px; padding: 7px 0; color: var(--muted); background: none; border: 0; border-bottom: 1px solid #f1f3f6; font-size: 12px; text-align: left; transition: color .12s ease; }
+.cx-pick:hover { color: var(--ink); }
+.cx-pick-box { display: grid; width: 15px; height: 15px; flex: 0 0 auto; border: 1.5px solid #cfd5e0; border-radius: 3px; background: #fff; place-items: center; transition: background .12s ease, border-color .12s ease; }
+.cx-pick.is-on { color: var(--ink); font-weight: 600; }
+.cx-pick.is-on .cx-pick-box { color: #fff; background: var(--ink); border-color: var(--ink); }
+.cx-pick:focus-visible { outline: 2px solid var(--primary); outline-offset: 2px; }
+.cx-error { color: #9e2a2a; font-size: 12.5px; }
+
+/* ── Profil : volets repliables ───────────────────────────────────────────
+   Ton & style et Personnalité sont des réglages fins : ils se replient pour
+   que le profil s'ouvre sur l'essentiel — les canaux et les règles. Un simple
+   filet les sépare, aucun cadre : ce ne sont pas des cartes. */
+.wk-fold { border-top: 1px solid var(--line); }
+.wk-fold:last-of-type { border-bottom: 1px solid var(--line); }
+.wk-fold-head { display: flex; align-items: baseline; gap: 10px; width: 100%; padding: 12px 2px; background: none; border: 0; text-align: left; }
+.wk-fold-head strong { flex: 0 0 auto; color: var(--ink); font-size: 13.5px; }
+.wk-fold-head > span { overflow: hidden; color: var(--faint); font-size: 12.5px; text-overflow: ellipsis; white-space: nowrap; }
+.wk-fold-mark { flex: 0 0 auto; align-self: center; color: var(--faint); transition: transform .14s ease; }
+.wk-fold-head[aria-expanded='true'] .wk-fold-mark { transform: rotate(90deg); }
+.wk-fold-head[aria-expanded='true'] > span { color: transparent; }
+.wk-fold-body { display: flex; flex-direction: column; gap: 2px; padding: 0 2px 14px 27px; }
+.wk-fold-body--stack { gap: 14px; }
+.wk-fold-field { display: flex; flex-direction: column; gap: 6px; }
+.wk-fold-field > span { display: flex; align-items: baseline; gap: 8px; }
+.wk-fold-field strong { color: var(--ink); font-size: 12.5px; }
+.wk-fold-field small { color: var(--faint); font-size: 11.5px; }
+.wk-fold-field textarea { padding: 9px 12px; border: 1px solid var(--line); border-radius: 10px; background: #fff; font-family: inherit; font-size: 13px; line-height: 1.5; resize: vertical; }
+.wk-fold-field textarea:focus-visible { outline: 2px solid var(--primary); outline-offset: 1px; }
+
+/* ── Profil d'un expert ───────────────────────────────────────────────────
+   En-tete : qui il est a gauche, son visage a droite. Puis des sections
+   titrees, separees par de l'air — la page se lit de haut en bas comme une
+   fiche, pas comme un formulaire de reglages. */
+/* L'en-tete suit la meme colonne que le reste : identite a gauche, portraits a
+   droite, mais dans la largeur du contenu — pas aux deux bords de l'ecran. */
+.pf-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 28px; max-width: 720px; margin-bottom: 22px; }
+.pf-id { min-width: 0; }
+/* Son etat, avec sa pastille : verte en service, grise sinon. */
+.pf-eyebrow { display: flex; align-items: center; gap: 6px; color: var(--faint); font-size: 11px; font-weight: 700; letter-spacing: .09em; text-transform: uppercase; }
+.pf-eyebrow i { width: 6px; height: 6px; flex: 0 0 auto; border-radius: 50%; background: #2fbf6b; font-style: normal; }
+.pf-eyebrow.is-off i { background: #c3c9d4; }
+.pf-head h2 { margin-top: 6px; font-size: 26px; letter-spacing: -.02em; }
+.pf-role { margin-top: 4px; color: var(--primary); font-size: 14px; font-weight: 600; }
+.pf-faces { display: flex; flex: 0 0 auto; flex-direction: column; align-items: flex-end; gap: 8px; }
+.pf-faces-row { display: flex; align-items: flex-start; flex-wrap: wrap; gap: 10px; justify-content: flex-end; max-width: 340px; }
+/* Deux cadrages coexistent : le plan large est vertical, le portrait est
+   carre. On ne force donc pas une hauteur commune — c'est justement leur
+   difference qu'on donne a voir. */
+.pf-face-pick { padding: 0; border: 0; background: none; border-radius: 14px; outline-offset: 3px; }
+.pf-face-pick.is-on { outline: 2px solid var(--ink); }
+.pf-face { display: block; width: 74px; height: 100px; border-radius: 12px; object-fit: cover; object-position: top center; background: var(--surface); }
+.pf-face--square { height: 74px; }
+.pf-face.agent-avatar--monogram { display: grid; place-items: center; font-size: 30px; }
+.pf-faces-action { display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; color: var(--muted); border: 1px solid var(--line); border-radius: 999px; background: #fff; font-size: 12px; font-weight: 600; }
+.pf-faces-action:hover { color: var(--primary); border-color: var(--primary); }
+
+/* Section titree : un titre, une phrase, le contenu. */
+/* Pas de `margin: 0 auto` ici : dans `.wk-form` (flex en colonne) des marges
+   horizontales automatiques annulent l'etirement, le bloc se reduit a son
+   contenu et decroche du bord gauche des autres. Le parent centre deja. */
+.pf-block { margin-bottom: 8px; }
+.pf-block h3 { color: var(--ink); font-size: 16px; }
+.pf-block > p { margin-top: 5px; color: var(--faint); font-size: 12.5px; }
+/* Cartes de canaux : le logo du service porte la reconnaissance, le libelle
+   confirme. Cochee, la carte se cerne — pas d'aplat colore. */
+.pf-channels { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 10px; margin-top: 12px; }
+.pf-channel { position: relative; display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 14px 10px; color: var(--body); border: 1px solid var(--line); border-radius: 14px; background: #fff; font-size: 13px; font-weight: 500; transition: border-color .12s ease, box-shadow .12s ease; }
+.pf-channel:hover { border-color: #cbb8f5; }
+.pf-channel.is-on { border-color: var(--ink); box-shadow: inset 0 0 0 1px var(--ink); }
+.pf-channel-logo { display: grid; width: 34px; height: 34px; place-items: center; }
+.pf-channel-logo img { width: 30px; height: 30px; object-fit: contain; }
+.pf-channel-tick { position: absolute; top: 9px; right: 9px; display: grid; width: 18px; height: 18px; color: #fff; border-radius: 50%; background: var(--ink); place-items: center; }
+
+/* ── Drive ────────────────────────────────────────────────────────────────
+   Lignes alternees : aucun filet, aucune carte. Une ligne sur deux prend une
+   teinte tres legere, et c'est ce contraste qui guide l'oeil du nom vers la
+   taille — le trait de separation devenait vite un quadrillage, la bordure par
+   fichier un empilement d'objets. */
+/* Barre du Drive : les trois vues. L'ajout vit en dessous, juste au-dessus de
+   la liste qu'il alimente, et pousse a droite. */
+/* Une ligne de fichier n'a pas besoin de toute la largeur : etiree, elle
+   laissait un long vide entre le nom et la date. On la borne a la meme
+   colonne que le reste de l'espace de l'expert, et l'action reste alignee sur
+   le bord droit des lignes. */
+.drive-bar, .drive-actions, .drive-rows { max-width: 1040px; }
+.drive-bar { margin-bottom: var(--gap-block); }
+.drive-bar .wk-filters { margin-bottom: 0; }
+.drive-actions { display: flex; justify-content: flex-end; margin-bottom: 16px; }
+/* Les lignes du Drive sont celles de la plateforme : carte blanche, bordure
+   fine, icone dans sa pastille. Elles etaient aplaties a coups de surcharges —
+   fond alterne, bordure retiree — et ne ressemblaient donc plus a aucune autre
+   liste de l'application. */
+.drive-rows { display: flex; flex-direction: column; gap: 8px; }
+.drive-rows .expert-list-meta { flex: 0 0 auto; color: var(--faint); font-size: 12px; font-variant-numeric: tabular-nums; }
+/* Interrupteur de ligne : deux tiers de celui des reglages. */
+/* Le partage se lit : un libelle et son etat, au dessin des autres pastilles
+   de la plateforme. */
+.drive-share { display: inline-flex; align-items: center; gap: 5px; flex: 0 0 auto; height: 24px; padding: 0 9px; color: var(--muted); border: 1px solid var(--line); border-radius: 999px; background: #fff; font-size: 11.5px; font-weight: 600; white-space: nowrap; }
+.drive-share:hover { color: var(--primary); border-color: var(--primary); }
+.drive-share.is-on { color: #2f7d4a; border-color: #b7ddc6; background: #eaf6ee; }
+.drive-share.is-on:hover { color: #2f7d4a; border-color: #2f7d4a; }
+
+/* ── Membres : les permissions, en clair ──────────────────────────────────
+   Une pastille « Administrateur » obligeait a connaitre la grille par coeur.
+   La liste de ce que le membre peut faire se lit directement — et comme elle
+   varie en longueur, elle se tronque proprement plutot que de pousser les
+   colonnes suivantes. */
+.member-perms { overflow: hidden; color: var(--muted); font-size: 12.5px; text-overflow: ellipsis; white-space: nowrap; }
+
+/* ── Membres : actions de ligne et permissions ────────────────────────────
+   Les trois points perdent leur cadre gris — c'est un declencheur discret, pas
+   un bouton de formulaire — et gagnent en contraste pour rester cliquables. */
+.members-row .file-actions > button { width: 28px; height: 28px; color: var(--muted); border: 0; border-radius: 8px; background: none; }
+.members-row .file-actions > button:hover { color: var(--ink); background: var(--surface); }
+
+
+/* ── Choix des experts d'un membre : minimaliste ──────────────────────────
+   Treize lignes a activer, c'est une liste de reglages, pas treize cartes. Pas
+   de bordure par ligne, un filet tres fin entre elles, un interrupteur reduit
+   aux deux tiers, et la zone defile sur place plutot que d'etirer la modale. */
+/* Assez haut pour montrer une dizaine d experts : plafonner a sept lignes
+   donnait l impression qu il en manquait. */
+.modal-list--scroll { max-height: 340px; overflow: auto; }
+.modal-agent-row { display: flex; align-items: center; gap: 10px; width: 100%; padding: 7px 10px; border: 0; border-radius: 0; background: none; text-align: left; }
+.modal-agent-row + .modal-agent-row { border-top: 1px solid #f4f5f8; }
+.modal-agent-row:hover { background: var(--surface); }
+.modal-agent-row .agent-icon { width: 22px; height: 22px; flex: 0 0 auto; }
+.modal-agent-name { flex: 1; min-width: 0; overflow: hidden; color: var(--body); font-size: 12.5px; text-overflow: ellipsis; white-space: nowrap; }
+.modal-agent-row .switch { width: 28px; height: 16px; flex: 0 0 auto; }
+.modal-agent-row .switch b { width: 12px; height: 12px; }
+.modal-agent-row .switch.is-on b { transform: translateX(12px); }
+
+/* ── Modale d'ajout d'un membre : resserree ───────────────────────────────
+   Trois permissions, treize experts et deux champs tenaient sur une hauteur
+   d'ecran et demi. Moins d'air entre les blocs, et la liste des experts
+   defile plus tot — le compte affiche dans l'en-tete dit deja combien il y en
+   a, la hauteur n'a plus a le montrer. */
+.member-modal { gap: 12px; padding: 22px 24px 20px; }
+.member-modal .modal-intro { font-size: 12.5px; }
+.member-modal .modal-field { display: flex; flex-direction: column; gap: 6px; }
+.member-modal .modal-field-head { margin-bottom: 2px; }
+.member-modal .modal-agent-bulk { margin-bottom: 6px; }
+.member-modal .modal-list--scroll { max-height: 176px; }
+.member-modal .modal-actions { margin-top: 2px; }
+
+
+
+/* ── Validation du plan d'un projet ───────────────────────────────────────
+   Le chef de projet propose, l'utilisateur valide. Le bandeau reste en tete de
+   la vue d'ensemble tant que le projet n'a pas demarre : c'est la porte
+   d'entree, elle ne doit pas se chercher. */
+
+/* La case de validation reprend la pastille d'avancement : meme emplacement,
+   meme taille — seul son role change selon l'etat du projet. */
+.plan-check { display: grid; width: 26px; height: 26px; flex: 0 0 auto; padding: 0; color: var(--faint); background: none; border: 0; place-items: center; }
+.plan-check:hover { color: var(--primary); }
+.plan-check .is-done { color: #2f7d4a; }
+.project-team-name { display: block; padding: 0; color: var(--ink); background: none; border: 0; font-size: 13.5px; font-weight: 600; text-align: left; }
+.project-team-name:hover { color: var(--primary); }
+
+/* Le lancement clot le rail : c'est la derniere chose a faire, donc la
+   derniere chose qu'on voit. */
+.plan-launch { display: flex; }
+.plan-launch button { width: 100%; }
+
+/* Livrables attendus : ce que le projet doit produire, en tete de la vue
+   d'ensemble — c'est la question a laquelle le plan repond. */
+/* Un titre pour le bloc, des sous-titres discrets pour ses deux parties :
+   la hierarchie dit qu'il s'agit du meme sujet. */
+.project-deliverables { margin-top: 16px; }
+.project-deliverables small { display: block; margin-top: 10px; color: var(--faint); font-size: 11.5px; font-weight: 600; }
+.project-expected { margin-top: 0; }
+.project-expected ul { display: flex; flex-direction: column; gap: 5px; margin-top: 6px; }
+.project-expected li { display: flex; align-items: center; gap: 8px; color: var(--body); font-size: 13px; }
+.project-expected li svg { flex: 0 0 auto; color: var(--faint); }
+
+/* ── Un plan qu'on peut corriger ──────────────────────────────────────────
+   Le chef de projet propose : l'utilisateur affecte, ajoute, retire. Les
+   commandes restent au niveau du sous-titre de la tache — rien de plus
+   lourd que le texte qu'elles remplacent. */
+.task-assign { position: relative; }
+.task-assign-btn { display: inline-flex; align-items: center; gap: 5px; padding: 0; color: var(--body); background: none; border: 0; font: inherit; font-weight: 600; }
+.task-assign-btn:hover { color: var(--primary); }
+.task-assign-face { width: 18px; height: 18px; flex: 0 0 auto; border-radius: 50%; object-fit: cover; object-position: center 15%; background: #7a5a76; }
+.task-assign-face.agent-avatar--monogram { display: grid; place-items: center; color: #fff; font-size: 8px; }
+.task-assign-btn svg { color: var(--faint); }
+
+/* Le voile ferme le menu au premier clic ailleurs. */
+.task-assign-veil { position: fixed; inset: 0; z-index: 30; display: block; }
+.task-assign-menu { position: absolute; z-index: 31; top: calc(100% + 6px); left: 0; display: flex; width: 244px; max-height: 292px; flex-direction: column; padding: 6px; overflow-y: auto; border: 1px solid var(--line); border-radius: 12px; background: #fff; box-shadow: 0 14px 34px rgb(18 22 40 / 14%); }
+.task-assign-menu em { padding: 7px 8px 4px; color: var(--faint); font-size: 10.5px; font-style: normal; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; }
+.task-assign-menu button { display: flex; align-items: center; gap: 9px; padding: 6px 8px; color: var(--ink); border: 0; border-radius: 8px; background: none; font-size: 12.5px; text-align: left; }
+.task-assign-menu button:hover { background: var(--surface); }
+.task-assign-menu button > svg:last-child { margin-left: auto; color: #2f7d4a; }
+.task-assign-menu small { margin-left: auto; color: var(--faint); font-size: 10.5px; }
+/* Ceux-la ne sont pas encore recrutes : le clic emmene a leur fiche. */
+.task-assign-menu .is-recruit { color: var(--primary); }
+.task-assign-menu .is-recruit svg { color: var(--primary); }
+.task-assign-menu .is-clear { margin-top: 4px; padding-top: 8px; border-top: 1px solid var(--line); border-radius: 0; color: var(--faint); font-size: 11.5px; }
+.task-assign-menu .is-clear:hover { color: var(--ink); background: none; }
+
+.task-drop { display: grid; width: 24px; height: 24px; flex: 0 0 auto; padding: 0; color: #c9ced9; background: none; border: 0; place-items: center; }
+.task-drop:hover { color: #c0392b; }
+
+/* L'ajout ferme la liste : c'est la derniere ligne du plan, pas un bouton
+   flottant qui se cherche. */
+.task-add { display: flex; align-items: center; gap: 8px; min-height: 52px; padding: 9px 18px; border-top: 1px solid #f0f2f5; }
+.task-add-open { display: inline-flex; align-items: center; gap: 7px; padding: 0; color: var(--primary); background: none; border: 0; font-size: 12.5px; font-weight: 600; }
+.task-add-open:hover { text-decoration: underline; }
+.task-add input { flex: 1; min-width: 0; height: 34px; padding: 0 11px; color: var(--ink); border: 1px solid var(--line); border-radius: 9px; font-size: 13px; }
+.task-add input:focus-visible { border-color: var(--primary); outline: none; }
+
+/* ── Ce dont l'equipe a besoin ────────────────────────────────────────────
+   Une reclamation, pas un formulaire : chaque ligne dit quoi, pourquoi, et
+   porte l'action qui la fait disparaitre. */
+.need-row { display: flex; align-items: center; gap: 12px; min-height: 62px; padding: 11px 18px; border-top: 1px solid #f0f2f5; }
+/* Le premier besoin suit le filet de l en-tete : pas de trait double. */
+.project-panel-head + .need-row { border-top: 0; }
+.need-row > div { flex: 1; min-width: 0; }
+.need-row strong { display: block; color: var(--ink); font-size: 13.5px; font-weight: 600; }
+.need-row div > span { display: block; margin-top: 3px; color: var(--faint); font-size: 11.5px; }
+.need-icon { display: grid; width: 34px; height: 34px; flex: 0 0 auto; color: var(--primary); border-radius: 10px; background: var(--surface); place-items: center; }
+.need-icon--logo { background: #fff; box-shadow: inset 0 0 0 1px var(--line); }
+.need-icon--logo img { width: 19px; height: 19px; object-fit: contain; }
+/* Le renvoi vers Ressources : le panneau informe, il n'exige rien. */
+.need-link { display: inline-flex; align-items: center; gap: 3px; flex: 0 0 auto; padding: 0; color: var(--primary); background: none; border: 0; font-size: 12px; font-weight: 600; }
+.need-link:hover { text-decoration: underline; }
+.need-act { display: inline-flex; align-items: center; gap: 5px; flex: 0 0 auto; height: 30px; padding: 0 11px; color: var(--primary); border: 1px solid var(--line); border-radius: 9px; background: #fff; font-size: 12px; font-weight: 600; }
+.need-act:hover:enabled { border-color: var(--primary); }
+.need-act:disabled { color: var(--faint); }
+
+
+/* ── Livrables suggeres par le chef de projet ─────────────────────────────
+   Dans le rail, sous les attendus : une proposition se lit comme une ligne de
+   plus, avec ses deux issues au bout. */
+.project-suggested { margin-top: 0; }
+.project-suggested ul { display: flex; flex-direction: column; gap: 10px; margin-top: 6px; }
+.project-suggested li { display: flex; align-items: flex-start; gap: 8px; }
+.project-suggested li > div { flex: 1; min-width: 0; }
+.project-suggested strong { display: block; color: var(--ink); font-size: 13px; font-weight: 600; }
+.project-suggested span { display: block; margin-top: 2px; color: var(--faint); font-size: 11.5px; line-height: 1.45; }
+.sug-yes, .sug-no { display: grid; width: 24px; height: 24px; flex: 0 0 auto; padding: 0; border: 1px solid var(--line); border-radius: 7px; background: #fff; place-items: center; }
+.sug-yes { color: #2f7d4a; }
+.sug-yes:hover { border-color: #2f7d4a; background: #e8f5ec; }
+.sug-no { color: #c9ced9; }
+.sug-no:hover { color: #c0392b; border-color: #e2b6b0; }
+
+
+/* ── Choix d'un reglage ───────────────────────────────────────────────────
+   Des pastilles au dessin de la plateforme, a la place des menus deroulants
+   du navigateur : trois options se lisent d'un coup, et un `select` natif ne
+   se dessine pas deux fois pareil selon le systeme. */
+.pf-choice { display: flex; flex-direction: column; gap: 8px; }
+.pf-choice > span { display: flex; align-items: baseline; gap: 8px; color: var(--ink); font-size: 12.5px; font-weight: 600; }
+.pf-choice > span small { color: var(--faint); font-size: 11px; font-weight: 500; font-variant-numeric: tabular-nums; }
+.pf-opts { display: flex; gap: 6px; }
+.pf-opts--wrap { flex-wrap: wrap; }
+.pf-opt { padding: 6px 13px; color: var(--muted); border: 1px solid var(--line); border-radius: 999px; background: #fff; font-size: 12.5px; font-weight: 500; }
+.pf-opt:hover:enabled { color: var(--ink); border-color: #c9cfda; }
+.pf-opt.is-on { color: var(--primary); border-color: #cfc0f4; background: var(--purple-100); font-weight: 600; }
+.pf-opt:disabled { color: #c9ced9; background: var(--surface); }
+
+/* ── Decisions en attente ─────────────────────────────────────────────────
+   Une decision non tranchee arrete quelqu'un : elle s'annonce en tete de la
+   vue d'ensemble, en ambre, et non dans un panneau qu'on peut manquer. */
+/* Une alerte sobre : un filet ambre a gauche, pas un panneau colore. Ce qui
+   attire l'oeil, c'est le contraste avec la page — pas la quantite de couleur. */
+.project-alert { display: flex; align-items: flex-start; gap: 11px; padding: 13px 16px 13px 14px; border: 1px solid var(--line); border-left: 3px solid #d9a521; border-radius: 4px 12px 12px 4px; background: #fff; }
+.project-alert > div { flex: 1; min-width: 0; }
+.project-alert-mark { display: grid; width: 26px; height: 26px; flex: 0 0 auto; color: #a97c12; border-radius: 8px; background: #fdf3de; place-items: center; }
+.project-alert strong { display: block; margin-top: 4px; color: var(--ink); font-size: 13px; font-weight: 600; }
+.project-alert ul { display: flex; flex-direction: column; margin-top: 6px; }
+.project-alert li button { display: flex; width: 100%; align-items: baseline; gap: 10px; padding: 5px 0; color: var(--body); border: 0; background: none; text-align: left; }
+.project-alert li button:hover span { color: var(--primary); }
+.project-alert li span { flex: 1; min-width: 0; font-size: 12.5px; }
+.project-alert li small { flex: 0 0 auto; color: var(--faint); font-size: 11px; }
+.project-alert li svg { flex: 0 0 auto; align-self: center; color: #c3c9d4; }
+
+/* L'expert d'une tache se choisit a la creation : le menu vit dans la ligne
+   de saisie, entre l'intitule et les commandes. */
+.task-add-agent { flex: 0 0 auto; height: 34px; max-width: 170px; padding: 0 9px; color: var(--ink); border: 1px solid var(--line); border-radius: 9px; background: #fff; font-family: inherit; font-size: 12.5px; }
+.task-add-agent:focus-visible { border-color: var(--primary); outline: none; }
+
+/* La liste des taches emportees par le retrait d'un expert. */
+/* Un retrait n'est pas une annonce : titre de taille normale, liste a plat,
+   sans puces ni encadre. */
+.drop-title { color: var(--ink); font-size: 14.5px; font-weight: 600; }
+.drop-body { display: flex; flex-direction: column; gap: 4px; }
+.drop-body p { color: var(--muted); font-size: 12.5px; }
+.drop-body span { color: var(--body); font-size: 12.5px; }
+.modal-acts { display: flex; justify-content: flex-end; gap: 8px; margin-top: 6px; }
+
+/* Ce que le projet attend, visible des la liste : discret quand c'est une
+   validation de plan, ambre quand quelqu'un est bloque. */
+.project-card-wait { display: inline-flex; align-items: center; gap: 6px; align-self: flex-start; margin-top: 10px; padding: 4px 9px; color: var(--muted); border: 1px solid var(--line); border-radius: 999px; font-size: 11.5px; font-weight: 600; }
+.project-card-wait svg { flex: 0 0 auto; color: #b6bcc7; }
+.project-card-wait.is-urgent { color: #8a6410; border-color: #f0dcae; background: #fdf7ea; }
+.project-card-wait.is-urgent svg { color: #d9a521; }
+
+/* Filtre par nom : une pastille qui ouvre la liste des experts. Elle vit en
+   tete de la rangee des filtres et en porte le dessin. */
+.name-pick { position: relative; flex: 0 0 auto; }
+.name-pick > .chip { gap: 5px; }
+/* La croix qui efface le nom choisi, dans la pastille elle-meme. */
+.name-pick .chip.is-active { gap: 4px; padding-right: 6px; }
+.name-pick .chip.is-active > button { display: grid; width: 18px; height: 18px; padding: 0; color: inherit; border: 0; background: none; place-items: center; opacity: .6; }
+.name-pick .chip.is-active > button:hover { opacity: 1; }
+.name-veil { position: fixed; inset: 0; z-index: 30; display: block; }
+.name-menu { position: absolute; z-index: 31; top: calc(100% + 6px); left: 0; display: flex; width: 240px; max-height: 320px; flex-direction: column; padding: 6px; overflow-y: auto; border: 1px solid var(--line); border-radius: 12px; background: #fff; box-shadow: 0 14px 34px rgb(18 22 40 / 14%); }
+.name-menu button { display: flex; align-items: baseline; gap: 8px; padding: 7px 9px; color: var(--ink); border: 0; border-radius: 8px; background: none; font-size: 12.5px; text-align: left; }
+.name-menu button:hover { background: var(--surface); }
+.name-menu button.is-on { color: var(--primary); background: var(--purple-100); font-weight: 600; }
+.name-menu small { margin-left: auto; color: var(--faint); font-size: 10.5px; }
+
+
+/* Taches par expert : deux teintes sur une meme barre — ce qui est fini, ce
+   qui tourne encore. Une barre unique aurait melange les deux. */
+.load-chart { display: flex; flex-direction: column; gap: 9px; margin-top: 14px; }
+.load-row { display: grid; grid-template-columns: 78px minmax(0, 1fr) 42px; align-items: center; gap: 10px; }
+.load-name { overflow: hidden; color: var(--ink); font-size: 12.5px; font-weight: 600; text-overflow: ellipsis; white-space: nowrap; }
+.load-track { display: flex; height: 9px; overflow: hidden; border-radius: 999px; background: var(--surface); }
+.load-done { background: var(--primary); }
+.load-running { background: #c5c4ff; }
+.load-value { color: var(--muted); font-size: 12px; text-align: right; font-variant-numeric: tabular-nums; }
+.load-legend { display: flex; gap: 16px; margin-top: 14px; color: var(--faint); font-size: 11.5px; }
+.load-legend span { display: inline-flex; align-items: center; gap: 6px; }
+.load-legend i { width: 8px; height: 8px; border-radius: 50%; }
+.load-legend i.is-done { background: var(--primary); }
+.load-legend i.is-running { background: #c5c4ff; }
+/* Le telechargement des metriques : discret, au bout du titre du bloc. */
+.metrics-export { display: inline-flex; align-items: center; gap: 6px; flex: 0 0 auto; height: 28px; padding: 0 11px; color: var(--muted); border: 1px solid var(--line); border-radius: 999px; background: #fff; font-size: 11.5px; font-weight: 600; }
+.metrics-export:hover { color: var(--primary); border-color: var(--primary); }
+
+/* ── Activite des membres ─────────────────────────────────────────────────
+   Un siege ouvert et jamais utilise se paie aussi : la ligne grisee le dit. */
+.member-metrics { display: flex; flex-direction: column; margin-top: 12px; }
+.member-metric { display: grid; grid-template-columns: 32px minmax(0, 1fr) 80px 90px 80px 100px 120px; align-items: center; gap: 12px; padding: 10px 0; border-bottom: 1px solid #f2f4f8; }
+.member-metric:last-child { border-bottom: 0; }
+.member-metric-face { display: grid; width: 32px; height: 32px; color: var(--primary); border-radius: 50%; background: var(--purple-100); place-items: center; font-size: 11.5px; font-weight: 700; }
+.member-metric-id { min-width: 0; }
+.member-metric-id strong { display: block; overflow: hidden; color: var(--ink); font-size: 13px; font-weight: 600; text-overflow: ellipsis; white-space: nowrap; }
+.member-metric-id small { display: block; overflow: hidden; color: var(--faint); font-size: 11.5px; text-overflow: ellipsis; white-space: nowrap; }
+.member-metric-num { color: var(--ink); font-size: 12.5px; font-weight: 600; text-align: right; font-variant-numeric: tabular-nums; }
+.member-metric-seen { color: var(--faint); font-size: 11.5px; text-align: right; }
+/* Aucune action sur la periode : le compte dort. */
+.member-metric.is-idle .member-metric-face { color: var(--faint); background: var(--surface); }
+.member-metric.is-idle .member-metric-id strong { color: var(--muted); }
+.member-metric.is-idle .member-metric-num { color: var(--faint); }
+.payroll-card { margin-top: 18px; }
+
+/* En-tete du tableau des membres : sans lui, un nombre nu ne dit pas de quoi
+   il est le compte. */
+.member-metric--head { color: var(--faint); border-bottom: 1px solid var(--line); font-size: 11px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; }
+.member-metric--head > span:nth-child(n+3) { text-align: right; }
+
+/* Connecteurs : le logo identifie plus vite que le nom. */
+.conn-row { display: grid; grid-template-columns: 22px 96px minmax(0, 1fr) 62px; align-items: center; gap: 10px; }
+.conn-logo { display: grid; width: 22px; height: 22px; color: var(--muted); border-radius: 6px; background: #fff; box-shadow: inset 0 0 0 1px var(--line); place-items: center; font-size: 10px; font-weight: 700; }
+.conn-logo img { width: 13px; height: 13px; object-fit: contain; }
+.conn-row.is-off { opacity: .55; }
+.conn-row.is-off .load-value { font-size: 11px; }
+
+/* Trois volumes en tete du bloc des ressources. */
+.res-counts { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin-top: 14px; padding-bottom: 14px; border-bottom: 1px solid #f2f4f8; }
+.res-counts > span { display: flex; flex-direction: column; gap: 2px; }
+.res-counts strong { color: var(--ink); font-size: 19px; font-variant-numeric: tabular-nums; }
+.res-counts small { color: var(--faint); font-size: 11.5px; }
+
+/* Les exports : quatre tuiles, en fin d'ecran. */
+.export-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 10px; margin-top: 14px; }
+.export-tile { display: flex; align-items: center; gap: 11px; padding: 12px 14px; border: 1px solid var(--line); border-radius: 12px; background: #fff; text-align: left; }
+.export-tile:hover { border-color: var(--primary); }
+.export-mark { display: grid; width: 32px; height: 32px; flex: 0 0 auto; color: var(--primary); border-radius: 9px; background: var(--purple-100); place-items: center; }
+.export-tile strong { display: block; color: var(--ink); font-size: 13px; font-weight: 600; }
+.export-tile small { display: block; margin-top: 2px; color: var(--faint); font-size: 11.5px; line-height: 1.4; }
+
+/* ── Fiche d'un membre ────────────────────────────────────────────────────
+   Deux colonnes qui remplissent la largeur : les droits a gauche, les agents a
+   droite. Les cases se cochent SUR PLACE — cette fiche est l'endroit ou l'on
+   regle, une fenetre intermediaire n'y ajoutait qu'un detour. */
+.mb-block { margin-top: 26px; max-width: 900px; }
+.mb-head { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; padding-bottom: 10px; border-bottom: 1px solid var(--line); }
+.mb-head h2 { color: var(--ink); font-size: 15px; }
+.mb-head em { color: var(--faint); font-size: 12px; font-style: normal; font-variant-numeric: tabular-nums; }
+.mb-head > .button { margin-left: auto; }
+.mb-note { margin-top: 10px; color: var(--faint); font-size: 12px; line-height: 1.5; }
+
+.mb-perms { display: flex; flex-direction: column; }
+.mb-perm { display: flex; align-items: center; gap: 10px; padding: 11px 2px; color: var(--ink); border-bottom: 1px solid #f2f4f8; font-size: 13px; }
+.mb-perm:last-child { border-bottom: 0; }
+.mb-perm input { width: 16px; height: 16px; flex: 0 0 auto; accent-color: var(--primary); }
+
+
+/* Tous les agents dans une seule liste : une ligne par agent, le nom et le
+   metier SUR LA MEME LIGNE pour que tout s'aligne d'une ligne a l'autre, et
+   l'action au bout. Ceux auxquels il n'a pas acces restent en retrait. */
+.mb-save { display: flex; gap: 8px; margin-top: 14px; }
+.mb-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(330px, 1fr)); gap: 0 28px; max-height: 440px; margin-top: 4px; overflow-y: auto; list-style: none; }
+.mb-list li { display: grid; grid-template-columns: 26px minmax(0, 1fr) minmax(0, 1fr) 84px; align-items: center; gap: 10px; padding: 9px 2px; border-bottom: 1px solid #f2f4f8; opacity: .5; }
+.mb-list li.is-on { opacity: 1; }
+.mb-list strong { overflow: hidden; color: var(--ink); font-size: 12.5px; font-weight: 600; text-overflow: ellipsis; white-space: nowrap; }
+.mb-list small { overflow: hidden; color: var(--faint); font-size: 11.5px; text-overflow: ellipsis; white-space: nowrap; }
+.mb-face { width: 26px; height: 26px; flex: 0 0 auto; border-radius: 50%; object-fit: cover; object-position: center 15%; background: #7a5a76; }
+.mb-face.agent-avatar--monogram { display: grid; place-items: center; color: #fff; font-size: 10px; }
+.mb-act { display: inline-flex; align-items: center; justify-content: center; gap: 4px; height: 24px; padding: 0 9px; color: var(--primary); border: 1px solid var(--line); border-radius: 999px; background: #fff; font-size: 11.5px; font-weight: 600; }
+.mb-act:hover { border-color: var(--primary); }
+.mb-act.is-on { color: var(--muted); }
+.mb-act.is-on:hover { color: #c0392b; border-color: #e2b6b0; }

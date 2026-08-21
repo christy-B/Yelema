@@ -31,7 +31,7 @@ export function AgentChatPage() {
         <div className="chat-shell">
           <header className="chat-header">
             <button type="button" className="chat-back" onClick={() => navigate(paths.agent(agent.id, workspaceId))}><ArrowLeft size={16} /> Retour à l'expert</button>
-            <AgentAvatar id={agent.id} name={agent.name} avatarUrl={agent.avatarUrl} className="chat-header-av" />
+            <AgentAvatar id={agent.id} name={agent.name} avatarUrl={agent.avatarUrl} variant="square" className="chat-header-av" />
             <div><h1>{agent.name}</h1>{agent.tags[0] && <p>{agent.tags[0]}</p>}</div>
           </header>
           <ExpertChat

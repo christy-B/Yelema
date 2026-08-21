@@ -1,3 +1,4 @@
+import type { ConversationStatus } from '../../conversations/api/contracts'
 export type ToolType = 'dust-agent' | 'native-agent' | 'n8n-workflow' | 'openclaw'
 
 export interface AgentSummary {
@@ -15,8 +16,40 @@ export interface AgentSummary {
   group?: { key: string; name: string } | null
   /** Canaux où l'expert est joignable (web, whatsapp, slack…). */
   channels: string[]
+  /** En service. Hors service, il ne répond plus et ses routines dorment. */
+  active?: boolean
+  /**
+   * Termes qui rendent l'expert trouvable à partir d'un besoin décrit —
+   * fonction, quotidien, compétences, outils. Servent à la recherche, jamais
+   * à l'affichage.
+   */
+  keywords?: string[]
   /** Portrait de l'employé IA — fourni par le back-office (pas encore prêt) ; sinon avatar généré. */
   avatarUrl?: string | null
+  /**
+   * Resume d'activite affiche sur la carte de l'equipe : ce que l'expert a en
+   * cours, ce qui attend, ce qui a echoue. Absent pour un expert du catalogue,
+   * qui n'a par definition aucune activite.
+   *
+   * CONTRAT ATTENDU DU BACK : ce decompte est calcule cote serveur. L'ecran ne
+   * doit pas charger toutes les taches de tous les experts pour en compter
+   * quatre.
+   */
+  activity?: AgentActivityBrief | null
+}
+
+/** Decompte d'activite d'un expert de l'equipe. */
+export interface AgentActivityBrief {
+  total: number
+  running: number
+  paused: number
+  failed: number
+  /**
+   * Les dernieres taches, la plus recente en tete. C'est ce que la carte
+   * affiche : un intitule dit ce que l'expert fait, un compteur ne dit que
+   * combien.
+   */
+  recent: { title: string; time: string | null; status: ConversationStatus }[]
 }
 
 /**
@@ -202,6 +235,32 @@ export interface PortraitJob {
   variants: PortraitVariant[]
 }
 
+/** Traits de personnalité d'un expert. Champs libres, tous facultatifs. */
+export interface AgentPersonality {
+  /**
+   * Caractère : la façon dont l'expert aborde le travail. Une liste de choix
+   * plutôt qu'un texte libre — un champ libre laisse écrire n'importe quoi
+   * sans qu'on sache ce qui sera réellement pris en compte par le runtime.
+   */
+  traits: string[]
+}
+
+/** Les caractères proposés. Volontairement distincts du TON, qui couvre déjà
+ *  direct / chaleureux / formel : ici c'est la méthode, pas la voix. */
+export const PERSONALITY_TRAITS: { key: string; label: string; hint: string }[] = [
+  { key: 'rigoureux', label: 'Rigoureux', hint: 'Vérifie avant d’affirmer' },
+  { key: 'pedagogue', label: 'Pédagogue', hint: 'Explique ce qu’il fait' },
+  { key: 'synthetique', label: 'Synthétique', hint: 'Va au fait, sans détour' },
+  { key: 'proactif', label: 'Proactif', hint: 'Signale ce qu’il voit venir' },
+  { key: 'prudent', label: 'Prudent', hint: 'Préfère demander que supposer' },
+  { key: 'diplomate', label: 'Diplomate', hint: 'Ménage les formes' },
+  { key: 'perseverant', label: 'Persévérant', hint: 'Relance jusqu’à réponse' },
+  { key: 'curieux', label: 'Curieux', hint: 'Creuse au-delà de la demande' },
+]
+
+/** Au-delà, le caractère ne veut plus rien dire : tout et son contraire. */
+export const PERSONALITY_TRAITS_MAX = 4
+
 export interface AgentProfile {
   /** Expert en service. Désactivé, il ne répond plus et ses routines sont suspendues. */
   active: boolean
@@ -224,6 +283,12 @@ export interface AgentProfile {
    * espace — le filtrage est appliqué côté serveur.
    */
   shareResources: boolean
+  /**
+   * Personnalité — ce qui donne sa couleur à l'expert au-delà de sa fonction.
+   * Tout est facultatif : un expert sans personnalité renseignée reste un
+   * professionnel neutre, ce qui convient à beaucoup d'organisations.
+   */
+  personality: AgentPersonality
   /** Portrait demandé pour cet expert (voir AgentAvatarConfig). */
   avatar: AgentAvatarConfig
   /** Proposition retenue. `null` tant que l'organisation garde le portrait du catalogue. */
@@ -232,6 +297,8 @@ export interface AgentProfile {
 
 /** Une ressource d'un expert : un document qu'il exploite, ou un artefact qu'il a produit. */
 export interface AgentResource {
+  /** Mise a disposition des autres experts, piece par piece. */
+  shared: boolean
   id: string
   name: string
   kind: 'source' | 'artefact'

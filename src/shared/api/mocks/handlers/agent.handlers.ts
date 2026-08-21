@@ -3,9 +3,15 @@ import { http, HttpResponse } from 'msw'
 import { ROSTER, type RosterExpert } from '../../../../features/agents/roster'
 import { AVATAR_AXES, DEFAULT_PROFILE, getProfile, PORTRAIT_CROPS, setProfile, type ProfileSettings } from '../stores/agent-profile.store'
 import { queueOpening } from '../stores/recruitment.store'
-import { API_BASE, notFound, requireAuth, validationError } from './helpers'
+import { addToTeam, isInTeam } from '../stores/team.store'
+import { agentActivityBrief } from './conversation.handlers'
+import { API_BASE, getAuthenticatedUser, notFound, requireAuth, validationError } from './helpers'
 
 // Provider (clé du logo) dérivé du nom d'affichage de l'intégration.
+/** Longueurs maximales des champs de personnalité — miroir du contrat. */
+const PERSONALITY_TRAITS = ['rigoureux', 'pedagogue', 'synthetique', 'proactif', 'prudent', 'diplomate', 'perseverant', 'curieux']
+const PERSONALITY_TRAITS_MAX = 4
+
 const providerSlug = (name: string) => name.toLocaleLowerCase('fr').normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')
 
 /**
@@ -27,9 +33,18 @@ const AGENT_TYPES = [
  * les recruter. Ce rattachement est un état d'organisation, pas une propriété
  * de l'expert — il viendra du control-plane (plan souscrit).
  */
-const TEAM_AGENT_IDS = new Set(['exp_kouassi', 'exp_awa', 'exp_mamadou', 'exp_salif'])
-const teamAgents = () => ROSTER.filter((expert) => TEAM_AGENT_IDS.has(expert.id))
-const marketplaceAgents = () => ROSTER.filter((expert) => !TEAM_AGENT_IDS.has(expert.id))
+
+/** Demandes d'experts sur mesure, en mémoire le temps de la démonstration. */
+const EXPERT_REQUESTS: Record<string, unknown>[] = []
+
+const teamAgents = () => ROSTER.filter((expert) => isInTeam(expert.id))
+/**
+ * Les experts que l'organisation a recrutes. Le chef de projet n'en fait pas
+ * partie : il vient avec les projets, on ne le recrute pas et on ne l'affecte
+ * pas a une tache. Sa fiche reste consultable par son identifiant.
+ */
+const listedAgents = () => teamAgents().filter((expert) => expert.role !== 'orchestrator')
+const marketplaceAgents = () => ROSTER.filter((expert) => !isInTeam(expert.id) && expert.role !== 'orchestrator')
 
 
 // Réglages par expert : magasin partagé avec /agents/:id/resources.
@@ -47,7 +62,32 @@ function toListDto(expert: RosterExpert) {
     group: { key: expert.groupKey, label: expert.group },
     channels: expert.channels,
     sovereignCapable: true,
+    // Hors service, il ne repond plus : la carte doit pouvoir le dire sans
+    // charger le profil de chacun.
+    active: getProfile(expert.id).active,
     description: expert.description,
+    /**
+     * De quoi rendre l'expert trouvable quand on decrit un besoin plutot
+     * qu'on cite un nom. Le nom, le metier et l'accroche ne suffisent pas :
+     * « relancer mes impayes » n'y figure nulle part, alors que c'est le
+     * quotidien de l'expert.
+     */
+    keywords: [
+      expert.metier,
+      expert.group,
+      expert.fonction,
+      ...expert.daily,
+      ...expert.skills.flatMap((skill) => [skill.label, skill.description]),
+      ...expert.connectors,
+      ...expert.approvals,
+      // Le cas d'usage est la partie la plus riche de la fiche : c'est le seul
+      // endroit ou le vocabulaire du client apparait tel qu'il le dit — un
+      // devis, un impaye, un comite de credit. L'ecarter privait la recherche
+      // de sa meilleure source.
+      expert.usecase.enAction,
+      expert.usecase.valeur,
+      ...expert.usecase.conversation.map((turn) => turn.text),
+    ],
   }
 }
 
@@ -69,7 +109,53 @@ export const agentHandlers = [
   http.get(`${API_BASE}/agents`, async ({ request }) => {
     const unauthorized = await requireAuth(request)
     if (unauthorized) return unauthorized
-    return HttpResponse.json(teamAgents().map(toListDto))
+    // Chaque expert de l'equipe porte son brief d'activite : la carte
+    // l'affiche sans avoir a charger les taches de tout le monde.
+    const currentUser = await getAuthenticatedUser(request)
+    return HttpResponse.json(listedAgents().map((expert) => ({
+      ...toListDto(expert),
+      activity: currentUser ? agentActivityBrief(expert.id, currentUser) : null,
+    })))
+  }),
+
+  /**
+   * Demande d'un expert SUR MESURE — un métier que le catalogue ne couvre pas
+   * encore. Ce n'est pas un recrutement : rien ne rejoint l'équipe, la demande
+   * part au cadrage. Elle est enregistrée telle quelle, le back décidera de son
+   * cheminement (revue, devis, création d'un expert).
+   */
+  http.post(`${API_BASE}/agents/requests`, async ({ request }) => {
+    const unauthorized = await requireAuth(request)
+    if (unauthorized) return unauthorized
+    const currentUser = await getAuthenticatedUser(request)
+    const body = (await request.json()) as { need?: string; metier?: string; dataKinds?: unknown }
+    const need = body.need?.trim()
+    const metier = body.metier?.trim()
+    const texte = (value: unknown) => (Array.isArray(value) ? value.filter((item): item is string => typeof item === 'string') : [])
+    const dataKinds = texte(body.dataKinds)
+    if (!need) return validationError('Décrivez le besoin auquel cet expert doit répondre.')
+    if (need.length > 2000) return validationError('La description ne peut pas dépasser 2000 caractères.')
+    // Le métier et la nature des données conditionnent la faisabilité : sans
+    // eux le cadrage recommence à zéro par un échange avec le client.
+    if (!metier) return validationError('Indiquez le métier concerné.')
+    if (dataKinds.length === 0) return validationError('Indiquez sur quelles données cet expert travaillera.')
+
+    const created = {
+      id: `req_${crypto.randomUUID().slice(0, 8)}`,
+      need,
+      metier,
+      dataKinds,
+      status: 'received',
+      requestedBy: currentUser?.email ?? null,
+      createdAt: new Date().toISOString(),
+    }
+    EXPERT_REQUESTS.unshift(created)
+    return HttpResponse.json(created, { status: 201 })
+  }),
+
+  http.get(`${API_BASE}/agents/requests`, async ({ request }) => {
+    const unauthorized = await requireAuth(request)
+    return unauthorized ?? HttpResponse.json(EXPERT_REQUESTS)
   }),
 
   http.get(`${API_BASE}/agents/types`, async ({ request }) => {
@@ -110,7 +196,7 @@ export const agentHandlers = [
     const refused = sent.filter((value) => !expert.channels.includes(value))
     if (refused.length > 0) return validationError(`Canaux non pris en charge par ${expert.name} : ${refused.join(', ')}.`)
 
-    TEAM_AGENT_IDS.add(id)
+    addToTeam(id)
     setProfile(id, { ...DEFAULT_PROFILE, channels: [...new Set(sent)] })
     // L'expert engage la conversation : sa prise de poste l'attend dès l'arrivée
     // dans son espace, il n'attend pas d'être sollicité.
@@ -123,7 +209,7 @@ export const agentHandlers = [
     const unauthorized = await requireAuth(request)
     if (unauthorized) return unauthorized
     const id = String(params.id)
-    if (!teamAgents().some((expert) => expert.id === id)) return notFound('Expert IA introuvable.')
+    if (!isInTeam(id)) return notFound('Expert IA introuvable.')
     return HttpResponse.json(getProfile(id))
   }),
 
@@ -141,6 +227,17 @@ export const agentHandlers = [
     const instructions = typeof body.instructions === 'string' ? body.instructions.trim() : current.instructions
     if (instructions.length > 2000) return validationError('Les consignes ne peuvent pas dépasser 2000 caractères.')
 
+    // Personnalité : une liste de caractères choisis parmi ceux que le
+    // catalogue propose. Tout ce qui n'y figure pas est écarté sans bruit —
+    // c'est une valeur d'énumération, pas un champ de saisie.
+    const envoyee = (body as { personality?: { traits?: unknown } }).personality
+    const personality = { ...current.personality }
+    if (envoyee && Array.isArray(envoyee.traits)) {
+      const retenus = [...new Set(envoyee.traits.filter((value): value is string => typeof value === 'string' && PERSONALITY_TRAITS.includes(value)))]
+      if (retenus.length > PERSONALITY_TRAITS_MAX) return validationError(`Quatre caractères au maximum.`)
+      personality.traits = retenus
+    }
+
     const next: ProfileSettings = {
       active: typeof body.active === 'boolean' ? body.active : current.active,
       // Canaux : on ne garde que ceux que l'expert prend en charge, et jamais une
@@ -154,6 +251,7 @@ export const agentHandlers = [
       language: pick(body.language, LANGUAGES, current.language),
       detail: pick(body.detail, DETAILS, current.detail),
       instructions,
+      personality,
       requireApproval: typeof body.requireApproval === 'boolean' ? body.requireApproval : current.requireApproval,
       shareResources: typeof body.shareResources === 'boolean' ? body.shareResources : current.shareResources,
       // Portrait : chaque axe est validé contre ses valeurs admises.
